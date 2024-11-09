@@ -1,0 +1,73 @@
+﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Product>
+
+<!-- Nút mở modal tạo sản phẩm mới -->
+<p>
+    <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
+        Thêm sản phẩm
+    </a>
+</p>
+
+<!-- Modal cho việc tạo sản phẩm mới -->
+<div id="productModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+           @*  <div class="modal-header">
+                <h2 style="color: bla; text-align: center; margin-bottom: 20px;">Tạo Sản Phẩm Mới</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> *@
+            <div class="modal-body">
+                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                @await Component.InvokeAsync("ProductCreate")
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning" role="alert">
+        Sản phẩm trống.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100">
+                    <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.ProductName</h5>
+                        <h5 class="card-title">Giá:@product.Price</h5>
+                        <h5 class="card-title">Số lượng đã bán:@product.Quantity</h5>
+
+
+                        @Html.ActionLink("Xem chi tiết", "Details", new { id = product.ProductID }, new { @class = "btn btn-primary" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Thêm script cho jQuery và Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Script mở và đóng modal -->
+<script>
+    $(document).ready(function () {
+        // Khi nhấn nút mở modal
+        $("#openModal").click(function () {
+            $("#productModal").modal('show');
+        });
+
+        // Khi nhấn nút đóng modal
+        $(".close").click(function () {
+            $("#productModal").modal('hide');
+        });
+    });
+</script>
