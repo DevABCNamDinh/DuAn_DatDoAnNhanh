@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using DuAn_DoAnNhanh.Application.Implements.Service
+@using DuAn_DoAnNhanh.Application.Interfaces.Service
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@inject ICartService _cartService
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,6 +30,42 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        
+                    </ul>
+                    <ul class="navbar-nav navbar-right">
+                        @{
+                            var userId = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+                          
+                            var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName");
+                           
+                        }
+                        @if (userId != null)
+                        {
+                            var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+                            var cartItems = _cartService.GetCartItems(cart.CartID);
+                            var cartItemCount = cartItems.Sum(i => i.Quantity);
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("Cart", "Cart")">
+                                    <span class="nav-link navbar-text">Cart (@cartItemCount)</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link navbar-text">Hello, @userName</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-danger" asp-controller="User" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        { 
+                            <li class="nav-item">
+                                <a class="btn btn-primary" asp-controller="User" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-warning" asp-controller="User" asp-action="Register">Register</a>
+                            </li>
+                         }
                     </ul>
                 </div>
             </div>

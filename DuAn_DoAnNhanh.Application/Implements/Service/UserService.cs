@@ -1,5 +1,6 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
+using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,26 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
     {
         private readonly IGenericRepository<User> _userRepository;
         private readonly IGenericRepository<Cart> _cartRepository;
-        public UserService(IGenericRepository<User> userRepository, IGenericRepository<Cart> cartRepository)
+        private readonly MyDBContext _dbContext;
+
+        public UserService(IGenericRepository<User> userRepository, 
+            IGenericRepository<Cart> cartRepository, MyDBContext dbContext)
         {
             _cartRepository = cartRepository;
             _userRepository = userRepository;
+            _dbContext = dbContext;
         }
-        public User Login(string email, string password)
+      
+
+      
+
+        public User Login(string Email, string Password)
         {
             return _userRepository.GetAll()
-             .FirstOrDefault(u => u.Email == email && u.Password == password);
+                 .FirstOrDefault(u=> u.Email == Email && u.Password == Password);
         }
+
+
 
         public User Register(User user)
         {
@@ -30,20 +41,23 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 throw new Exception("Username already exists.");
             }
-
-            _userRepository.insert(user);
-            _userRepository.save();
+            _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
+            //_userRepository.insert(user);
+            //_userRepository.save();
 
             var cart = new Cart()
             {
                 CartID = Guid.NewGuid(),
                 UserID = user.UserID
             };
-
-            _cartRepository.insert(cart);
-            _cartRepository.save();
+            _dbContext.Carts.Add(cart);
+            _dbContext.SaveChanges();
+            //_cartRepository.insert(cart);
+            //_cartRepository.save();
 
             return user;
         }
+
     }
 }
