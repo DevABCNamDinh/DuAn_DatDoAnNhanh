@@ -16,9 +16,9 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.ToTable("Users");
             builder.HasKey(x => x.UserID);
             builder.Property(x=> x.UserID).ValueGeneratedOnAdd();
-            builder.HasMany(x => x.Addresses).WithOne(x => x.User).HasForeignKey(x => x.AddressID).IsRequired();
+            builder.HasMany(x => x.Addresses).WithOne(x => x.User).HasForeignKey(x => x.UserID).IsRequired();
             builder.HasMany(x=>x.Orderes).WithOne(x=>x.User).HasForeignKey(x=>x.UserID).IsRequired();
-            builder.HasOne(x => x.Cart).WithOne(x => x.User).HasForeignKey<User>(x => x.UserID).IsRequired();
+           
         }
     }
 }

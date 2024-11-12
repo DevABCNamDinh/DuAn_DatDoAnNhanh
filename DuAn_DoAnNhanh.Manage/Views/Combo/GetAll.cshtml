@@ -1,0 +1,70 @@
+﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
+
+<!-- Nút mở modal tạo sản phẩm mới -->
+<p>
+    <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
+        Thêm Combo
+    </a>
+</p>
+
+<!-- Modal cho việc tạo sản phẩm mới -->
+<div id="comboModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+           
+            <div class="modal-body">
+                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                @await Component.InvokeAsync("ComboCreate")
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning" role="alert">
+        Combo trống.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var combo in Model)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100">
+                    <img class="card-img-top" src="@combo.Combo.Image" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h4 class="card-title"><b>@combo.Combo.ComboName</b></h4>
+                        @foreach (var item in combo.Products)
+                        {
+                            <h5 class="card-title ">@item.Quantity @item.ProductName</h5>
+                        }
+                        <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
+                        
+                        @Html.ActionLink("Xem chi tiết", "Details", new { id = combo.Combo.ComboID }, new { @class = "btn btn-primary" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Thêm script cho jQuery và Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Script mở và đóng modal -->
+<script>
+    $(document).ready(function () {
+        // Khi nhấn nút mở modal
+        $("#openModal").click(function () {
+            $("#comboModal").modal('show');
+        });
+
+        // Khi nhấn nút đóng modal
+        $(".close").click(function () {
+            $("#comboModal").modal('hide');
+        });
+    });
+</script>

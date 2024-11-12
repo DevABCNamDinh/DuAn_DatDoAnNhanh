@@ -17,7 +17,7 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.ToTable("Carts");
             builder.HasKey(x => x.CartID);
             builder.Property(x => x.CartID).ValueGeneratedOnAdd();
-            builder.HasOne(x => x.User).WithOne(x => x.Cart).HasForeignKey<Cart>(x => x.CartID).IsRequired();
+            builder.HasOne(x => x.User).WithOne(x => x.Cart).HasForeignKey<Cart>(x => x.UserID).IsRequired();
             builder.HasMany(x => x.CartItems).WithOne(x => x.Cart).HasForeignKey(x => x.CartID).IsRequired();
           
 

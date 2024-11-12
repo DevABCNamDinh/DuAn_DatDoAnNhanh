@@ -16,5 +16,7 @@ namespace DuAn_DoAnNhanh.Data.Enum
         Canceled=5, /*- Đơn hàng bị hủy bởi khách hàng hoặc người quản lý.*/
         Returned =6,/*- Đơn hàng đã được trả lại sau khi giao.*/
         Refunded =7,/* - Đơn hàng đã hoàn tất việc hoàn tiền cho khách hàng (nếu có).*/
+        Activity = 10,//Hoạt động
+        InActivity = 11,//Ngừng hoạt động
     }
 }

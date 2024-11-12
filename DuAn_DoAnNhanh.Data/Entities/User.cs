@@ -9,7 +9,6 @@ namespace DuAn_DoAnNhanh.Data.Entities
     public class User
     {
         public Guid UserID { get; set; }
-        public Guid AddressID { get; set; }
 
         public string FullName { get; set; }
         public string Email { get; set; }
