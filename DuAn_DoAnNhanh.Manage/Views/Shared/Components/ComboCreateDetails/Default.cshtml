@@ -1,0 +1,43 @@
+﻿@model DuAn_DoAnNhanh.Data.ViewModel.ComboDetailsViewModel
+
+
+
+@if (Model.Products == null || !Model.Products.Any())
+{
+    <div class="alert alert-warning" role="alert">
+        Sản phẩm trống.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100">
+                    <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.ProductName</h5>
+                        <h3 class="card-title" style="color: red;"><b>Giá:@product.Price.ToString("N0") đ</b></h3>
+                        @* <h5 class="card-title">Số lượng đã bán:@product.Quantity</h5> *@
+                      
+
+                        <!-- Form để gửi thông tin -->
+                        <form asp-controller="ComboDetails" asp-action="Create" method="post">
+                            <input type="hidden" name="productID" value="@product.ProductID" />
+                            <input type="hidden" name="comboID" value="@Model.ComboID" />
+                            <h5 class="card-title">
+                                Số lượng:
+                                <input type="number" name="quantity" value="1" style="width: 50px; display: inline-block;" />
+                            </h5>
+
+                            <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+         
+        }
+    </div>
+
+}

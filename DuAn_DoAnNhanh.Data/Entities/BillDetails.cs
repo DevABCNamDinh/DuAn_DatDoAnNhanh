@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DuAn_DoAnNhanh.Data.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public Guid OrderID { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
+        public StatusOrder Status { get; set; }
+
         public virtual Bill Order { get; set; }
         public virtual Combo Combo { get; set; }
 

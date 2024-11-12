@@ -16,7 +16,7 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.ToTable("Address");
             builder.HasKey(x => x.AddressID);
             builder.Property(x => x.AddressID).ValueGeneratedOnAdd();
-            builder.HasOne(x => x.User).WithMany(x => x.Addresses).IsRequired();
+            builder.HasOne(x => x.User).WithMany(x => x.Addresses).HasForeignKey(x=>x.UserID).IsRequired();
           
 
 

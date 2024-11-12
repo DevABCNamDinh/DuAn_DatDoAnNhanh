@@ -36,7 +36,12 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("AddressID");
+
+                    b.HasIndex("UserID");
 
                     b.ToTable("Address", (string)null);
                 });
@@ -84,6 +89,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderDetailsID");
 
                     b.HasIndex("ComboID");
@@ -105,6 +113,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("CartID");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("Carts", (string)null);
                 });
@@ -152,7 +163,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
@@ -219,6 +229,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("ProductComboID");
 
                     b.HasIndex("ComboID");
@@ -232,9 +245,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                 {
                     b.Property<Guid>("UserID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AddressID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDate")
@@ -261,7 +271,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                 {
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.User", "User")
                         .WithMany("Addresses")
-                        .HasForeignKey("AddressID")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -304,6 +314,17 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Cart", b =>
+                {
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.User", "User")
+                        .WithOne("Cart")
+                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.Cart", "UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.CartItem", b =>
@@ -352,17 +373,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
-                {
-                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Cart", "Cart")
-                        .WithOne("User")
-                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.User", "UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cart");
-                });
-
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Bill", b =>
                 {
                     b.Navigation("BillDetails");
@@ -371,9 +381,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Cart", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("User")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Combo", b =>
@@ -397,6 +404,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("Cart")
+                        .IsRequired();
 
                     b.Navigation("Orderes");
                 });
