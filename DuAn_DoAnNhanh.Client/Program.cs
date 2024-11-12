@@ -7,16 +7,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession();
 // Add services to the container.
 builder.Services.AddDbContext<MyDBContext>((serviceProvider, options) =>
 {
     var dbContextFactory = serviceProvider.GetRequiredService<IDesignTimeDbContextFactory<MyDBContext>>();
-    options.UseSqlServer("Data Source=DESKTOP-6F71DIH\\SQLEXPRESS;Initial Catalog=Do_An_Nhanh;Integrated Security=True;TrustServerCertificate=true");
+    options.UseSqlServer("Data Source=DESKTOP-PMMSQG0\\SQLEXPRESS;Initial Catalog=Du_An;Integrated Security=True;TrustServerCertificate=true");
 });
 builder.Services.AddSingleton<IDesignTimeDbContextFactory<MyDBContext>, MyDbContextFactory>();
 
 // Add services to the container.
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -35,7 +37,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseSession();
 app.UseRouting();
 
 app.UseAuthorization();

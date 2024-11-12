@@ -1,0 +1,26 @@
+﻿
+@using DuAn_DoAnNhanh.Client.Models.ViewModel
+@model LoginViewModel
+
+<h1>Login</h1>
+
+<form asp-action="Login" method="post">
+  
+    <div class="mb-3">
+        <label asp-for="@Model.Email" class="form-label"></label>
+        <input asp-for="@Model.Email" class="form-control">
+        <span asp-validation-for="@Model.Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="@Model.Password" class="form-label"></label>
+        <input asp-for="@Model.Password" class="form-control">
+        <span asp-validation-for="@Model.Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <span class="text-danger">@ViewBag.Error</span>
+}
