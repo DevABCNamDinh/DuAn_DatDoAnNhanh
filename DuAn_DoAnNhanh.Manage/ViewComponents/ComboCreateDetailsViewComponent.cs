@@ -1,6 +1,7 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ namespace DuAn_DoAnNhanh.Manage.ViewComponents
         }
         public IViewComponentResult Invoke(Guid comboID)
         {
-            var listProductCombo = _dbContext.productCombos.Where(x => x.ComboID == comboID).ToList();
+            var listProductCombo = _dbContext.productCombos.Where(x => x.ComboID == comboID&&x.Status==StatusCombo.Activity).ToList();
             var products = new List<Product>();
             foreach (var product in listProductCombo)
             {

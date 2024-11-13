@@ -28,12 +28,15 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void DeleteCombo(Guid id)
         {
-            throw new NotImplementedException();
+           var comboDelete = _genericRepository.GetById(id);
+            comboDelete.Status = StatusCombo.InActivity;
+          UpdateCombo(comboDelete);
+
         }
 
         public List<Combo> GetAllCombo()
         {
-            return _genericRepository.GetAll();
+            return _genericRepository.GetAll().Where(x=>x.Status==StatusCombo.Activity).ToList();
         }
 
         public Combo GetComboById(Guid id)

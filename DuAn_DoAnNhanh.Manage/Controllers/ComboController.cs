@@ -1,6 +1,7 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,7 +43,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                var imageUrl = await SaveImageAsync(ImageFile); // Gọi phương thức lưu ảnh
+                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
                 if (!string.IsNullOrEmpty(imageUrl))
                 {
                     combo.Image = imageUrl; // Gán đường dẫn ảnh vào combo
@@ -63,38 +64,68 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         }
 
         // Phương thức lưu ảnh vào thư mục và trả về URL
-        private async Task<string> SaveImageAsync(IFormFile imageFile)
+        //private async Task<string> SaveImageAsync(IFormFile imageFile)
+        //{
+        //    if (imageFile != null && imageFile.Length > 0)
+        //    {
+        //        // Đường dẫn tới thư mục lưu ảnh
+        //        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/combo");
+
+        //        // Kiểm tra nếu thư mục không tồn tại thì tạo
+        //        if (!Directory.Exists(uploads))
+        //        {
+        //            Directory.CreateDirectory(uploads);
+        //        }
+
+        //        // Lấy tên file
+        //        var fileName = Path.GetFileName(imageFile.FileName);
+        //        var filePath = Path.Combine(uploads, fileName);
+
+        //        // Lưu ảnh vào thư mục
+        //        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await imageFile.CopyToAsync(fileStream);
+        //        }
+
+        //        // Trả về đường dẫn ảnh tương đối
+        //        return $"/images/combo/{fileName}";
+        //    }
+        //    return null;
+        //}
+
+        private async Task<string> SaveImageAsync2(IFormFile imageFile)
         {
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Đường dẫn tới thư mục lưu ảnh
-                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/combo");
+                // Đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
+                var dataProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
 
-                // Kiểm tra nếu thư mục không tồn tại thì tạo
-                if (!Directory.Exists(uploads))
+                // Kiểm tra nếu thư mục Images không tồn tại thì tạo mới
+                if (!Directory.Exists(dataProjectPath))
                 {
-                    Directory.CreateDirectory(uploads);
+                    Directory.CreateDirectory(dataProjectPath);
                 }
 
                 // Lấy tên file
                 var fileName = Path.GetFileName(imageFile.FileName);
-                var filePath = Path.Combine(uploads, fileName);
+                var filePath = Path.Combine(dataProjectPath, fileName);
 
-                // Lưu ảnh vào thư mục
+                // Lưu ảnh vào thư mục Images
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await imageFile.CopyToAsync(fileStream);
                 }
 
-                // Trả về đường dẫn ảnh tương đối
-                return $"/images/combo/{fileName}";
+                // Trả về đường dẫn tương đối đến ảnh (tùy thuộc vào cách bạn muốn sử dụng đường dẫn này)
+                return $"/images/{fileName}";
             }
             return null;
         }
+
         public IActionResult Details(Guid id)
         {
             var comboDetail = new ComboWithProductsViewModel();
-            var listProductCombo = _dbContext.productCombos.Where(x=>x.ComboID==id).ToList();
+            var listProductCombo = _dbContext.productCombos.Where(x=>x.ComboID==id&&x.Status==StatusCombo.Activity).ToList();
 
            var combo = _comboService.GetComboById(id);
             var products = new List<Product>();
@@ -112,7 +143,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                var imageUrl = await SaveImageAsync(ImageFile); // Gọi phương thức lưu ảnh
+                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
                 if (!string.IsNullOrEmpty(imageUrl))
                 {
                     combo.Image = imageUrl; // Gán đường dẫn ảnh vào combo
@@ -133,10 +164,16 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             //return ViewComponent("ComboDetails", new { comboID =combo.ComboID});
 
         }
+
+        public IActionResult Delete(Guid id)
+        {
+            _comboService.DeleteCombo(id);
+            return RedirectToAction("GetAll");
+        }
         public List<Product> Abc(Guid id)
         {
            
-            var listProductCombo = _dbContext.productCombos.Where(x => x.ComboID == id).ToList();
+            var listProductCombo = _dbContext.productCombos.Where(x => x.ComboID == id&&x.Status==StatusCombo.Activity).ToList();
 
 
             var products = new List<Product>();

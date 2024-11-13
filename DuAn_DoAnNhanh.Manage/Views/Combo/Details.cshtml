@@ -65,30 +65,35 @@
                     else
                     {
                         <div class="row">
-                            @foreach (var combo in Model.Products)
+                            @foreach (var product in Model.Products)
                             {
 
-                            
 
-                                <div class="col-md-4 col-sm-6 mb-4">
-                                    <div class="card h-100">
-                                       
-                                        <img class="card-img-top" src="@combo.ImageUrl" style="height: 200px; object-fit: cover;">
+
+                            <div class="col-md-4 col-sm-6 mb-4">
+                                <div class="card h-100 position-relative combo-card">
+                                    <!-- Nút "X" hiển thị khi hover -->
+                                    <a href="@Url.Action("Delete", "ComboDetails", new { productID = product.ProductID,comboID = Model.Combo.ComboID })"
+                                       class="btn btn-danger position-absolute top-0 end-0 m-2 delete-combo-btn"
+                                       title="Xóa combo">
+                                        X
+                                    </a>
+                                    <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
                                         <div class="card-body">
-                                            <h6 class="card-title">@combo.ProductName</h6>
-                                            <h5 class="card-title " style="color: red;"><b>Giá:@combo.Price.ToString("N0") đ</b></h5>
+                                        <h6 class="card-title">@product.ProductName</h6>
+                                        <h5 class="card-title " style="color: red;"><b>Giá:@product.Price.ToString("N0") đ</b></h5>
                                             <form asp-action="Edit" asp-controller="ComboDetails" method="post">
                                             <h7>
                                                 Số lượng:
-                                                <input type="number" name="quantity" value="@combo.Quantity"
+                                                <input type="number" name="quantity" value="@product.Quantity"
                                                        style="width:40px"
-                                                       id="quantityInput_@combo.ProductID"
-                                                       onchange="showSaveButton2('@combo.ProductID')" />
+                                                       id="quantityInput_@product.ProductID"
+                                                       onchange="showSaveButton2('@product.ProductID')" />
                                             </h7>
                                             <input type="hidden" name="comboID" value="@Model.Combo.ComboID" />
-                                            <input type="hidden" name="productID" value="@combo.ProductID" />
-                                           
-                                            <button type="submit" id="saveQuantityButton_@combo.ProductID"
+                                            <input type="hidden" name="productID" value="@product.ProductID" />
+
+                                            <button type="submit" id="saveQuantityButton_@product.ProductID"
                                                     style="display: none;">
                                                 Lưu
                                             </button>
@@ -150,7 +155,18 @@
                 background-color: #e7f3ff;
             }
     </style>
+<!-- CSS cho nút "X" khi hover -->
+<style>
+    /* Ẩn nút "X" mặc định */
+    .delete-combo-btn {
+        display: none;
+    }
 
+    /* Hiển thị nút "X" khi di chuột vào combo-card */
+    .combo-card:hover .delete-combo-btn {
+        display: inline-block;
+    }
+</style>
     <script>
         function previewImage(event) {
             var input = event.target;
