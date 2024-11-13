@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
 
-<!-- Nút mở modal tạo sản phẩm mới -->
+
 <p>
     <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
         Thêm Combo
@@ -32,7 +32,13 @@ else
         @foreach (var combo in Model)
         {
             <div class="col-md-4 col-sm-6 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 position-relative combo-card">
+                    <!-- Nút "X" hiển thị khi hover -->
+                    <a href="@Url.Action("Delete", "Combo", new { id = combo.Combo.ComboID })"
+                       class="btn btn-danger position-absolute top-0 end-0 m-2 delete-combo-btn"
+                       title="Xóa combo">
+                        X
+                    </a>
                     <img class="card-img-top" src="@combo.Combo.Image" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h4 class="card-title"><b>@combo.Combo.ComboName</b></h4>
@@ -68,3 +74,15 @@ else
         });
     });
 </script>
+<!-- CSS cho nút "X" khi hover -->
+<style>
+    /* Ẩn nút "X" mặc định */
+    .delete-combo-btn {
+        display: none;
+    }
+
+    /* Hiển thị nút "X" khi di chuột vào combo-card */
+    .combo-card:hover .delete-combo-btn {
+        display: inline-block;
+    }
+</style>

@@ -1,21 +1,18 @@
-using DuAn_DoAnNhanh.Application.Implements.Repository;
+﻿using DuAn_DoAnNhanh.Application.Implements.Repository;
 using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.FileProviders;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddDbContext<MyDBContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//});
-builder.Services.AddDbContext<MyDBContext>((serviceProvider, options) =>
+
+builder.Services.AddDbContext<MyDBContext>(options =>
 {
-    var dbContextFactory = serviceProvider.GetRequiredService<IDesignTimeDbContextFactory<MyDBContext>>();
-    options.UseSqlServer("Data Source=DESKTOP-6F71DIH\\SQLEXPRESS;Initial Catalog=Do_An_Nhanh;Integrated Security=True;TrustServerCertificate=true");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddSingleton<IDesignTimeDbContextFactory<MyDBContext>, MyDbContextFactory>();
 
@@ -27,6 +24,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IComboService, ComboSevice>();
+builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
+
 
 
 var app = builder.Build();
@@ -41,6 +40,20 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+
+// Cấu hình để truy cập thư mục Images trong DuAn_DoAnNhanh.Application
+var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
+// Kiểm tra nếu thư mục Images chưa tồn tại, thì tự động tạo
+if (!Directory.Exists(imagesPath))
+{
+    Directory.CreateDirectory(imagesPath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imagesPath),
+    RequestPath = "/images"
+});
 
 app.UseRouting();
 

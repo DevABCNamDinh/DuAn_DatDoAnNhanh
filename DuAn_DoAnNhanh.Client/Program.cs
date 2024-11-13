@@ -1,19 +1,21 @@
-using DuAn_DoAnNhanh.Application.Implements.Repository;
+﻿using DuAn_DoAnNhanh.Application.Implements.Repository;
 using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
+using Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.FileProviders;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
 // Add services to the container.
-builder.Services.AddDbContext<MyDBContext>((serviceProvider, options) =>
+builder.Services.AddDbContext<MyDBContext>(options =>
 {
-    var dbContextFactory = serviceProvider.GetRequiredService<IDesignTimeDbContextFactory<MyDBContext>>();
-    options.UseSqlServer("Data Source=DESKTOP-PMMSQG0\\SQLEXPRESS;Initial Catalog=Du_An;Integrated Security=True;TrustServerCertificate=true");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddSingleton<IDesignTimeDbContextFactory<MyDBContext>, MyDbContextFactory>();
 
@@ -36,9 +38,25 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// C?u hình ?? truy c?p th? m?c Images trong DuAn_DoAnNhanh.Application
+var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
+// Kiểm tra nếu thư mục Images chưa tồn tại, thì tự động tạo
+if (!Directory.Exists(imagesPath))
+{
+    Directory.CreateDirectory(imagesPath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imagesPath),
+    RequestPath = "/images"
+});
 app.UseStaticFiles();
+
 app.UseSession();
 app.UseRouting();
+
+
 
 app.UseAuthorization();
 
