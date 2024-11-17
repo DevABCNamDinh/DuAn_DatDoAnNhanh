@@ -1,0 +1,63 @@
+﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Product>
+
+
+@{
+    ViewData["Title"] = "Danh Sách Sản Phẩm";
+}
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        .product {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin: 16px;
+            border-radius: 8px;
+        }
+        img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        header {
+            background-color: #ff3d00;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+
+   
+    <h1>@ViewData["Title"]</h1>
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100">
+                        <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
+                
+                    <div class="card-body">
+                        <h5 class="card-title">@product.ProductName</h5>
+                        <h5 class="card-title">Giá:@product.Price</h5>
+                        <h5 class="card-title">Số lượng đã bán:@product.Quantity</h5>
+                      
+
+                        @Html.ActionLink("Xem chi tiết", "Details", new { id = product.ProductID }, new { @class = "btn btn-primary" })
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    </div>
+</body>
+</html>
+

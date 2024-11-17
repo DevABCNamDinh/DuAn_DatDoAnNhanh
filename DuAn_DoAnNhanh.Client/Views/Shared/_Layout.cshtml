@@ -27,14 +27,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                   
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
                         </li>
                         
                     </ul>
                     <ul class="navbar-nav navbar-right">
                         @{
-                            var userId = HttpContextAccessor.HttpContext.Session.GetString("UserID");
+                            var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
                           
                             var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName");
                            

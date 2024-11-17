@@ -1,10 +1,14 @@
 ﻿
+using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.ViewModel;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DuAn_DoAnNhanh.Application.Interfaces.Service
 {
@@ -16,5 +20,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         void UpdateCartItem(Guid cartItemId, int quantity);
         void RemoveCartItem(Guid cartItemId);
         void ClearCart(Guid cartId);
+       //List<Data.ViewModel.CartItemViewModel> GetCartItemsWithDetails(Guid cartId);
+       // IEnumerable<Implements.Service.CartItemViewModel> GetCartItemsWithDetails(Guid cartId);
     }
 }

@@ -1,13 +1,1 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace DuAn_DoAnNhanh.Client.Controllers
-{
-    public class ProductController : Controller
-    {
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-    }
-}
+﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;using Microsoft.AspNetCore.Mvc;namespace DuAn_DoAnNhanh.Client.Controllers{    public class ProductController : Controller    {               private readonly IProductService _productService;        public ProductController(IProductService productService)        {           _productService = productService;        }        public IActionResult Index()        {            var products = _productService.GetAllProduct();            return View(products);         }        public IActionResult Details(Guid id)        {            var products = _productService.GetProductById(id);            if (products == null)            {                return NotFound();            }            return View(products);        }    }}
