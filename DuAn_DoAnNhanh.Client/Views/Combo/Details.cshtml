@@ -1,0 +1,52 @@
+﻿@model DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel
+
+<div class="row">
+    <div class="mb-4 ">
+
+        <div class="card-body " style="display:flex;padding:0px;">
+            <div style=" border: 1px solid ;padding:10px; margin-right:10px">
+                    <h4 class="card-title">
+                      @Model.Combo.ComboName
+                    </h4>
+                    <!-- Ảnh hiển thị -->
+                    <img id="imagePreview" name="Image" class="card-img-top" src="@Model.Combo.Image" style="height: 350px; width:350px;">
+                    <br />
+                    <h3 class="card-title" style="color: red;margin-top:10px"><b>Tổng: @Model.Combo.Price.ToString("N0") đ</b></h3>
+            </div>
+            <div style="border: 1px solid; padding:10px ;width:100%">
+                <h4><b>Chi tiết Combo</b></h4>
+
+                @if (Model.Products == null || !Model.Products.Any())
+                {
+                    <div class="alert alert-warning" role="alert">
+                        Combo trống.
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        @foreach (var product in Model.Products)
+                        {
+                            <div class="col-md-4 col-sm-6 mb-4">
+                                <div class="card h-100 position-relative combo-card">
+                                  
+                                    <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@product.ProductName</h6>
+                                        <h5 class="card-title " style="color: red;"><b>Giá:@product.Price.ToString("N0") đ</b></h5>                
+                                        <h7>Số lượng: @product.Quantity</h7>                     
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>

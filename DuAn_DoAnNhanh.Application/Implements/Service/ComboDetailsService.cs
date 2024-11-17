@@ -15,11 +15,14 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
     public class ComboDetailsService : IComboDetailsService
     {
         private readonly IGenericRepository<ProductCombo> _genericRepository;
+        private readonly IProductService _productService;
+
         private readonly MyDBContext _myDBContext;
         
-        public ComboDetailsService(IGenericRepository<ProductCombo> genericRepository, MyDBContext myDBContext)
+        public ComboDetailsService(IGenericRepository<ProductCombo> genericRepository, MyDBContext myDBContext,IProductService productService)
         {
             _genericRepository = genericRepository;
+            _productService = productService;
             _myDBContext = myDBContext;
 
         }
@@ -62,7 +65,23 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             throw new NotImplementedException();
         }
 
-        public void UpdateCombo(ProductCombo productCombo)
+        public List<Product> listProductInCombo(Guid id)
+        {
+            var listProductInCombo = _myDBContext.productCombos.Where(x => x.ComboID == id && x.Status == StatusCombo.Activity).ToList();
+
+
+            var products = new List<Product>();
+            foreach (var product in listProductInCombo)
+            {
+                var pr = _productService.GetProductById(product.ProductID);
+                pr.Quantity = product.Quantity;
+                products.Add(pr);
+            }
+
+            return products;
+        }
+
+        public void UpdateProductCombo(ProductCombo productCombo)
         {
             var productComboEdit = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productCombo.ProductID && x.ComboID == productCombo.ComboID && x.Status == StatusCombo.Activity);
             productComboEdit.Quantity = productCombo.Quantity;

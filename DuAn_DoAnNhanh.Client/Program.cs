@@ -27,6 +27,10 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICartService, CartService>();
+
+builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
+builder.Services.AddScoped<IComboService, ComboSevice>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
