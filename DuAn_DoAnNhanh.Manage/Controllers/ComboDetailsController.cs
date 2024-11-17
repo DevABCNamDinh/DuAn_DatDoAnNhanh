@@ -29,7 +29,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         [HttpPost]
         public IActionResult Edit(ProductCombo productCombo)
         {
-           _comboDetailsService.UpdateCombo(productCombo);   
+           _comboDetailsService.UpdateProductCombo(productCombo);   
             return RedirectToAction("Details", "Combo", new { id = productCombo.ComboID });
 
         }

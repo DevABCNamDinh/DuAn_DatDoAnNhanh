@@ -36,7 +36,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public List<Combo> GetAllCombo()
         {
-            return _genericRepository.GetAll().Where(x=>x.Status==StatusCombo.Activity).ToList();
+            return _genericRepository.GetAll().Where(x=>x.Status==StatusCombo.Activity).OrderByDescending(p => p.CreteDate).ToList();
         }
 
         public Combo GetComboById(Guid id)

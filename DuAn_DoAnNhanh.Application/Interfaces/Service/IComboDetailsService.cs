@@ -13,6 +13,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         Combo GetProductComboByIdComboIdProduct(Guid comboID,Guid productID);
         void AddProductCombo(ProductCombo productCombo);
         void DeleteComboDetailsByproductIDcomboID(Guid productID, Guid comboID);
-        void UpdateCombo(ProductCombo productCombo);
+        void UpdateProductCombo(ProductCombo productCombo);
+         List<Product> listProductInCombo(Guid id);
     }
 }
