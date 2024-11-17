@@ -1,7 +1,7 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.Entities;
-
+using DuAn_DoAnNhanh.Data.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public List<Product> GetAllProduct()
         {
-            return _ProductRepository.GetAll();
+            return _ProductRepository.GetAll().Where(x=>x.Status==StatusProduct.Activity).ToList();
         }
 
         public Product GetProductById(Guid id)

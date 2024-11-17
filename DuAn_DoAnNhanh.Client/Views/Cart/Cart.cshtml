@@ -4,12 +4,12 @@
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4">Your Shopping Cart</h2>
+    <h2 class="mb-4">Giỏ hàng của bạn</h2>
     @if (!Model.Any())
     {
         <div class="alert alert-info">
-            Your cart is empty.
-            <a href="@Url.Action("Index", "Product")">Continue shopping</a>
+            Giỏ hàng của bạn trống.
+            <a href="@Url.Action("Index", "Product")">Quay lại mua sắm</a>
         </div>
     }
     else
@@ -18,7 +18,7 @@
             <div class="col-lg-8">
                 <div class="table-responsive">
                     <table class="table table-bordered">
-                        <thead>
+                       @*  <thead>
                             <tr>
                                 <th>Image</th>
                                 <th>Title</th>
@@ -27,7 +27,7 @@
                                 <th>Total</th>
                                 <th>Action</th>
                             </tr>
-                        </thead>
+                        </thead> *@
                         <tbody>
                             @foreach (var item in Model)
                             {
@@ -55,7 +55,7 @@
                                     </td>
                                     <td style="vertical-align: middle;">
                                         <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -64,7 +64,7 @@
                     </table>
                 </div>
             </div>
-            <div class="col-lg-4">
+           @*  <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Order Summary</h4>
@@ -76,7 +76,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
     }
     @if (TempData["Message"] != null)

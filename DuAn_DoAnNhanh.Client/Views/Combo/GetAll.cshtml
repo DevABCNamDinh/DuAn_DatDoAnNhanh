@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
 
 
-
+<h1>Danh sách Combo</h1>
 @if (Model == null || !Model.Any())
 {
     <div class="alert alert-warning" role="alert">
@@ -30,7 +30,7 @@ else
                             <p class="card-title ">@item.Quantity @item.ProductName</p>
                         }
                         <p class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></p>
-                        <a href="@Url.Action("Add", "Combo", new { id = combo.Combo.ComboID })"
+                        <a href="@Url.Action("AddToCart", "Cart", new { ProductId = combo.Combo.ComboID,quantity=1 })"
                            class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn"
                            style=" padding-right:10px;padding-left:10px"
                            title="Thêm combo">

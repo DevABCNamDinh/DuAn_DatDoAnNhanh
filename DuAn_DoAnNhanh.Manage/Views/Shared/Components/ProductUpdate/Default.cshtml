@@ -11,16 +11,13 @@
     </div>
     <div class="form-group">
         <label class="form-label">Giá:</label>
-        <input type="number" asp-for="Price" step="0.01" required class="form-input" />
-    </div>
-    <div class="form-group">
-        <label class="form-label">Số Lượng:</label>
-        <input type="number" asp-for="Quantity" required class="form-input" />
+        <input type="number" asp-for="Price" step="1" required class="form-input" />
     </div>
     <div class="form-group">
         <label class="form-label">Hình Ảnh:</label>
-        <img src="@Model.ImageUrl" alt="ảnh sản phẩm" style="height: 200px; object-fit: cover;"> 
-        <input type="file" name="ImageFile" id="ImageFile" class="form-control" accept="image/*" required />
+        <img id="imagePreview" src="@Model.ImageUrl" alt="ảnh sản phẩm"  style="height: 200px; object-fit: cover;" >
+        <input type="file" id="ImageFile" name="ImageFile" class="form-control" accept="image/*" onchange="previewImage(event)">
+
     </div>
     <div class="form-group">
         <label class="form-label">Mô Tả:</label>
@@ -32,9 +29,26 @@
 </form>
 
 
+<script>
+    function previewImage(event) {
+        var input = event.target;
 
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var preview = document.getElementById('imagePreview');
+                preview.src = e.target.result;  // Đặt ảnh mới vào thẻ <img>
+
+
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }</script>
 
 <script>
+  
     // Lắng nghe sự kiện khi người dùng chọn tệp ảnh
     document.getElementById('ImageFile').addEventListener('change', function () {
         var file = this.files[0];
@@ -54,6 +68,8 @@
         var productPrice = document.getElementById('product-price').value;
         var productQuantity = document.getElementById('product-quantity').value;
         var productImage = document.getElementById('product-image').files[0];
+
+       
 </script>
 
 

@@ -20,7 +20,18 @@
 <!-- Thêm script cho jQuery và Bootstrap -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- CSS cho nút "X" khi hover -->
+<style>
+    /* Ẩn nút "X" mặc định */
+    .delete-combo-btn {
+        display: none;
+    }
 
+    /* Hiển thị nút "X" khi di chuột vào combo-card */
+    .combo-card:hover .delete-combo-btn {
+        display: inline-block;
+    }
+</style>
 <!-- Script mở và đóng modal -->
 <script>
     $(document).ready(function () {
@@ -47,122 +58,14 @@
 
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao Diện Bán Đồ Ăn Nhanh</title>
 
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f8f8;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background-color: #ff3d00;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            height: 100px;
-        }
-
-        /* nav {
-            background-color: #c62828;
-            padding: 10px;
-            text-align: center;
-        } */
-
-        article {
-            padding-top: 40px;
-        }
-
-            nav a {
-                color: white;
-                margin: 0 15px;
-                text-decoration: none;
-                font-weight: bold;
-            }
-
-                nav a:hover {
-                    text-decoration: underline;
-                }
-
-        .menu {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin: 20px;
-        }
-
-        .item {
-            background-color: white;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 10px;
-            width: 220px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-            .item:hover {
-                transform: scale(1.05);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            }
-
-            .item img {
-                width: 100%;
-                height: auto;
-                border-radius: 5px;
-            }
-
-            .item h3 {
-                margin: 10px 0;
-                color: #c62828;
-            }
-
-            .item p {
-                color: #555;
-            }
-
-            .item button {
-                background-color: #ff3d00;
-                color: white;
-                border: none;
-                padding: 10px;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            }
-
-                .item button:hover {
-                    background-color: #e64a19;
-                }
-
-        footer {
-            background-color: #ff3d00;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
-</head>
 <body>
-    <header>
-        <h1>Nhà Hàng Đồ Ăn Nhanh</h1>
-        <p>Thực Đơn Ngon Miệng Đang Chờ Bạn!</p>
-    </header>
-
+   
     <article>
         
         <!-- Nút mở modal tạo sản phẩm mới -->
         <p>
-            <a id="openModal" class="btn btn-success">
+            <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
                 Thêm sản phẩm
             </a>
         </p>
@@ -178,27 +81,30 @@
             <div class="row">
                 @foreach (var product in Model)
                 {
-                    if (product.Status == DuAn_DoAnNhanh.Data.Enum.StatusProduct.InActivity) continue;
                     <div class="col-md-4 col-sm-6 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 position-relative combo-card">
+                            <!-- Nút "X" hiển thị khi hover -->
+                            <a href="@Url.Action("Delete", "Product", new { id = product.ProductID })"
+                               class="btn btn-danger position-absolute top-0 end-0 m-2 delete-combo-btn"
+                               title="Xóa combo">
+                                X
+                            </a>
+
                             <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
                             <div class="card-body">
-                                <h5 class="card-title">Tên sản phẩm: @product.ProductName</h5>
-                                <h5 class="card-title">Giá:@product.Price</h5>
-                                <h5 class="card-title">Số lượng đã bán:@product.Quantity</h5>
+                                <h4 class="card-title"><b>@product.ProductName</b></h4>
+                                <h5>Đã bán: @product.Quantity</h5>
+                                <h3 class="card-title style=" style="color: red;"><b>@product.Price.ToString("N0") đ</b></h3>
 
-
-                                @* @Html.ActionLink("Xem chi tiết", "Details", new { id = product.ProductID }, new { @class = "btn btn-primary" }) *@
-                                <a id="openUpdateModal_@product.ProductID" class="btn btn-warning">
+                                <a id="openUpdateModal_@product.ProductID" class="btn btn-primary">
                                     Sửa
-                                </a>
-
-                                <a id="openDeleteModal_@product.ProductID" class="btn btn-danger">
-                                    Xóa
                                 </a>
                             </div>
                         </div>
                     </div>
+                   
+
+                  
 
                     <div id="productUpdateModal_@product.ProductID" class="modal" tabindex="-1" role="dialog" >
                         <div class="modal-dialog" role="document">
@@ -213,12 +119,12 @@
 
                     <div id="productDeleteModal_@product.ProductID" class="modal" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-custom-height" role="document">
-                            <div class="modal-content">
+                          @*   <div class="modal-content">
                                 <div class="modal-body">
                                     <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
                                     @await Component.InvokeAsync("ProductDelete", new { idProduct = @product.ProductID })
                                 </div>
-                            </div>
+                            </div> *@
                         </div>
                     </div>
                 }
