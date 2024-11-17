@@ -67,6 +67,138 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             return RedirectToAction("GetAll", "Product");
         }
 
+        public IActionResult Details(Guid id)
+        {
+            var book = _productService.GetProductById(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            return View(book);
+        }
+
+        public IActionResult Edit(Guid id)
+        {
+            var product = _productService.GetProductById(id);
+            return View(product);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Product product, IFormFile imageFile)
+        {
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                // Xóa ảnh cũ nếu có
+                if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.ImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                // Lưu ảnh mới
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", imageFile.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    imageFile.CopyTo(stream);
+                }
+                product.ImageUrl = $"/images/{imageFile.FileName}";
+            }
+
+            //Product productUpdate = new Product
+            //{
+            //    ProductName = product.ProductName,
+            //    Description = product.Description,
+            //    Price = product.Price,
+            //    Quantity = product.Quantity,
+            //    Status = product.Status,
+            //    ImageUrl = product.ImageUrl, // Địa chỉ ảnh đã tạo
+            //    CreteDate = DateTime.Now
+            //};
+
+            _productService.UpdateProduct(product);
+
+
+
+
+
+            return RedirectToAction("GetAll");
+
+        }
+
+        public IActionResult Delete(Guid id)
+        {
+            var product = _productService.GetProductById(id);
+            return View(product);
+        }
+
+        [HttpPost]  
+        public IActionResult Delete(Product product)
+        {
+
+            _productService.DeleteProduct(product.ProductID);
+
+            return RedirectToAction("GetAll");
+
+        }
+
+
+        //[HttpPost]
+        //public IActionResult Edit(Product product, IFormFile imageFile)
+        //{
+        //    if (imageFile != null && imageFile.Length > 0)
+        //    {
+        //        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", imageFile.FileName);
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            imageFile.CopyTo(stream);
+        //        }
+        //        product.ImageUrl = $"/images/{imageFile.FileName}";
+        //    }
+
+        //    var existingProduct = _productService.FirstOrDefault(p => p.Id == product.Id).UpdateProduct;
+        //    if (existingProduct != null)
+        //    {
+        //        existingProduct.Name = product.Name;
+        //        existingProduct.Price = product.Price;
+        //        existingProduct.Description = product.Description;
+        //        existingProduct.ImagePath = product.ImagePath;
+        //    }
+
+        //    return RedirectToAction("Index");
+        //}
+
+
+
+
+
+
+
+
+        //[HttpPost]
+        //public IActionResult UploadImage(IFormFile file)
+        //{
+        //    if (file != null && file.Length > 0)
+        //    {
+        //        var filePath = Path.Combine("wwwroot/images", file.FileName);
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            file.CopyTo(stream);
+        //        }
+
+        //        // Trả về đường dẫn ảnh (tương đối)
+        //        return Json(new { imageUrl = $"/images/{file.FileName}" });
+        //    }
+
+        //    return BadRequest("No file uploaded.");
+        //}
+
+
+
+
 
     }
 }
