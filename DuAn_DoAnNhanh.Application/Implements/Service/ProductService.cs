@@ -26,7 +26,11 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void DeleteProduct(Guid id)
         {
-            throw new NotImplementedException();
+            var obj = _ProductRepository.GetById(id);
+
+            obj.Status = Data.Enum.StatusProduct.InActivity;
+            _ProductRepository.update(obj);
+            _ProductRepository.save();
         }
 
         public List<Product> GetAllProduct()
@@ -41,7 +45,16 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void UpdateProduct(Product product)
         {
-             _ProductRepository.update(product);
+            var obj = _ProductRepository.GetById(product.ProductID);
+
+            obj.ProductName = product.ProductName;
+            obj.ImageUrl = product.ImageUrl;
+            obj.Description = product.Description;
+            obj.Quantity = product.Quantity;
+            obj.Price = product.Price;
+            obj.CreteDate = product.CreteDate;
+            obj.Status = product.Status;
+             _ProductRepository.update(obj);
             _ProductRepository.save();
         }
     }
