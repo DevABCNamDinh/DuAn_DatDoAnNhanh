@@ -19,12 +19,11 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         [HttpPost]
         public IActionResult Login(LoginViewModel loginViewModel)
         {
-            var user = _userService.Login( loginViewModel.Email, loginViewModel.Password);
+            var user = _userService.Login(loginViewModel.Email, loginViewModel.Password);
             if (user != null)
             {
-               
-                HttpContext.Session.SetString("UserEmail", user.Email.ToString());
-
+                HttpContext.Session.SetString("UserId", user.UserID.ToString());
+                HttpContext.Session.SetString("UserName", user.FullName.ToString());
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -58,6 +57,12 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             {
                 return View(registerViewModel);
             }
+        }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserId");
+            HttpContext.Session.Remove("UserName");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

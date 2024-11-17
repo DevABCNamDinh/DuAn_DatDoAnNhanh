@@ -14,14 +14,14 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
     {
         private readonly IGenericRepository<User> _userRepository;
         private readonly IGenericRepository<Cart> _cartRepository;
-        private readonly MyDBContext _dbContext;
+       // private readonly MyDBContext _dbContext;
 
         public UserService(IGenericRepository<User> userRepository, 
             IGenericRepository<Cart> cartRepository, MyDBContext dbContext)
         {
             _cartRepository = cartRepository;
             _userRepository = userRepository;
-            _dbContext = dbContext;
+            //_dbContext = dbContext;
         }
       
 
@@ -41,20 +41,18 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 throw new Exception("Username already exists.");
             }
-            _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
-            //_userRepository.insert(user);
-            //_userRepository.save();
+
+            _userRepository.insert(user);
+            _userRepository.save();
 
             var cart = new Cart()
             {
                 CartID = Guid.NewGuid(),
                 UserID = user.UserID
             };
-            _dbContext.Carts.Add(cart);
-            _dbContext.SaveChanges();
-            //_cartRepository.insert(cart);
-            //_cartRepository.save();
+
+            _cartRepository.insert(cart);
+            _cartRepository.save();
 
             return user;
         }
