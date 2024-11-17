@@ -26,7 +26,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             var cartItems = _cartService.GetCartItems(cart.CartID);
             return View(cartItems);
         }
-        [HttpPost]
+        
         public IActionResult AddToCart(Guid ProductId, int quantity)
         {
             var userId = HttpContext.Session.GetString("UserId");
@@ -37,13 +37,13 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             try
             {
                 _cartService.AddToCart(Guid.Parse(userId), ProductId, quantity);
-                TempData["Message"] = $"{quantity} books have been added to your cart.";
+                TempData["Message"] = $"{quantity} sản phẩm được thêm vào giỏ hàng";
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
             }
-            return RedirectToAction("Details", "Book", new { id = ProductId });
+            return RedirectToAction("Index", "Product", new { id = ProductId });
         }
 
         [HttpPost]

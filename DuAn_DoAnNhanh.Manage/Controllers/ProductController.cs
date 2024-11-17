@@ -30,24 +30,11 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                // Đường dẫn tới thư mục lưu ảnh
-                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/product");
-                if (!Directory.Exists(uploads))
+                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
+                if (!string.IsNullOrEmpty(imageUrl))
                 {
-                    Directory.CreateDirectory(uploads);
+                    product.ImageUrl = imageUrl; // Gán đường dẫn ảnh vào combo
                 }
-
-                var fileName = Path.GetFileName(ImageFile.FileName);
-                var filePath = Path.Combine(uploads, fileName);
-
-                // Lưu file vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await ImageFile.CopyToAsync(fileStream);
-                }
-
-                // Tạo URL cho hình ảnh
-                product.ImageUrl = Url.Content($"~/images/product/{fileName}");
             }
 
             // Tạo product mới và lưu vào cơ sở dữ liệu
@@ -56,7 +43,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
                 ProductName = product.ProductName,
                 Description = product.Description,
                 Price = product.Price,
-                Quantity = product.Quantity,
+                Quantity = 0,
                 Status = product.Status,
                 ImageUrl = product.ImageUrl, // Địa chỉ ảnh đã tạo
                 CreteDate = DateTime.Now
@@ -77,49 +64,42 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             return View(book);
         }
 
-        public IActionResult Edit(Guid id)
-        {
-            var product = _productService.GetProductById(id);
-            return View(product);
-        }
+        //public IActionResult Edit(Guid id)
+        //{
+        //    var product = _productService.GetProductById(id);
+        //    return View(product);
+        //}
 
-        [HttpPost]
-        public IActionResult Edit(Product product, IFormFile imageFile)
+      
+        public async Task<IActionResult> Edit(Product product, IFormFile ImageFile)
         {
 
-            if (imageFile != null && imageFile.Length > 0)
+
+            if (ImageFile != null && ImageFile.Length > 0)
             {
-                // Xóa ảnh cũ nếu có
-                if (!string.IsNullOrEmpty(product.ImageUrl))
+                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
+                if (!string.IsNullOrEmpty(imageUrl))
                 {
-                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", product.ImageUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
+                    product.ImageUrl = imageUrl; // Gán đường dẫn ảnh vào combo
                 }
-
-                // Lưu ảnh mới
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", imageFile.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    imageFile.CopyTo(stream);
-                }
-                product.ImageUrl = $"/images/{imageFile.FileName}";
+            }
+            else
+            {
+                // Nếu không có ảnh mới, giữ nguyên giá trị ảnh cũ
+                var comboEditX = _productService.GetProductById(product.ProductID);
+                product.ImageUrl = comboEditX.ImageUrl;  // Giữ lại ảnh cũ nếu không có ảnh mới
             }
 
-            //Product productUpdate = new Product
-            //{
-            //    ProductName = product.ProductName,
-            //    Description = product.Description,
-            //    Price = product.Price,
-            //    Quantity = product.Quantity,
-            //    Status = product.Status,
-            //    ImageUrl = product.ImageUrl, // Địa chỉ ảnh đã tạo
-            //    CreteDate = DateTime.Now
-            //};
+            var productUpdate = _productService.GetProductById(product.ProductID);
 
-            _productService.UpdateProduct(product);
+            productUpdate.ProductName = product.ProductName;
+            productUpdate.Price = product.Price;
+            productUpdate.Description = product.Description;       
+            productUpdate.ImageUrl = product.ImageUrl;
+
+
+
+            _productService.UpdateProduct(productUpdate);
 
 
 
@@ -129,17 +109,16 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
 
         }
 
+        //public IActionResult Delete(Guid id)
+        //{
+        //    var product = _productService.GetProductById(id);
+        //    return View(product);
+        //}
+
         public IActionResult Delete(Guid id)
         {
-            var product = _productService.GetProductById(id);
-            return View(product);
-        }
 
-        [HttpPost]  
-        public IActionResult Delete(Product product)
-        {
-
-            _productService.DeleteProduct(product.ProductID);
+            _productService.DeleteProduct(id);
 
             return RedirectToAction("GetAll");
 
@@ -198,7 +177,34 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
 
 
 
+        private async Task<string> SaveImageAsync2(IFormFile imageFile)
+        {
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                // Đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
+                var dataProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
 
+                // Kiểm tra nếu thư mục Images không tồn tại thì tạo mới
+                if (!Directory.Exists(dataProjectPath))
+                {
+                    Directory.CreateDirectory(dataProjectPath);
+                }
+
+                // Lấy tên file
+                var fileName = Path.GetFileName(imageFile.FileName);
+                var filePath = Path.Combine(dataProjectPath, fileName);
+
+                // Lưu ảnh vào thư mục Images
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(fileStream);
+                }
+
+                // Trả về đường dẫn tương đối đến ảnh (tùy thuộc vào cách bạn muốn sử dụng đường dẫn này)
+                return $"/images/{fileName}";
+            }
+            return null;
+        }
 
     }
 }
