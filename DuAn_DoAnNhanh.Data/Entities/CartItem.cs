@@ -9,8 +9,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
     public class CartItem
     {
         public Guid CartItemID { get; set; }
-        public Guid ProductID { get; set; }
-        public Guid ComboID { get; set; }
+        public Guid? ProductID { get; set; }
+        public Guid? ComboID { get; set; }
 
         public Guid CartID { get; set; }
         public int Quantity { get; set; }

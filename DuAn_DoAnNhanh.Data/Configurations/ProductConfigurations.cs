@@ -16,7 +16,7 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.ToTable("Products");
             builder.HasKey(x => x.ProductID);
             builder.Property(x => x.ProductID).ValueGeneratedOnAdd();
-           
+
             builder.HasMany(x => x.CartItemes).WithOne(x => x.Product);
             builder.HasMany(x => x.ProductComboes).WithOne(x => x.Product).IsRequired();
             

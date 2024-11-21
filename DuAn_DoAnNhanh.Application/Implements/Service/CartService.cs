@@ -33,14 +33,16 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 cart.CartItems = new List<CartItem>();
             }
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductID == ProductId);
+            
+
             if (cartItem != null)
             {
-                if (cartItem.Quantity + quantity > cartItem.Product.Quantity)
-                {
-                    throw new Exception($"Cannot add more than {cartItem.Product.Quantity} .");
-                }
-                cartItem.Quantity += quantity;
-                _cartItemRepository.update(cartItem);
+                //if (cartItem.Quantity + quantity > cartItem.Product.Quantity)
+                //{
+                //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity} . co trong gio");
+                //}
+                //cartItem.Quantity += quantity;
+                //_cartItemRepository.update(cartItem);
             }
             else
             {
@@ -53,10 +55,10 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                     Product = _productRepository.GetById(ProductId),
                     Cart = _cartRepository.GetById(cart.CartID)
                 };
-                if (quantity > cartItem.Product.Quantity)
-                {
-                    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
-                }
+                //if (quantity > cartItem.Product.Quantity)
+                //{
+                //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
+                //}
                 _cartItemRepository.insert(cartItem);
             }
             _cartItemRepository.save();

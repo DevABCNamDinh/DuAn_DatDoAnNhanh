@@ -18,16 +18,16 @@
             <div class="col-lg-8">
                 <div class="table-responsive">
                     <table class="table table-bordered">
-                       @*  <thead>
+                        <thead>
                             <tr>
                                 <th>Image</th>
-                                <th>Title</th>
+                          
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Total</th>
-                                <th>Action</th>
+                             
                             </tr>
-                        </thead> *@
+                        </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
@@ -36,11 +36,9 @@
 
                                 <tr>
                                     <td style="width: 15%;">
-                                        <img src="@item.Product.ImageUrl" @* alt="@item.Product.Title" *@ class="img-fluid" style="max-height: 100px;" />
+                                        <img src="@item.Product.ImageUrl"  class="img-fluid" style="max-height: 100px;" />
                                     </td>
-                                    @*  <td style="vertical-align: middle;">
-                            @item.Book.Title
-                            </td> *@
+                                  
                                     <td style="vertical-align: middle;">
                                         @item.Product.Price.ToString("C")
                                     </td>
