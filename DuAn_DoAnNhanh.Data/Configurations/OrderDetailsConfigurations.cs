@@ -13,11 +13,11 @@ namespace DuAn_DoAnNhanh.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<BillDetails> builder)
         {
-            builder.ToTable("OrderDetails");
-            builder.HasKey(x => x.OrderDetailsID);
-            builder.Property(x => x.OrderDetailsID).ValueGeneratedOnAdd();
-            builder.HasOne(x => x.Order).WithMany(x => x.BillDetails).HasForeignKey(x => x.OrderID).IsRequired();
-            builder.HasOne(x => x.Product).WithMany(x => x.BillDetails).HasForeignKey(x => x.ProductID).IsRequired();
+            builder.ToTable("BillDetails");
+            builder.HasKey(x => x.BillDetailsID);
+            builder.Property(x => x.BillDetailsID).ValueGeneratedOnAdd();
+            builder.HasOne(x => x.Order).WithMany(x => x.BillDetails).HasForeignKey(x => x.BillID).IsRequired();
+         
         }
     }
 }

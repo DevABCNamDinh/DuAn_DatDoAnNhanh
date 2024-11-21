@@ -1,0 +1,160 @@
+﻿@model DuAn_DoAnNhanh.Data.ViewModel.BillViewModel
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <!-- Lấy giá trị status từ Model -->
+                @{
+                    int status = Convert.ToInt32(Model.Bill.Status); // Lấy giá trị Status từ đối tượng đầu tiên hoặc mặc định là 0.
+                }
+                <!-- Step 1 -->
+                <div class="step">
+                    <div class="circle @(status == 4 ? "cancel" : (status >= 0 ? "active" : ""))">1</div>
+                    <div>Chờ xác nhận</div>
+                </div>
+                <div class="line @(status == 4 ? "cancel" : (status > 0 ? "active" : ""))"></div>
+
+                <div class="step">
+                    <div class="circle @(status == 4 ? "cancel" : (status >= 1 ? "active" : ""))">2</div>
+                    <div>Đã xác nhận</div>
+                </div>
+                <div class="line @(status == 4 ? "cancel" : (status > 1 ? "active" : ""))"></div>
+
+                <div class="step">
+                    <div class="circle @(status == 4 ? "cancel" : (status >= 2 ? "active" : ""))">3</div>
+                    <div>Giao hàng</div>
+                </div>
+                <div class="line @(status == 4 ? "cancel" : (status > 2 ? "active" : ""))"></div>
+
+                <div class="step">
+                    <div class="circle @(status == 4 ? "cancel" : (status >= 3 ? "active" : ""))">4</div>
+                    <div>Hoàn thành</div>
+                </div>
+                <div class="line @(status == 4 ? "cancel" : (status > 3 ? "active" : ""))"></div>
+
+                <div class="step">
+                    <div class="circle @(status == 4 ? "cancel" : "")">5</div>
+                    <div>Hủy</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br/>
+    @if (status == 0)
+    {
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="billId" value="@Model.Bill.BillID" />
+            <input type="hidden" name="status" value="1" />
+            <button type="submit" class="btn btn-success">Xác nhận</button>
+        </form>
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="billId" value="@Model.Bill.BillID" />
+            <input type="hidden" name="status" value="4" />
+            <button type="submit" class="btn btn-danger">Hủy</button>
+        </form>
+    }
+    @if (status == 1)
+    {
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="billId" value="@Model.Bill.BillID" />
+            <input type="hidden" name="status" value="2" />
+            <button type="submit" class="btn btn-primary">Giao hàng</button>
+        </form>
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="billId" value="@Model.Bill.BillID" />
+            <input type="hidden" name="status" value="4" />
+            <button type="submit" class="btn btn-danger">Hủy</button>
+        </form>
+    }
+    @if (status == 2)
+    {
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="billId" value="@Model.Bill.BillID" />
+            <input type="hidden" name="status" value="3" />
+            <button type="submit" class="btn btn-success">Hoàn thành</button>
+        </form>
+    }
+</div>
+<br/>
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>
+               
+            </th>
+            <th>
+                Tên
+            </th>
+            <th>
+               Loại
+            </th>          
+            <th>
+               Giá
+            </th>
+            <th>
+                Số lượng
+            </th>
+          
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.BillDetails) {
+        <tr>
+                <td><img @* class="card-img-top" *@ src="@item.Image" style="height: 100px;width:100px; object-fit: cover;"></td>
+            <td>@item.PCName</td>          
+            <td>
+                    @item.Price.ToString("N0") đ
+            </td>           
+            <td>
+               @item.Quantity
+            </td>
+        
+        </tr>
+}
+    </tbody>
+</table>
+<style>
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+        .circle.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+    .line {
+        height: 4px;
+        flex: 1;
+        background-color: #ddd;
+    }
+
+        .line.active {
+            background-color: #0d6efd;
+        }
+
+    .circle.cancel {
+        background-color: #dc3545; /* Màu đỏ */
+        color: white;
+    }
+
+    .line.cancel {
+        background-color: #dc3545; /* Màu đỏ */
+    }
+</style>
