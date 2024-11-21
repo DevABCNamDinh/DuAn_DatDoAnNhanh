@@ -21,7 +21,7 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public DateTime CreteDate { get; set;}
         public StatusProduct Status { get; set;}
         public virtual List<CartItem> CartItemes { get; set;}
-        public virtual List<BillDetails> BillDetails { get; set; }
+      
         public virtual List<ProductCombo> ProductComboes { get; set; }
 
 

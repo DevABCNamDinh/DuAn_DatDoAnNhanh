@@ -13,10 +13,10 @@ namespace DuAn_DoAnNhanh.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Bill> builder)
         {
-            builder.ToTable("Orders");
-            builder.HasKey(x => x.OrderID);
-            builder.Property(x => x.OrderID).ValueGeneratedOnAdd();
-            builder.HasMany(x => x.BillDetails).WithOne(x => x.Order).HasForeignKey(x => x.OrderID).IsRequired();
+            builder.ToTable("Bill");
+            builder.HasKey(x => x.BillID);
+            builder.Property(x => x.BillID).ValueGeneratedOnAdd();
+            builder.HasMany(x => x.BillDetails).WithOne(x => x.Order).HasForeignKey(x => x.BillID);
             builder.HasOne(x => x.User).WithMany(x => x.Orderes).HasForeignKey(x => x.UserID).IsRequired();
         }
     
