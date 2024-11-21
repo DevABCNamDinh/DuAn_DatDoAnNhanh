@@ -62,9 +62,13 @@
 <body>
     <div class="sidebar">
         <h2>Menu</h2>
-        <a href="#">Đơn hàng</a>
+        <a asp-action="GetAll" asp-controller="Product">Thống kê</a>
+
+        <a asp-action="GetAll" asp-controller="Bill">Đơn hàng</a>
         <a asp-action="GetAll" asp-controller="Product">Sản phẩm</a>
         <a asp-action="GetAll" asp-controller="Combo">Combo</a>
+        <a asp-action="GetAll" asp-controller="Combo">Khách hàng</a>
+
     </div>
 
     <div class="main-content">

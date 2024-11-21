@@ -10,11 +10,12 @@ namespace DuAn_DoAnNhanh.Data.Entities
 {
     public class Bill
     {
-        public Guid OrderID { get; set; }
+        public Guid BillID { get; set; }
         public Guid UserID { get; set; }
 
-        public DateTime OrderDate { get; set; }
+        public DateTime BillDate { get; set; }
         public StatusOrder Status { get; set; }
+        public decimal TotalAmount { get; set; }
         public virtual User User { get; set; }
         public virtual List<BillDetails> BillDetails { get; set; }
 

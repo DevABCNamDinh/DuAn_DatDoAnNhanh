@@ -1,0 +1,73 @@
+﻿@using DuAn_DoAnNhanh.Data.Enum
+@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Bill>
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>
+               Người dùng
+            </th>
+            <th>
+               Tổng giá
+            </th>
+            <th>
+               Thời gian
+            </th>
+            <th>
+               Trạng thái   
+            </th>
+            
+          
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    
+        <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Email)
+                </td>
+                <td>
+                    @item.TotalAmount.ToString("N0") đ
+                </td>
+            <td>
+               @item.BillDate
+            </td>
+            <td>           
+             @{
+                        string cssClass = item.Status switch
+                        {
+                            StatusOrder.Pending => "text-warning",    // Màu vàng
+                            StatusOrder.Confirmed => "text-primary", // Màu xanh
+                            StatusOrder.Shipping => "text-info",     // Màu xanh nhạt
+                            StatusOrder.Completed => "text-success", // Màu xanh lá
+                            StatusOrder.Cancelled => "text-danger",  // Màu đỏ
+                            _ => "text-dark"                         // Mặc định
+                        };
+                        string statusText = item.Status switch
+                        {
+                            StatusOrder.Pending => "Chờ xác nhận",
+                            StatusOrder.Confirmed => "Đã xác nhận",
+                            StatusOrder.Shipping => "Đang giao hàng",
+                            StatusOrder.Completed => "Hoàn thành",
+                            StatusOrder.Cancelled => "Hủy",
+                             _ => "Không xác định"
+                         };
+             }
+              <span class="@cssClass">@statusText</span>
+             
+                  
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.BillID">Chi tiết</a> 
+               
+            </td>
+        </tr>
+
+}
+    </tbody>
+</table>
+
+<style>
+
+</style>

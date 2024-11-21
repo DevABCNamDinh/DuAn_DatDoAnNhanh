@@ -25,6 +25,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IComboService, ComboSevice>();
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
+builder.Services.AddScoped<IBillService, BillService>();
+
 
 
 

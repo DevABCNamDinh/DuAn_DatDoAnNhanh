@@ -38,7 +38,7 @@ namespace DuAn_DoAnNhanh.Data.EF
         }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-        public DbSet<Bill> Orders { get; set; }
+        public DbSet<Bill> Bill { get; set; }
         public DbSet<BillDetails> BillDetailses { get; set; }
         public DbSet<Combo> Combos { get; set; }
         public DbSet<Product> Products { get; set; }
