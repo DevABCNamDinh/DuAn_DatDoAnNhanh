@@ -1,5 +1,7 @@
-﻿using DuAn_DoAnNhanh.Application.Implements.Service;
+﻿
+using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
+using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +11,23 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
-        public ProductController(IProductService productService)
+        private readonly MyDBContext _myDbContext;
+        public ProductController(IProductService productService, MyDBContext myDbContext)
         {
             _productService = productService;
+            _myDbContext = myDbContext;
         }
-        public IActionResult GetAll()
+        public IActionResult GetAll(string search)
         {
-            var product = _productService.GetAllProduct().OrderByDescending(p => p.CreteDate);
+            var product = _productService.GetAllProduct().OrderByDescending(p => p.CreteDate).ToList();
+            //return View(product);
+            //var product = _myDbContext.Products.AsQueryable();
+            if (!string.IsNullOrEmpty(search))
+            {
+                product = product.Where(p => p.ProductName.ToLower().Contains(search.ToLower())).ToList();
+            }
             return View(product);
+
         }
 
         [HttpGet]
@@ -64,13 +75,9 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             return View(book);
         }
 
-        //public IActionResult Edit(Guid id)
-        //{
-        //    var product = _productService.GetProductById(id);
-        //    return View(product);
-        //}
+        
 
-      
+
         public async Task<IActionResult> Edit(Product product, IFormFile ImageFile)
         {
 
@@ -94,7 +101,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
 
             productUpdate.ProductName = product.ProductName;
             productUpdate.Price = product.Price;
-            productUpdate.Description = product.Description;       
+            productUpdate.Description = product.Description;
             productUpdate.ImageUrl = product.ImageUrl;
 
 
@@ -109,11 +116,6 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
 
         }
 
-        //public IActionResult Delete(Guid id)
-        //{
-        //    var product = _productService.GetProductById(id);
-        //    return View(product);
-        //}
 
         public IActionResult Delete(Guid id)
         {
@@ -123,59 +125,6 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             return RedirectToAction("GetAll");
 
         }
-
-
-        //[HttpPost]
-        //public IActionResult Edit(Product product, IFormFile imageFile)
-        //{
-        //    if (imageFile != null && imageFile.Length > 0)
-        //    {
-        //        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", imageFile.FileName);
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            imageFile.CopyTo(stream);
-        //        }
-        //        product.ImageUrl = $"/images/{imageFile.FileName}";
-        //    }
-
-        //    var existingProduct = _productService.FirstOrDefault(p => p.Id == product.Id).UpdateProduct;
-        //    if (existingProduct != null)
-        //    {
-        //        existingProduct.Name = product.Name;
-        //        existingProduct.Price = product.Price;
-        //        existingProduct.Description = product.Description;
-        //        existingProduct.ImagePath = product.ImagePath;
-        //    }
-
-        //    return RedirectToAction("Index");
-        //}
-
-
-
-
-
-
-
-
-        //[HttpPost]
-        //public IActionResult UploadImage(IFormFile file)
-        //{
-        //    if (file != null && file.Length > 0)
-        //    {
-        //        var filePath = Path.Combine("wwwroot/images", file.FileName);
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            file.CopyTo(stream);
-        //        }
-
-        //        // Trả về đường dẫn ảnh (tương đối)
-        //        return Json(new { imageUrl = $"/images/{file.FileName}" });
-        //    }
-
-        //    return BadRequest("No file uploaded.");
-        //}
-
-
 
         private async Task<string> SaveImageAsync2(IFormFile imageFile)
         {

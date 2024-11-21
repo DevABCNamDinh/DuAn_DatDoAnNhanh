@@ -60,9 +60,19 @@
 <html lang="vi">
 
 <body>
-   
+
     <article>
-        
+        <form asp-action="GetAll" asp-controller="Product">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" name="search">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                </div>
+            </div>
+        </form>
+
+
+
         <!-- Nút mở modal tạo sản phẩm mới -->
         <p>
             <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
@@ -102,16 +112,16 @@
                             </div>
                         </div>
                     </div>
-                   
 
-                  
 
-                    <div id="productUpdateModal_@product.ProductID" class="modal" tabindex="-1" role="dialog" >
+
+
+                    <div id="productUpdateModal_@product.ProductID" class="modal" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document">
-                            <div class="modal-content overflow-auto">                               
+                            <div class="modal-content overflow-auto">
                                 <div class="modal-body">
                                     <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                                    @await Component.InvokeAsync("ProductUpdate", new {idProduct = @product.ProductID})
+                                    @await Component.InvokeAsync("ProductUpdate", new { idProduct = @product.ProductID })
                                 </div>
                             </div>
                         </div>
@@ -119,12 +129,12 @@
 
                     <div id="productDeleteModal_@product.ProductID" class="modal" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-custom-height" role="document">
-                          @*   <div class="modal-content">
-                                <div class="modal-body">
-                                    <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                                    @await Component.InvokeAsync("ProductDelete", new { idProduct = @product.ProductID })
-                                </div>
-                            </div> *@
+                            @*   <div class="modal-content">
+                    <div class="modal-body">
+                    <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                    @await Component.InvokeAsync("ProductDelete", new { idProduct = @product.ProductID })
+                    </div>
+                    </div> *@
                         </div>
                     </div>
                 }
