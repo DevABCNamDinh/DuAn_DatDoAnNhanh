@@ -17,8 +17,8 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.HasKey(x => x.CartItemID);
             builder.Property(x => x.CartItemID).ValueGeneratedOnAdd();
             builder.HasOne(x => x.Cart).WithMany(x => x.CartItems).HasForeignKey(x => x.CartID).IsRequired();
-            builder.HasOne(x => x.Product).WithMany(x => x.CartItemes).HasForeignKey(x => x.ProductID).IsRequired();
-            builder.HasOne(x => x.Combo).WithMany(x => x.CartItemes).HasForeignKey(x => x.ComboID).IsRequired();
+            builder.HasOne(x => x.Product).WithMany(x => x.CartItemes).HasForeignKey(x => x.ProductID);
+            builder.HasOne(x => x.Combo).WithMany(x => x.CartItemes).HasForeignKey(x => x.ComboID);
             
         }
 

@@ -17,7 +17,7 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.HasKey(x => x.ComboID);
             builder.Property(x => x.ComboID).ValueGeneratedOnAdd();
             builder.HasMany(x => x.BillDetails).WithOne(x => x.Combo).IsRequired();
-            builder.HasMany(x => x.CartItemes).WithOne(x => x.Combo).IsRequired();
+            builder.HasMany(x => x.CartItemes).WithOne(x => x.Combo);
 
             builder.HasMany(x => x.ProductComboes).WithOne(x => x.Combo).IsRequired();
 
