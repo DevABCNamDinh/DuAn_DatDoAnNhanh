@@ -62,13 +62,13 @@
                             </li>
                         }
                         else
-                        { 
+                        {
                             <li class="nav-item">
-                                <a class="btn btn-primary" asp-controller="User" asp-action="Login">Login</a>
+                                <a id="openModal" class="btn btn-primary" >
+                                        Đăng nhập/Đăng ký
+                                 </a>                       
                             </li>
-                            <li class="nav-item">
-                                <a class="btn btn-warning" asp-controller="User" asp-action="Register">Register</a>
-                            </li>
+                          
                          }
                     </ul>
                 </div>
@@ -77,18 +77,38 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            <div id="productModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-body p-2">
+                            <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                            @await Component.InvokeAsync("SignUpSignIn")
+                        </div>
+                    </div>
+                </div>
+            </div>
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - DuAn_DoAnNhanh.Client - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+<script>
+    $(document).ready(function () {
+        // Khi nhấn nút mở modal
+        $("#openModal").click(function () {
+            $("#productModal").modal('show');
+        });
+
+        // Khi nhấn nút đóng modal
+        $(".close").click(function () {
+            $("#productModal").modal('hide');
+        });
+    });
+</script>

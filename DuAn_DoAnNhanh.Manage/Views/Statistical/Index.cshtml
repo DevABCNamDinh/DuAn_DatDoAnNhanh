@@ -1,0 +1,90 @@
+﻿<div class="container my-5">
+    <div class="row g-4">
+        <!-- Total Income -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card card-custom bg-primary-custom">
+                <h5>Tổng tiền</h5>
+                <h2 class="counter" data-target="579000">$ 0</h2>
+                
+            </div>
+        </div>
+
+        <!-- Total Expenses -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card card-custom bg-info-custom">
+                <h5>Đơn hàng hoàn thành</h5>
+                <h2 class="counter" data-target="70">0</h2>
+                
+            </div>
+        </div>
+
+        <!-- Cash on Hand -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card card-custom bg-purple-custom">
+                <h5>Đơn hàng chờ xác nhận</h5>
+                <h2 class="counter" data-target="90">0</h2>
+                
+            </div>
+        </div>
+
+        <!-- Net Profit Margin -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card card-custom bg-success-custom">
+                <h5>Đơn hàng đang giao</h5>
+                <h2 class="counter" data-target="10">0</h2>
+               
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const counters = document.querySelectorAll('.counter');
+
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-target'); // Giá trị mục tiêu
+                let current = +counter.innerText.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+
+                // Tính giá trị tăng dần (tùy thuộc target)
+                const increment = Math.ceil(target / 30);
+
+                if (current < target) {
+                    current += increment; // Tăng dần giá trị
+                    counter.innerText = `${current.toLocaleString()}`;
+                    setTimeout(updateCount, 30); // Gọi lại sau 30ms
+                } else {
+                    counter.innerText = `${target.toLocaleString()}`; // Đặt giá trị cuối cùng
+                }
+            };
+
+            updateCount(); // Gọi hàm khi tải trang
+        });
+    });
+
+</script>
+<style>
+    .card-custom {
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: left;
+    }
+
+    .bg-primary-custom {
+        background-color: #2b59c3;
+    }
+    /* Total Income */
+    .bg-info-custom {
+        background-color: #50c4f7;
+    }
+    /* Total Expenses */
+    .bg-purple-custom {
+        background-color: #9c59b6;
+    }
+    /* Cash on Hand */
+    .bg-success-custom {
+        background-color: #5dc983;
+    }
+    /* Net Profit Margin */
+</style>
