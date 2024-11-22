@@ -85,7 +85,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         {
             var productComboEdit = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productCombo.ProductID && x.ComboID == productCombo.ComboID && x.Status == StatusCombo.Activity);
             productComboEdit.Quantity = productCombo.Quantity;
-            _genericRepository.update(productCombo);
+            _genericRepository.update(productComboEdit);
             _genericRepository.save();
             var combo = _myDBContext.Combos.Find(productCombo.ComboID);
 
