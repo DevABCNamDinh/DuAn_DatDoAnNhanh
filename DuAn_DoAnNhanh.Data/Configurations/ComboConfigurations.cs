@@ -16,13 +16,12 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.ToTable("Combos");
             builder.HasKey(x => x.ComboID);
             builder.Property(x => x.ComboID).ValueGeneratedOnAdd();
-
-
             builder.HasMany(x => x.CartItemes).WithOne(x => x.Combo);
-
-
-
             builder.HasMany(x => x.ProductComboes).WithOne(x => x.Combo).IsRequired();
+            builder.Navigation(x => x.ProductComboes).AutoInclude();
+            builder.Navigation(x => x.CartItemes).AutoInclude();
+
+
 
 
 

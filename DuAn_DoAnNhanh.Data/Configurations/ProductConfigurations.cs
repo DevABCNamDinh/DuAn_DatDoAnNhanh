@@ -19,7 +19,10 @@ namespace DuAn_DoAnNhanh.Data.Configurations
 
             builder.HasMany(x => x.CartItemes).WithOne(x => x.Product);
             builder.HasMany(x => x.ProductComboes).WithOne(x => x.Product).IsRequired();
-            
+            builder.Navigation(x => x.CartItemes).AutoInclude();
+            builder.Navigation(x => x.ProductComboes).AutoInclude();
+
+
 
         }
 

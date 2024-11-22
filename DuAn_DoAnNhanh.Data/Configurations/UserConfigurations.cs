@@ -18,7 +18,11 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.Property(x=> x.UserID).ValueGeneratedOnAdd();
             builder.HasMany(x => x.Addresses).WithOne(x => x.User).HasForeignKey(x => x.UserID).IsRequired();
             builder.HasMany(x=>x.Orderes).WithOne(x=>x.User).HasForeignKey(x=>x.UserID).IsRequired();
-           
+            builder.Navigation(x => x.Cart).AutoInclude();
+            builder.Navigation(x => x.Orderes).AutoInclude();
+            builder.Navigation(x => x.Addresses).AutoInclude();
+
+
         }
     }
 }
