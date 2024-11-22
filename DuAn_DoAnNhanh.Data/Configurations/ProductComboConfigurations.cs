@@ -18,6 +18,9 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.Property(x => x.ProductComboID).ValueGeneratedOnAdd();
             builder.HasOne(x => x.Product).WithMany(x => x.ProductComboes).IsRequired();
             builder.HasOne(x => x.Combo).WithMany(x => x.ProductComboes).IsRequired();
+            builder.Navigation(x => x.Product).AutoInclude();
+            builder.Navigation(x => x.Combo).AutoInclude();
+
 
 
 

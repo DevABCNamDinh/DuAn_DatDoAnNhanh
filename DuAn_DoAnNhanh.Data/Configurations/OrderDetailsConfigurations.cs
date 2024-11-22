@@ -17,7 +17,9 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.HasKey(x => x.BillDetailsID);
             builder.Property(x => x.BillDetailsID).ValueGeneratedOnAdd();
             builder.HasOne(x => x.Order).WithMany(x => x.BillDetails).HasForeignKey(x => x.BillID).IsRequired();
-         
+            builder.Navigation(x => x.Order).AutoInclude();
+
+
         }
     }
 }
