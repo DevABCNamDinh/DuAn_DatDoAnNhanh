@@ -19,8 +19,6 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.Property(x => x.CartID).ValueGeneratedOnAdd();
             builder.HasOne(x => x.User).WithOne(x => x.Cart).HasForeignKey<Cart>(x => x.UserID).IsRequired();
             builder.HasMany(x => x.CartItems).WithOne(x => x.Cart).HasForeignKey(x => x.CartID).IsRequired();
-            builder.Navigation(x => x.User).AutoInclude();
-            builder.Navigation(x => x.CartItems).AutoInclude();
           
 
         }
