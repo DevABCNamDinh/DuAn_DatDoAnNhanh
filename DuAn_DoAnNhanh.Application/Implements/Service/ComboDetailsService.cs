@@ -47,8 +47,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         public void DeleteComboDetailsByproductIDcomboID(Guid productID, Guid comboID)
         {
             var productComboDelete = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productID && x.ComboID == comboID && x.Status == StatusCombo.Activity);
-            productComboDelete.Status = StatusCombo.InActivity;
-            _myDBContext.Update(productComboDelete);
+           
+            _myDBContext.Remove(productComboDelete);
             _myDBContext.SaveChanges();
             var combo = _myDBContext.Combos.Find(comboID);
             if (combo != null)

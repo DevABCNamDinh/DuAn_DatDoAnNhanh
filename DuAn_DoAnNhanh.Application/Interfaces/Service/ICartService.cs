@@ -15,6 +15,8 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
     public interface ICartService
     {
         void AddToCart(Guid userId, Guid ProductId, int quantity);
+        void AddComboToCart(Guid userId, Guid ComboID, int quantity);
+
         List<CartItem> GetCartItems(Guid cartId);
         Cart GetCartFromUserId(Guid userId);
         void UpdateCartItem(Guid cartItemId, int quantity);

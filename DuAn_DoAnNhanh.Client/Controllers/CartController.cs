@@ -30,31 +30,60 @@
             public IActionResult AddToCart(Guid ProductId, int quantity)
             {
                 var userId = HttpContext.Session.GetString("UserId");
+                TempData["ReturnUrl"] = Request.Headers["Referer"].ToString();
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return RedirectToAction("Login", "User");
+                // Trả về đoạn script mở modal
+                TempData["OpenSignInModal"] = true;
+               
+                return Redirect(TempData["ReturnUrl"].ToString());
+             
                 }
-                //try
-                //{
-                    _cartService.AddToCart(Guid.Parse(userId), ProductId, quantity);
-            return RedirectToAction("Index", "Product", new { id = ProductId });
-            //TempData["Message"] = $"{quantity} sản phẩm được thêm vào giỏ hàng";
-            //return RedirectToAction("Cart", "Cart");
-            //}
-            //    catch (Exception ex)
-            //    {
-            //        TempData["Error"] = ex.Message;
-            //    }
-            //    return RedirectToAction("Index", "Product", new { id = ProductId });
+                try
+                {
+                    _cartService.AddToCart(Guid.Parse(userId), ProductId, quantity);        
+                    TempData["Message"] = $"{quantity} sản phẩm được thêm vào giỏ hàng";
+                return Redirect(TempData["ReturnUrl"].ToString());
+            }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = ex.Message;
+                }
+            return Redirect(TempData["ReturnUrl"].ToString());
+        }
+        [HttpPost]
+        public IActionResult AddComboToCart(Guid ComboId, int quantity)
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            TempData["ReturnUrl"] = Request.Headers["Referer"].ToString();
+            if (string.IsNullOrEmpty(userId))
+            {
+                // Trả về đoạn script mở modal
+                TempData["OpenSignInModal"] = true;
+                
+                
+               
+            }
+            try
+            {
+                _cartService.AddComboToCart(Guid.Parse(userId), ComboId, quantity);
+                TempData["Message"] = $"{quantity} sản phẩm được thêm vào giỏ hàng";
+                return Redirect(TempData["ReturnUrl"].ToString());
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+            return Redirect(TempData["ReturnUrl"].ToString());
         }
 
-            [HttpPost]
+        [HttpPost]
             public IActionResult UpdateCartItem(Guid cartItemId, int quantity)
             {
                 try
                 {
                     _cartService.UpdateCartItem(cartItemId, quantity);
-                    TempData["Message"] = "Cart item updated successfully.";
+                    TempData["Message"] = "Cập nhật giỏ hàng thành công";
                 }
                 catch (Exception ex)
                 {
@@ -67,7 +96,7 @@
             public IActionResult RemoveCartItem(Guid cartItemId)
             {
                 _cartService.RemoveCartItem(cartItemId);
-                TempData["Message"] = "Cart item removed successfully.";
+                TempData["Message"] = "Đã xóa sản phẩm ra khỏi giỏ hàng.";
                 return RedirectToAction("Cart");
             }
 

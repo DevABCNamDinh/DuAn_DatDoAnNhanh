@@ -1,59 +1,87 @@
 ﻿@model DuAn_DoAnNhanh.Data.Entities.Product
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Product</h4>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Phần bên trái -->
+        <div class="col-lg-4 col-md-6 col-12 mb-4">
+            <img src="@Model.ImageUrl" alt="Product Image" class="product-image">
+            <h3 class="mt-3">@Model.ProductName</h3>
+            <p class="text-danger fw-bold fs-4">@Model.Price.ToString("N0") đ</p>
+           @*  <p class="text-muted"><del>299.000 đ</del></p>
+            <p class="text-success">Bạn tiết kiệm được <strong>16.000 đ</strong> sau khi giảm giá.</p> *@
         </div>
-        <div class="card-body">
-            <div class="text-center mb-4">
-                <img src="@Model.ImageUrl" alt="@Model.ProductName" class="img-fluid rounded" style="height: 200px; object-fit: cover;">
+
+        <!-- Phần bên phải -->
+        <div class="col-lg-6 col-md-6 col-12">
+             <form method="post" action="@Url.Action("AddToCart", "Cart")">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="quantity-controls d-flex align-items-center">
+                    <label for="quantity" class="me-2">Số lượng:</label>
+                        <button type="button" class="btn-quantity btn-decrease">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" class="form-control mx-1">
+                        <button type="button" class="btn-quantity btn-increase">+</button>
+                        <input type="hidden" name="ProductId" value="@Model.ProductID" />
+                </div>
+                <button type="submit" class="btn-add-to-cart">Thêm vào giỏ hàng</button>
             </div>
-            <dl class="row">
-                <dt class="col-sm-3 font-weight-bold">Product Name</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.ProductName)</dd>
-
-          @*       <dt class="col-sm-3 font-weight-bold">Description</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
- *@
-                @* <dt class="col-sm-3 font-weight-bold">Quantity</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Quantity)</dd> *@
-
-                <dt class="col-sm-3 font-weight-bold">Price</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Price) VND</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Creation Date</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.CreteDate)</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Status</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
-            </dl>
-            <form method="post" action="@Url.Action("AddToCart", "Cart"@* , new { ProductId = Model.ProductID } *@)">
-                @* <p class="card-title style=" style="color: red;"><b>@product.Price.ToString("N0") đ</b></p> *@
-                <input type="hidden" asp-for="@Model.ProductID"></input>
-                 <div class="form-group">
-                    <label for="quantity">Quantity</label>
-                    <input type="number" class="form-control"  id="quantity" name="quantity"  @* value="1" min="1" max="@Model.Quantity" *@  />
-                </div>
-                <button type="submit" class="btn btn-primary btn-lg">Add to Cart</button>
             </form>
- 
-            @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["Message"]
-                </div>
-            }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger">
-                    @TempData["Error"]
-                </div>
-            } 
-        </div>
-        <div class="card-footer text-end">
-           @*  <a asp-action="Edit" asp-route-id="@Model?.ProductID" class="btn btn-warning me-2">Edit</a> *@
-            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            
         </div>
     </div>
 </div>
+
+
+<style>
+    .product-image {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .quantity-controls input {
+        width: 70px;
+        text-align: center;
+    }
+
+    .btn-quantity {
+        background-color: #f8d7da;
+        border: none;
+        padding: 5px 10px;
+        color: #d9534f;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn-add-to-cart {
+        background-color: #d9534f;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+        .btn-add-to-cart:hover {
+            background-color: #c9302c;
+        }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const decreaseButton = document.querySelector(".btn-decrease");
+        const increaseButton = document.querySelector(".btn-increase");
+        const quantityInput = document.getElementById("quantity");
+
+        // Giảm số lượng
+        decreaseButton.addEventListener("click", function () {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        // Tăng số lượng
+        increaseButton.addEventListener("click", function () {
+            let currentValue = parseInt(quantityInput.value);
+            quantityInput.value = currentValue + 1;
+        });
+    });
+</script>
