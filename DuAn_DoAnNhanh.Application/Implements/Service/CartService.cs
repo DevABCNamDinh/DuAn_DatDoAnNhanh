@@ -1,6 +1,8 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
+using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +18,63 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         private readonly IGenericRepository<Cart> _cartRepository;
         private readonly IGenericRepository<CartItem> _cartItemRepository;
         private readonly IGenericRepository<Product> _productRepository;
+
+        private readonly IGenericRepository<Combo> _comboRepository;
+        private readonly MyDBContext _context;
+
         public CartService(IGenericRepository<Cart> cartRepository,
             IGenericRepository<CartItem> cartItemRepository,
-            IGenericRepository<Product> productRepository)
+            IGenericRepository<Product> productRepository,
+            IGenericRepository<Combo> comboRepository,
+
+            MyDBContext context)
         {
             _cartItemRepository = cartItemRepository;
             _productRepository = productRepository;
             _cartRepository = cartRepository;
+            _comboRepository = comboRepository;
+            _context = context;
         }
+
+        public void AddComboToCart(Guid userId, Guid ComboID, int quantity)
+        {
+            var cart = GetCartFromUserId(userId);
+            if (cart.CartItems == null)
+            {
+                cart.CartItems = new List<CartItem>();
+            }
+            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ComboID == ComboID);
+
+
+            if (cartItem != null)
+            {
+                //if (cartItem.Quantity + quantity > cartItem.Product.Quantity)
+                //{
+                //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity} . co trong gio");
+                //}
+                cartItem.Quantity += quantity;
+                _cartItemRepository.update(cartItem);
+            }
+            else
+            {
+                cartItem = new CartItem
+                {
+                    CartItemID = Guid.NewGuid(),
+                    CartID = cart.CartID,
+                    ComboID = ComboID,
+                    Quantity = quantity,
+                    Combo = _comboRepository.GetById(ComboID),
+                    Cart = _cartRepository.GetById(cart.CartID)
+                };
+                //if (quantity > cartItem.Product.Quantity)
+                //{
+                //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
+                //}
+                _cartItemRepository.insert(cartItem);
+            }
+            _cartItemRepository.save();
+        }
+
         public void AddToCart(Guid userId, Guid ProductId, int quantity)
         {
 
@@ -41,8 +92,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 //{
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity} . co trong gio");
                 //}
-                //cartItem.Quantity += quantity;
-                //_cartItemRepository.update(cartItem);
+                cartItem.Quantity += quantity;
+                _cartItemRepository.update(cartItem);
             }
             else
             {
@@ -66,17 +117,29 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void ClearCart(Guid cartId)
         {
-            throw new NotImplementedException();
+            var cart = _cartRepository.GetById(cartId);
+            if (cart != null)
+            {
+                foreach (var cartItem in cart.CartItems)
+                {
+                    _cartItemRepository.delete(cartItem);
+                }
+                _cartItemRepository.save();
+            }
         }
 
         public Cart GetCartFromUserId(Guid userId)
         {
-            return _cartRepository.GetAll().FirstOrDefault(c => c.UserID == userId);
+            return _context.Carts.Include(x => x.CartItems).FirstOrDefault(x => x.UserID == userId);
         }
 
         public List<CartItem> GetCartItems(Guid cartId)
         {
-            var cartItems = _cartItemRepository.GetAll()
+            var cartItems = _context.CartItems.Include(x=>x.Cart)
+                .Include(y=>y.Combo)
+                .ThenInclude(x=>x.ProductComboes)
+                .ThenInclude(x => x.Product)
+                .Include(z=>z.Product) 
                 .Where(ci => ci.CartID == cartId).ToList();
             if (cartItems != null)
             {
@@ -90,7 +153,12 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void RemoveCartItem(Guid cartItemId)
         {
-            throw new NotImplementedException();
+            var cartItem = _cartItemRepository.GetById(cartItemId);
+            if (cartItem != null)
+            {
+                _cartItemRepository.delete(cartItem);
+                _cartItemRepository.save();
+            }
         }
 
        
@@ -130,7 +198,10 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void UpdateCartItem(Guid cartItemId, int quantity)
         {
-            throw new NotImplementedException();
+            var cartItem = _cartItemRepository.GetById(cartItemId);         
+            cartItem.Quantity = quantity;
+            _cartItemRepository.update(cartItem);
+            _cartItemRepository.save();
         }
 
        

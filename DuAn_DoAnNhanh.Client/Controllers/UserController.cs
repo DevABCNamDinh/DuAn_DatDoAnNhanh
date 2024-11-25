@@ -20,16 +20,25 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         public IActionResult Login(LoginViewModel loginViewModel)
         {
             var user = _userService.Login(loginViewModel.Email, loginViewModel.Password);
+            TempData["ReturnUrl"] = Request.Headers["Referer"].ToString();
+
             if (user != null)
             {
                 HttpContext.Session.SetString("UserId", user.UserID.ToString());
                 HttpContext.Session.SetString("UserName", user.FullName.ToString());
+                TempData["Message"] = "Đăng nhập thành công";
+
+                if (TempData["ReturnUrl"] != null)
+                {
+                    return Redirect(TempData["ReturnUrl"].ToString());
+                }
                 return RedirectToAction("Index", "Home");
             }
             else
             {
-                ViewBag.Error = "Invalid username or password";
-                return View(loginViewModel);
+                TempData["Error"] = " Email hoặc mật khẩu không chính xác";
+                TempData["OpenSignInModal"] = true;
+                return Redirect(TempData["ReturnUrl"].ToString());
             }
         }
         public IActionResult Register()

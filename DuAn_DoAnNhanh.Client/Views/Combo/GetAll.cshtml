@@ -30,12 +30,14 @@ else
                             <p class="card-title ">@item.Quantity @item.ProductName</p>
                         }
                         <p class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></p>
-                        <a href="@Url.Action("AddToCart", "Cart", new { ProductId = combo.Combo.ComboID,quantity=1 })"
-                           class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn"
-                           style=" padding-right:10px;padding-left:10px"
-                           title="Thêm combo">
-                            +
-                        </a>
+                        
+                        <form method="post" action="@Url.Action("AddComboToCart", "Cart")" class="d-inline">
+                            <input type="hidden" name="ComboId" value="@combo.Combo.ComboID" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn" style="padding-right:10px;padding-left:10px" title="Thêm sản phẩm">
+                                +
+                            </button>
+                        </form>
 
                        
                     </div>
