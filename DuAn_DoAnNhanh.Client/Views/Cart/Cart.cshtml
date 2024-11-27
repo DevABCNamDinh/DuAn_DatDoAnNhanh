@@ -2,18 +2,31 @@
 @{
     decimal totalCartPrice = 0;
 }
+<!-- Modal -->
+<div id="checkOutModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="checkOutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">         
+            <div class="modal-body">
+                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                @await Component.InvokeAsync("CheckOut")
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container mt-5">
     <h2 class="mb-4">Giỏ hàng của bạn</h2>
+ 
     @if (!Model.Any())
     {
         <div class="alert alert-info">
             Giỏ hàng của bạn trống.
-            <a href="@Url.Action("Index", "Product")">Quay lại mua sắm</a>
+            <a href="@Url.Action("OrderHome", "Home")">Quay lại mua sắm</a>
         </div>
     }
     else
     {
+
         <div class="row">
             <div class="col-lg-8">
                 <div class="table-responsive">
@@ -113,7 +126,9 @@
                         <h4 class="card-title">Tóm tắt đơn hàng</h4>
                         <p class="card-text">Mặt hàng: @Model.Sum(item => item.Quantity)</p>
                         <p class="card-text">Tổng: @totalCartPrice.ToString("N0") đ</p>
-                        <a href="@Url.Action("Checkout", "Order")" class="btn btn-primary btn-lg btn-block">Tiến hành thanh toán</a>
+                        <!-- Nút mở modal -->
+                        <a id="openModalX" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#checkOutModal">Tiến hành thanh toán</a>
+
                         <form method="post" action="@Url.Action("ClearCart", "Cart")" class="mt-3">
                             <button type="submit" class="btn btn-warning btn-block">Xóa tất cả giỏ hàng</button>
                         </form>
@@ -122,6 +137,10 @@
             </div>
         </div>
     }
- 
+   
 
     </div>
+
+<!-- Gắn jQuery và Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>

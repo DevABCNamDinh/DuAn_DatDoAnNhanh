@@ -15,33 +15,36 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DuAn_DoAnNhanh.Client</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+            <div class="container">
+                <!-- Logo hoặc tiêu đề -->
+                <a class="navbar-brand" href="#">ĐẶT ĐỒ ĂN NHANH</a>
+
+                <!-- Nút ba gạch ngang -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Menu -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
-                   
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
+                            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="OrderHome">Đặt hàng</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Combo" asp-action="GetAll">Combo</a>
-                        </li>
-                        
+                       
                     </ul>
+                    <!-- Nút Login -->
+                    
                     <ul class="navbar-nav navbar-right">
                         @{
                             var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
-                          
+
                             var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName");
-                           
+
                         }
                         @if (userId != null)
                         {
@@ -58,22 +61,23 @@
                                 <span class="nav-link navbar-text">Hello, @userName</span>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-danger" asp-controller="User" asp-action="Logout">Logout</a>
+                                <a class="btn btn-warning text-white rounded-pill" asp-controller="User" asp-action="Logout">Logout</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a id="openModal" class="btn btn-primary" >
-                                        Đăng nhập/Đăng ký
-                                 </a>                       
+                                <a id="openModal" class="btn btn-danger text-white rounded-pill">
+                                    Đăng nhập/Đăng ký
+                                </a>
                             </li>
-                          
-                         }
+
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
+     
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -144,4 +148,9 @@
         opacity: 1;
         transition: opacity 1s ease-in-out;
     }
+
+    main {
+        margin-top: 70px; /* Điều chỉnh khoảng cách tùy theo chiều cao của menu */
+    }
+
 </style>

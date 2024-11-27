@@ -13,18 +13,27 @@
             }
             public IActionResult Cart ()
             {
-                //var cart = _cartService.GetCartFromUserId(userId); 
-                //if (cart == null)
-                //{
-                //    return View("EmptyCart"); 
-                //}
+            //var cart = _cartService.GetCartFromUserId(userId); 
+            //if (cart == null)
+            //{
+            //    return View("EmptyCart"); 
+            //}
 
-                //var cartItems = _cartService.GetCartItems(cart.CartID); 
-                //return View(cartItems);
+            //var cartItems = _cartService.GetCartItems(cart.CartID); 
+            //return View(cartItems);
+            try
+            {
                 var UserId = HttpContext.Session.GetString("UserId");
                 var cart = _cartService.GetCartFromUserId(Guid.Parse(UserId));
                 var cartItems = _cartService.GetCartItems(cart.CartID);
                 return View(cartItems);
+            }
+            catch (Exception)
+            {
+                TempData["OpenSignInModal"] = true;
+                return RedirectToAction("Index", "Home");
+            }
+               
             }
         [HttpPost]
             public IActionResult AddToCart(Guid ProductId, int quantity)

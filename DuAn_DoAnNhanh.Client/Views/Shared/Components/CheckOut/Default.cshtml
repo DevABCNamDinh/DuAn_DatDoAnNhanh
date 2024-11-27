@@ -1,0 +1,46 @@
+﻿
+
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-sm" style="width: 100%; max-width: 800px;">
+            <div class="card-body">
+                <!-- Chuyển đổi giữa Sign In và Sign Up -->
+                <div class="d-flex justify-content-around mb-3">
+                    <div id="signin-tab" class="active fw-bold text-primary" style="cursor: pointer;">Nhận hàng tại nhà</div>
+                    <div id="signup-tab" class="active fw-bold " style="cursor: pointer;">Nhận hàng tại quầy</div>
+                </div>
+
+                <!-- Form Đăng nhập -->
+                <form id="signin-form" class="form-content active">
+                    abc
+                </form>
+
+                <!-- Form Đăng ký -->
+                <form id="signup-form" class="form-content" style="display: none;">
+                    abc
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript để chuyển đổi giữa SIGN IN và SIGN UP
+        const signinTab = document.getElementById('signin-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const signinForm = document.getElementById('signin-form');
+        const signupForm = document.getElementById('signup-form');
+
+        signinTab.addEventListener('click', () => {
+            signinTab.classList.add('text-primary');
+            signupTab.classList.remove('text-primary');
+            signinForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        });
+
+        signupTab.addEventListener('click', () => {
+            signupTab.classList.add('text-primary');
+            signinTab.classList.remove('text-primary');
+            signupForm.style.display = 'block';
+            signinForm.style.display = 'none';
+        });
+    </script>
+
