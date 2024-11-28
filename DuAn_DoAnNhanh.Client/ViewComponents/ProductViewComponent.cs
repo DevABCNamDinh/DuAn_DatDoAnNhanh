@@ -1,4 +1,5 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
+using DuAn_DoAnNhanh.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DuAn_DoAnNhanh.Client.ViewComponents
@@ -11,10 +12,19 @@ namespace DuAn_DoAnNhanh.Client.ViewComponents
             _productService = productService;
         }
     
-        public IViewComponentResult Invoke()
+        public IViewComponentResult Invoke(string name)
         {
+            List<Product> products;
+            if(name==null)
+            {
+                 products = _productService.GetAllProduct();
 
-            var products = _productService.GetAllProduct();
+            }
+            else
+            {
+                 products = _productService.GetAllProduct().Where(x => x.ProductName.Contains(name)).ToList();
+
+            }
             return View(products);
         }
     }
