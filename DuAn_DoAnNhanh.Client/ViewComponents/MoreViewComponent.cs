@@ -22,7 +22,7 @@ namespace DuAn_DoAnNhanh.Client.ViewComponents
         public IViewComponentResult Invoke(Guid comboID)
         {
             // Lấy danh sách combo
-            var comboList = _context.Combos.Where(x => x.SetupPrice != null&&x.ComboID!=comboID).ToList().Take(6);
+            var comboList = _context.Combos.Where(x => x.SetupPrice != null&&x.ComboID!=comboID).ToList().Take(3);
 
             // Tạo danh sách ViewModel để chứa combo và sản phẩm của mỗi combo
             var comboWithProductsList = comboList.Select(combo => new ComboWithProductsViewModel

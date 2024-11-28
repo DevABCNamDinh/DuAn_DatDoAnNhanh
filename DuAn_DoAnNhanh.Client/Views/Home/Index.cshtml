@@ -48,12 +48,21 @@
             </div>
         </div>
       
-        <!-- Danh mục 3 -->
+        <!-- Danh mục 2 -->
         <div class="col">
             <div class="card">
                 <img src="https://www.lotteria.vn/media/catalog/product/cache/400x400/2/2/222278_4.png.webp" style="height:200px" class="card-img-top" alt="Combo 1 Người">
                 <div class="card-body text-center">
-                    <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#sanpham"> Sản phẩm &gt;</a>                  
+                    <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#sanpham"> Gà rán &gt;</a>                  
+                </div>
+            </div>
+        </div>
+        <!-- Danh mục 3 -->
+        <div class="col">
+            <div class="card">
+                <img src="https://www.lotteria.vn/media/catalog/product/cache/400x400/b/u/burger_bulgogi_4.png.webp" style="height:200px" class="card-img-top" alt="Combo 1 Người">
+                <div class="card-body text-center">
+                    <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#burger"> Burger &gt;</a>
                 </div>
             </div>
         </div>
@@ -73,43 +82,6 @@
 <div class="container my-4">
     <h2 class="fw-bold">CÓ THỂ BẠN THÍCH MÓN NÀY</h2>
     <hr>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-        <!-- Danh mục 1 -->
-        <div class="col">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=Khuyen+Mai" class="card-img-top" alt="Ưu Đãi">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Ưu Đãi &gt;</h5>
-                </div>
-            </div>
-        </div>
-        <!-- Danh mục 2 -->
-        <div class="col">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=Mon+Moi" class="card-img-top" alt="Món Mới">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Món Mới &gt;</h5>
-                </div>
-            </div>
-        </div>
-        <!-- Danh mục 3 -->
-        <div class="col">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=Combo+1+Nguoi" class="card-img-top" alt="Combo 1 Người">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Combo 1 Người &gt;</h5>
-                </div>
-            </div>
-        </div>
-        <!-- Danh mục 4 -->
-        <div class="col">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200?text=Combo+Nhom" class="card-img-top" alt="Combo Nhóm">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Combo Nhóm &gt;</h5>
-                </div>
-            </div>
-        </div>
-       
-    </div>
+            @await Component.InvokeAsync("Endow")
+    
 </div>

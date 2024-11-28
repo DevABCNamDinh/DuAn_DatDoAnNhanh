@@ -26,7 +26,7 @@
                 </button>
 
                 <!-- Menu -->
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="collapse navbar-collapse fs-5" id="navbarNav">
                     <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
                             <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
@@ -54,7 +54,13 @@
 
                             <li class="nav-item">
                                 <a href="@Url.Action("Cart", "Cart")">
-                                    <span class="nav-link navbar-text">Cart (@cartItemCount)</span>
+                                    <span class="nav-link navbar-text"><img src="https://www.lotteria.vn/grs-static/images/icon-cart.svg" alt="Alternate Text" /> (@cartItemCount)</span>
+                                    
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a >
+                                    <span class="nav-link navbar-text"><img src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg" alt="Alternate Text" /></span>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -79,6 +85,8 @@
         </nav>
      
     </header>
+   
+
     <div class="container">
         <main role="main" class="pb-3">
             <div id="productModal" class="modal" tabindex="-1" role="dialog">
@@ -92,6 +100,9 @@
                     </div>
                 </div>
             </div>
+            <marquee behavior="scroll" direction="left" style="color: red; font-size: 20px; font-weight: bold;padding:10px">
+                Kính chào quý khách! Chúc quý khách buổi trưa mát mẻ.
+            </marquee>
             @RenderBody()
         </main>
     </div>
