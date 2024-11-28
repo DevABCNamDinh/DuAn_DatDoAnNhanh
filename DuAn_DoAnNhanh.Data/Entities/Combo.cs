@@ -13,6 +13,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public string ComboName { get; set; }
         public string Image { get; set; }
         public decimal Price { get; set; }
+        public decimal? SetupPrice { get; set; }
+
         public StatusCombo Status { get; set; }
         public string? Description { get; set; }
         public DateTime CreteDate { get; set; }

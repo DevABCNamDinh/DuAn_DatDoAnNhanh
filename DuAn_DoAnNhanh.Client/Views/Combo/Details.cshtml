@@ -10,7 +10,15 @@
                 <!-- Ảnh hiển thị -->
                 <img id="imagePreview" name="Image" class="card-img-top" src="@Model.Combo.Image" style="max-width:100%;height:auto">
                 <br />
-                <h3 class="card-title" style="color: red;margin-top:10px"><b>Tổng: @Model.Combo.Price.ToString("N0") đ</b></h3>
+                @if (Model.Combo.SetupPrice == null)
+                {
+                <h3 class="card-title style=" style="color: red;"><b>@Model.Combo.Price.ToString("N0") đ</b></h3>
+                }
+                else
+                {
+                <h3 class="card-title style=" style="color: red;"><b><del>@Model.Combo.Price.ToString("N0")</del> đ</b></h3>
+                <h3 class="card-title style=" style="color: red;"><b>Tổng: @(Model.Combo.SetupPrice.HasValue ? Model.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                }
                 <hr/>
                 <h4><b>Chi tiết Combo</b></h4>
 
@@ -43,7 +51,7 @@
             </div>
 
             <!-- Phần bên phải -->
-            <div class="col-lg-6 col-md-6 col-12">
+            <div class="col-lg-8 col-md-6 col-12">
                 <form method="post" action="@Url.Action("AddComboToCart", "Cart")">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="quantity-controls d-flex align-items-center">
@@ -56,6 +64,8 @@
                         <button type="submit" class="btn-add-to-cart">Thêm vào giỏ hàng</button>
                     </div>
                 </form>
+                 @await Component.InvokeAsync("More",new {comboID = @Model.Combo.ComboID})
+
             </div>
          
 

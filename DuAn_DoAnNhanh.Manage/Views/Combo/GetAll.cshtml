@@ -47,7 +47,13 @@ else
                         {
                             <h5 class="card-title ">@item.Quantity @item.ProductName</h5>
                         }
-                        <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
+                        @if (combo.Combo.SetupPrice == null)
+                        {
+                            <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
+                        }else{
+                            <p class="card-title style=" style="color: red;"><b><del>@combo.Combo.Price.ToString("N0")</del> đ</b></p>
+                            <h3 class="card-title style=" style="color: red;"><b>@(combo.Combo.SetupPrice.HasValue ? combo.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                        }
                         
                         @Html.ActionLink("Xem chi tiết", "Details", new { id = combo.Combo.ComboID }, new { @class = "btn btn-primary" })
                     </div>

@@ -5,7 +5,7 @@
 @if (Model == null || !Model.Any())
 {
     <div class="alert alert-warning" role="alert">
-        Combo trống.
+        Khuyến mãi trống.
     </div>
 }
 else
@@ -31,7 +31,7 @@ else
                         }                
                         @if (combo.Combo.SetupPrice == null)
                         {
-                            <h3 class="card-title" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
+                            <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
                         }
                         else
                         {

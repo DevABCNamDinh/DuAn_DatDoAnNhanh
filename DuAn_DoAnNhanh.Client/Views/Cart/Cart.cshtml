@@ -1,6 +1,8 @@
 ﻿ @model IEnumerable<DuAn_DoAnNhanh.Data.Entities.CartItem> 
 @{
     decimal totalCartPrice = 0;
+    decimal totalCartPriceEndow = 0;
+
 }
 <!-- Modal -->
 <div id="checkOutModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="checkOutModalLabel" aria-hidden="true">
@@ -48,6 +50,7 @@
                                 {
                                     var totalItemPrice = item.Product.Price * item.Quantity;
                                     totalCartPrice += totalItemPrice;
+                                    totalCartPriceEndow += totalItemPrice;
 
                                     <tr>
                                         <td style="width: 15%;">
@@ -57,6 +60,7 @@
                                             @item.Product.ProductName
                                         </td>
                                         <td style="vertical-align: middle;">
+
                                             @item.Product.Price.ToString("N0") đ
                                         </td>
                                         <td style="vertical-align: middle;">
@@ -78,9 +82,25 @@
 
                                 @if (item.Combo != null && item.Product == null)
                                 {
-                                    var totalItemPrice = item.Combo.Price * item.Quantity;
-                                    totalCartPrice += totalItemPrice;
+                                    
+                                    decimal totalItemPrice;
+                                    decimal totalItemPriceEndow=0;
 
+
+                                    @if (item.Combo.SetupPrice.HasValue)
+                                    {
+                                        totalItemPriceEndow = item.Combo.SetupPrice.Value * item.Quantity;
+                                        totalCartPriceEndow += totalItemPriceEndow;
+                                        totalItemPrice = item.Combo.Price * item.Quantity;
+                                        totalCartPrice += totalItemPrice;
+                                        
+                                    }
+                                    else
+                                    {
+                                        totalItemPrice = item.Combo.Price * item.Quantity;
+                                        totalCartPrice += totalItemPrice;
+                                        totalCartPriceEndow += totalItemPrice;                                    
+                                    }
                                     <tr>
                                         <td style="width: 15%;">
                                             <img src="@item.Combo.Image" class="img-fluid" style="max-height: 100px;" />
@@ -97,7 +117,15 @@
                                             
                                         </td>
                                         <td style="vertical-align: middle;">
-                                            @item.Combo.Price.ToString("N0") đ
+                                            @if (@item.Combo.SetupPrice == null)
+                                            {
+                                                <p class="card-title">@item.Combo.Price.ToString("N0") đ</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="card-title style=" ><del>@item.Combo.Price.ToString("N0")</del> đ</p>
+                                                <p class="card-title style=" >@(item.Combo.SetupPrice.HasValue ? item.Combo.SetupPrice.Value.ToString("N0") : "0") đ</p>
+                                            }
                                         </td>
                                         <td style="vertical-align: middle;">
                                             <form method="post" action="@Url.Action("UpdateCartItem", "Cart", new { cartItemId = item.CartItemID, quantity = item.Quantity })" class="d-inline">
@@ -106,7 +134,19 @@
                                             </form>
                                         </td>
                                         <td style="vertical-align: middle;">
-                                            @totalItemPrice.ToString("N0") đ
+                                            @if (@item.Combo.SetupPrice == null)
+                                            {
+                                                <p class="card-title">@totalItemPrice.ToString("N0") đ</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="card-title"><del>@totalItemPrice.ToString("N0")</del> đ</p>
+                                                <p class="card-title">@totalItemPriceEndow.ToString("N0") đ</p>
+
+                                               
+
+                                            }
+                                     
                                         </td>
                                         <td style="vertical-align: middle;">
                                             <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
@@ -125,7 +165,15 @@
                     <div class="card-body">
                         <h4 class="card-title">Tóm tắt đơn hàng</h4>
                         <p class="card-text">Mặt hàng: @Model.Sum(item => item.Quantity)</p>
-                        <p class="card-text">Tổng: @totalCartPrice.ToString("N0") đ</p>
+                        @if (totalCartPriceEndow == totalCartPrice)
+                        {
+                            <p class="card-text">Tổng: @totalCartPrice.ToString("N0") đ</p>
+                        }else{
+                            <p class="card-title style="><del>@totalCartPrice.ToString("N0")</del> đ</p>
+                            <p class="card-title style=">Tổng: @totalCartPriceEndow.ToString("N0") đ</p>
+
+                        }
+                      
                         <!-- Nút mở modal -->
                         <a id="openModalX" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#checkOutModal">Tiến hành thanh toán</a>
 

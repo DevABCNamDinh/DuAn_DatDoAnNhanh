@@ -46,9 +46,27 @@
                         <input type="file" id="ImageFile" name="ImageFile" class="form-control" accept="image/*" onchange="previewImage(event)" style="display:none;">
                         <input type="hidden" name="ComboID" value="@Model.Combo.ComboID" />
 
-                        <h3 class="card-title" style="color: red;margin-top:10px"><b>Tổng: @Model.Combo.Price.ToString("N0") đ</b></h3>
+                        @if (@Model.Combo.SetupPrice==null)
+                        {
+                        <h3 class="card-title" style="color: red;margin-top:10px"><b>Tổng: <b id="priceDisplay">@Model.Combo.Price.ToString("N0")</b> đ</b></h3>
+                        <!-- Nút để hiển thị input giá -->
+                        <button type="button" class="btn btn-secondary" id="setupPriceButton" onclick="showPriceInput()">Setup giá</button>
+
+                        }else{
+                        <p class="card-title" style="color: red;margin-top:10px"><b id="priceDisplay"><del>@Model.Combo.Price.ToString("N0")</del> đ</b></p>
+                        <h3 class="card-title" style="color: red;margin-top:10px"><b id="priceDisplay">Tổng: @(Model.Combo.SetupPrice.HasValue ? Model.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+
+                        <button type="submit" class="btn btn-secondary" onclick="cancelSetupPrice()">Hủy setup giá</button>
+                                              
+                        }
+
+                        <!-- Input để thiết lập giá mới, ban đầu ẩn -->
+                        <div id="priceInputContainer" style="display:none; margin-top:10px;">
+                           
+                        <input type="number" name="SetupPrice" id="newPriceInput" class="form-control" value="@Model.Combo.SetupPrice" placeholder="@Model.Combo.Price.ToString("N0") đ" style="width:200px; " onchange="showSaveButton()" />
+                        </div>
                         <!-- Nút Lưu ảnh, ban đầu ẩn -->
-                        <button type="submit" class="custom-file-upload" id="saveButton" onclick="saveImage()" style="display: none; padding: 10px 20px; margin-left: 10px;">Lưu thay đổi</button>
+                        <button type="submit" class="custom-file-upload" id="saveButton" onclick="saveImage()" style="display: none; padding: 10px 20px; margin-top: 10px;">Lưu thay đổi</button>
 
                     </form>
 
@@ -104,8 +122,8 @@
                                         
 
                                         
-                                    </div>
                                 </div>
+                            </div>
                             }
                         </div>
                     }
@@ -137,6 +155,24 @@
                 $("#addComboModal").modal('hide');
             });
         });
+        function showPriceInput() {
+            // Ẩn nút "Setup giá"
+            document.getElementById('setupPriceButton').style.display = 'none';
+
+            // Hiển thị ô nhập giá
+            document.getElementById('priceInputContainer').style.display = 'block';
+            // Lấy giá hiện tại từ thẻ <h3>
+            var currentPrice = document.getElementById('priceDisplay');
+            var priceText = currentPrice.innerText;
+
+            // Thêm thẻ <del> vào giá cũ (gạch ngang)
+            currentPrice.innerHTML = '<del>' + priceText + '</del>';
+        }
+        function cancelSetupPrice() {
+            // Set giá trị của input SetupPrice thành null
+            document.getElementById('newPriceInput').value = "";  
+        }
+
 
     </script>
     <style>
