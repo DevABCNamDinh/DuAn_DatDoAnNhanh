@@ -136,11 +136,13 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         public List<CartItem> GetCartItems(Guid cartId)
         {
             var cartItems = _context.CartItems.Include(x=>x.Cart)
-                .Include(y=>y.Combo)
+                .Include(y=>y.Combo)               
                 .ThenInclude(x=>x.ProductComboes)
                 .ThenInclude(x => x.Product)
                 .Include(z=>z.Product) 
-                .Where(ci => ci.CartID == cartId).ToList();
+                .Where(ci => ci.CartID == cartId
+                &&(ci.Combo.Status==Data.Enum.StatusCombo.Activity
+                ||ci.Product.Status==Data.Enum.StatusProduct.Activity)).ToList();
             if (cartItems != null)
             {
                 return cartItems;

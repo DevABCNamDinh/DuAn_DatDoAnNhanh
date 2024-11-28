@@ -40,6 +40,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(productCombo.ComboID);
+                combo.SetupPrice = null;
                 _myDBContext.Combos.Update(combo);
                 _myDBContext.SaveChanges();
             }
@@ -55,6 +56,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(comboID);
+                combo.SetupPrice= null;
                 _myDBContext.Combos.Update(combo);
                 _myDBContext.SaveChanges();
             }
@@ -93,6 +95,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(productCombo.ComboID);
+                combo.SetupPrice = null;
 
                 _myDBContext.Combos.Update(combo);
                 _myDBContext.SaveChanges();
