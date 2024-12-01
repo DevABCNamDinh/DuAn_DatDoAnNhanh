@@ -87,9 +87,7 @@
             <th>
                 Tên
             </th>
-            <th>
-               Loại
-            </th>          
+                
             <th>
                Giá
             </th>
@@ -105,7 +103,16 @@
                 <td><img @* class="card-img-top" *@ src="@item.Image" style="height: 100px;width:100px; object-fit: cover;"></td>
             <td>@item.PCName</td>          
             <td>
-                    @item.Price.ToString("N0") đ
+                    @if (item.Price == item.PriceEndow)
+                    {
+                        <p>@item.Price.ToString("N0") đ</p>
+                    }
+                    else
+                    {
+                        <p><del>@item.Price.ToString("N0")</del> đ</p>
+                        <p>@item.PriceEndow.ToString("N0") đ</p>
+
+                    }
             </td>           
             <td>
                @item.Quantity

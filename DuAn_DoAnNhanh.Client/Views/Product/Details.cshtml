@@ -12,7 +12,7 @@
         </div>
 
         <!-- Phần bên phải -->
-        <div class="col-lg-6 col-md-6 col-12">
+        <div class="col-lg-8 col-md-6 col-12">
              <form method="post" action="@Url.Action("AddToCart", "Cart")">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="quantity-controls d-flex align-items-center">
@@ -25,7 +25,8 @@
                 <button type="submit" class="btn-add-to-cart">Thêm vào giỏ hàng</button>
             </div>
             </form>
-            
+            @await Component.InvokeAsync("More")
+
         </div>
     </div>
 </div>
