@@ -1,68 +1,67 @@
-﻿<div class="container my-5">
+﻿@model DuAn_DoAnNhanh.Data.ViewModel.StatisticalViewModel
+
+<div class="container my-5">
     <div class="row g-4">
-        <!-- Total Income -->
+        <!-- Tổng tiền -->
         <div class="col-md-6 col-lg-3">
             <div class="card card-custom bg-primary-custom">
                 <h5>Tổng tiền</h5>
-                <h2 class="counter" data-target="579000">$ 0</h2>
-                
+                <h2 class="counter" data-target="@Model.TotalAmount"></h2>
             </div>
         </div>
 
-        <!-- Total Expenses -->
+        <!-- Đơn hàng hoàn thành -->
         <div class="col-md-6 col-lg-3">
             <div class="card card-custom bg-info-custom">
                 <h5>Đơn hàng hoàn thành</h5>
-                <h2 class="counter" data-target="70">0</h2>
-                
+                <h2 class="counter" data-target="@Model.CompletedBillCount">0</h2>
             </div>
         </div>
 
-        <!-- Cash on Hand -->
+        <!-- Đơn hàng chờ xác nhận -->
         <div class="col-md-6 col-lg-3">
             <div class="card card-custom bg-purple-custom">
                 <h5>Đơn hàng chờ xác nhận</h5>
-                <h2 class="counter" data-target="90">0</h2>
-                
+                <h2 class="counter" data-target="@Model.PendingBillCount">0</h2>
             </div>
         </div>
 
-        <!-- Net Profit Margin -->
+        <!-- Đơn hàng đang giao -->
         <div class="col-md-6 col-lg-3">
             <div class="card card-custom bg-success-custom">
                 <h5>Đơn hàng đang giao</h5>
-                <h2 class="counter" data-target="10">0</h2>
-               
+                <h2 class="counter" data-target="@Model.ShippingBillCount">0</h2>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const counters = document.querySelectorAll('.counter');
 
         counters.forEach(counter => {
             const updateCount = () => {
-                const target = +counter.getAttribute('data-target'); // Giá trị mục tiêu
-                let current = +counter.innerText.replace(/\D/g, ''); // Loại bỏ ký tự không phải số
+                const target = +counter.getAttribute('data-target');
+                let current = +counter.innerText.replace(/\D/g, '');
 
-                // Tính giá trị tăng dần (tùy thuộc target)
                 const increment = Math.ceil(target / 30);
 
                 if (current < target) {
-                    current += increment; // Tăng dần giá trị
+                    current += increment;
                     counter.innerText = `${current.toLocaleString()}`;
-                    setTimeout(updateCount, 30); // Gọi lại sau 30ms
+                    setTimeout(updateCount, 30);
                 } else {
-                    counter.innerText = `${target.toLocaleString()}`; // Đặt giá trị cuối cùng
+                    counter.innerText = `${target.toLocaleString()}`;
                 }
             };
 
-            updateCount(); // Gọi hàm khi tải trang
+            updateCount();
         });
     });
-
 </script>
+
 <style>
     .card-custom {
         color: white;
@@ -72,19 +71,18 @@
     }
 
     .bg-primary-custom {
-        background-color: #2b59c3;
+        background-color: #007bff;
     }
-    /* Total Income */
+
     .bg-info-custom {
-        background-color: #50c4f7;
+        background-color: #17a2b8;
     }
-    /* Total Expenses */
+
     .bg-purple-custom {
-        background-color: #9c59b6;
+        background-color: #6f42c1;
     }
-    /* Cash on Hand */
+
     .bg-success-custom {
-        background-color: #5dc983;
+        background-color: #28a745;
     }
-    /* Net Profit Margin */
 </style>

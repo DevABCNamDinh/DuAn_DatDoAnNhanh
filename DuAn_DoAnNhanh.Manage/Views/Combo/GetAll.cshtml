@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
 
+<div class="search-container mb-4">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm combo..." class="form-control" />
+</div>
 
 <p>
     <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
@@ -11,7 +14,6 @@
 <div id="comboModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-           
             <div class="modal-body">
                 <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
                 @await Component.InvokeAsync("ComboCreate")
@@ -28,10 +30,10 @@
 }
 else
 {
-    <div class="row">
+    <div class="row" id="comboList">
         @foreach (var combo in Model)
         {
-            <div class="col-md-4 col-sm-6 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4 combo-item">
                 <div class="card h-100 position-relative combo-card">
                     <!-- Nút "X" hiển thị khi hover -->
                     <a href="@Url.Action("Delete", "Combo", new { id = combo.Combo.ComboID })"
@@ -39,16 +41,16 @@ else
                        title="Xóa combo">
                         X
                     </a>
-                    
+
                     <img class="card-img-top" src="@combo.Combo.Image" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h4 class="card-title"><b>@combo.Combo.ComboName</b></h4>
                         @foreach (var item in combo.Products)
                         {
-                            <h5 class="card-title ">@item.Quantity @item.ProductName</h5>
+                            <h5 class="card-title">@item.Quantity @item.ProductName</h5>
                         }
-                        <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
-                        
+                        <h3 class="card-title" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
+
                         @Html.ActionLink("Xem chi tiết", "Details", new { id = combo.Combo.ComboID }, new { @class = "btn btn-primary" })
                     </div>
                 </div>
@@ -74,16 +76,11 @@ else
             $("#comboModal").modal('hide');
         });
     });
+    // Tìm kiếm combo
+    $("#searchInput").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $(".combo-item").filter(function () {
+            $(this).toggle($(this).find(".card-title b").text().toLowerCase().indexOf(value) > -1);
+        });
+    });
 </script>
-<!-- CSS cho nút "X" khi hover -->
-<style>
-    /* Ẩn nút "X" mặc định */
-    .delete-combo-btn {
-        display: none;
-    }
-
-    /* Hiển thị nút "X" khi di chuột vào combo-card */
-    .combo-card:hover .delete-combo-btn {
-        display: inline-block;
-    }
-</style>
