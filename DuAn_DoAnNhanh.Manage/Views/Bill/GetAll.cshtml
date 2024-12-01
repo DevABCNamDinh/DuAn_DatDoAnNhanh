@@ -28,7 +28,15 @@
                     @Html.DisplayFor(modelItem => item.User.Email)
                 </td>
                 <td>
-                    @item.TotalAmount.ToString("N0") đ
+                    @if (item.TotalAmount == item.TotalAmountEndow)
+                    {
+                        <p>@item.TotalAmount.ToString("N0") đ</p>
+                    }else{
+                        <p><del>@item.TotalAmount.ToString("N0")</del> đ</p>
+                        <p>@item.TotalAmountEndow.ToString("N0") đ</p>
+
+                    }
+                    
                 </td>
             <td>
                @item.BillDate

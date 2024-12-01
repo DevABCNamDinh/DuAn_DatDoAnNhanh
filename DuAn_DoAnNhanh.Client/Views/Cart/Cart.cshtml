@@ -175,7 +175,11 @@
                         }
                       
                         <!-- Nút mở modal -->
-                        <a id="openModalX" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#checkOutModal">Tiến hành thanh toán</a>
+                        @* <a id="openModalX" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#checkOutModal">Tiến hành thanh toán</a> *@
+                        @* <a method="post" action="@Url.Action("CheckOut", "Cart")" class="btn btn-primary btn-lg btn-block">Tiến hành thanh toán</a> *@
+                        <form method="post" action="@Url.Action("CheckOut", "Cart")" class="mt-3">
+                            <button type="submit" class="btn btn-primary btn-block">Tiến hành thanh toán</button>
+                        </form>
 
                         <form method="post" action="@Url.Action("ClearCart", "Cart")" class="mt-3">
                             <button type="submit" class="btn btn-warning btn-block">Xóa tất cả giỏ hàng</button>

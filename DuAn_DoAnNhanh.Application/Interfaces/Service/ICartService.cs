@@ -22,6 +22,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         void UpdateCartItem(Guid cartItemId, int quantity);
         void RemoveCartItem(Guid cartItemId);
         void ClearCart(Guid cartId);
+        void CheckOut(Guid cartId);
        //List<Data.ViewModel.CartItemViewModel> GetCartItemsWithDetails(Guid cartId);
        // IEnumerable<Implements.Service.CartItemViewModel> GetCartItemsWithDetails(Guid cartId);
     }
