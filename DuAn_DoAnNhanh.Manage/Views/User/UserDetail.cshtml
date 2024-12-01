@@ -1,0 +1,31 @@
+﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Bill>
+
+<h1>Danh sách hóa đơn</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên khách hàng</th>
+            <th>Ngày hóa đơn</th>
+            <th>Tổng số tiền</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bill in Model)
+        {
+            <tr>
+                <td>@bill.User.FullName</td>
+                <td>@bill.BillDate.ToString("dd/MM/yyyy")</td>
+                <td>@bill.TotalAmount</td>
+                <td>@bill.Status.ToString()</td>
+				<td>
+					<a asp-action="GetAllBill" asp-route-id="@bill.BillID">Chi tiết</a>
+				</td>
+            </tr>
+       
+        }
+    </tbody>
+</table>
+
+ 

@@ -1,0 +1,32 @@
+﻿
+
+ @model IEnumerable<DuAn_DoAnNhanh.Data.Entities.User> 
+
+
+<h1>Danh sách người dùng</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Họ và tên</th>
+            <th>Email</th>
+            <th>Lịch sử đơn hàng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+         
+                <td>
+                    <a asp-action="UserDetail" asp-route-id="@user.UserID">Chi tiết</a>
+                </td>
+               
+               
+            </tr>
+        }
+    </tbody>
+</table>
+
