@@ -31,6 +31,10 @@
     .combo-card:hover .delete-combo-btn {
         display: inline-block;
     }
+    input{
+        width: 1070px;
+        margin-right: 20px;
+    }
 </style>
 <!-- Script mở và đóng modal -->
 <script>
@@ -54,6 +58,9 @@
             $("#productModal").modal('hide');
         });
     });
+
+   
+    });
 </script>
 
 <!DOCTYPE html>
@@ -70,7 +77,8 @@
                 </div>
             </div>
         </form>
-
+     
+        <br />
 
 
         <!-- Nút mở modal tạo sản phẩm mới -->
@@ -91,7 +99,7 @@
             <div class="row">
                 @foreach (var product in Model)
                 {
-                    <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="col-md-4 col-sm-6 mb-4 ">
                         <div class="card h-100 position-relative combo-card">
                             <!-- Nút "X" hiển thị khi hover -->
                             <a href="@Url.Action("Delete", "Product", new { id = product.ProductID })"
@@ -143,5 +151,3 @@
     </article>
 </body>
 </html>
-
-

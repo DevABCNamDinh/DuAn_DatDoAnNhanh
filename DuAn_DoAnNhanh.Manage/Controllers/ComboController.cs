@@ -22,21 +22,44 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             _productService= productService;
             _comboDetailsService = comboDetailsService;
         }
-        public IActionResult GetAll()
+        //public IActionResult GetAll()
+        //{
+        //    // Lấy danh sách combo
+        //    var comboList = _comboService.GetAllCombo();
+
+        //    // Tạo danh sách ViewModel để chứa combo và sản phẩm của mỗi combo
+        //    var comboWithProductsList = comboList.Select(combo => new ComboWithProductsViewModel
+        //    {
+
+        //        Combo = combo,
+        //        Products = _comboDetailsService.listProductInCombo(combo.ComboID).ToList() // Giả sử bạn có dịch vụ _productService để lấy sản phẩm theo ComboID
+        //    }).ToList();
+
+        //    return View(comboWithProductsList);
+        //}
+
+
+        public IActionResult GetAll(string searchTerm = null)
         {
             // Lấy danh sách combo
             var comboList = _comboService.GetAllCombo();
 
+            // Nếu có từ khóa tìm kiếm, lọc danh sách combo
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                comboList = comboList.Where(combo => combo.ComboName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
             // Tạo danh sách ViewModel để chứa combo và sản phẩm của mỗi combo
             var comboWithProductsList = comboList.Select(combo => new ComboWithProductsViewModel
             {
-
                 Combo = combo,
-                Products = _comboDetailsService.listProductInCombo(combo.ComboID).ToList() // Giả sử bạn có dịch vụ _productService để lấy sản phẩm theo ComboID
+                Products = _comboDetailsService.listProductInCombo(combo.ComboID).ToList()
             }).ToList();
 
             return View(comboWithProductsList);
         }
+
         public IActionResult Create() { 
             return ViewComponent("ComboCreate");
         }
