@@ -15,18 +15,25 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var slides = new List<SlideModel>
+            {
+                new SlideModel { imgurl = "https://inan2h.vn/wp-content/uploads/2022/12/in-banner-quang-cao-do-an-10-1.jpg" },
+                new SlideModel { imgurl = "https://inan2h.vn/wp-content/uploads/2022/12/in-banner-quang-cao-do-an-11-1.jpg" },
+                new SlideModel { imgurl = "https://inan2h.vn/wp-content/uploads/2022/12/in-banner-quang-cao-do-an-7-1.jpg" }
+            };
+
+            return View(slides);
         }
 
-        public IActionResult Privacy()
+        public IActionResult OrderHome()
         {
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public class SlideModel
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            public string imgurl { get; set; }
         }
+
+
     }
 }

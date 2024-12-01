@@ -1,19 +1,25 @@
 ﻿@model DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel
 
 <div class="row">
-    <div class="mb-4 ">
 
-        <div class="card-body " style="display:flex;padding:0px;">
-            <div style=" border: 1px solid ;padding:10px; margin-right:10px">
-                    <h4 class="card-title">
-                      @Model.Combo.ComboName
-                    </h4>
-                    <!-- Ảnh hiển thị -->
-                    <img id="imagePreview" name="Image" class="card-img-top" src="@Model.Combo.Image" style="height: 350px; width:350px;">
-                    <br />
-                    <h3 class="card-title" style="color: red;margin-top:10px"><b>Tổng: @Model.Combo.Price.ToString("N0") đ</b></h3>
-            </div>
-            <div style="border: 1px solid; padding:10px ;width:100%">
+       
+            <div class="col-lg-4 col-md-6 col-12 mb-4">
+                <h4 class="card-title">
+                    @Model.Combo.ComboName
+                </h4>
+                <!-- Ảnh hiển thị -->
+                <img id="imagePreview" name="Image" class="card-img-top" src="@Model.Combo.Image" style="max-width:100%;height:auto">
+                <br />
+                @if (Model.Combo.SetupPrice == null)
+                {
+                <h3 class="card-title style=" style="color: red;"><b>@Model.Combo.Price.ToString("N0") đ</b></h3>
+                }
+                else
+                {
+                <h3 class="card-title style=" style="color: red;"><b><del>@Model.Combo.Price.ToString("N0")</del> đ</b></h3>
+                <h3 class="card-title style=" style="color: red;"><b>Tổng: @(Model.Combo.SetupPrice.HasValue ? Model.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                }
+                <hr/>
                 <h4><b>Chi tiết Combo</b></h4>
 
                 @if (Model.Products == null || !Model.Products.Any())
@@ -29,12 +35,12 @@
                         {
                             <div class="col-md-4 col-sm-6 mb-4">
                                 <div class="card h-100 position-relative combo-card">
-                                  
-                                    <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
+
+                                    <img class="card-img-top" src="@product.ImageUrl" style="height: 120px; object-fit: cover;">
                                     <div class="card-body">
-                                        <h6 class="card-title">@product.ProductName</h6>
-                                        <h5 class="card-title " style="color: red;"><b>Giá:@product.Price.ToString("N0") đ</b></h5>                
-                                        <h7>Số lượng: @product.Quantity</h7>                     
+                                        <h8 style="font-size:14px" class="card-title">@product.ProductName</h8>
+                                        <br />
+                                        <h9 style="font-size:12px">Số lượng: @product.Quantity</h9>
                                     </div>
                                 </div>
                             </div>
@@ -42,11 +48,75 @@
                     </div>
                 }
 
-
             </div>
 
+            <!-- Phần bên phải -->
+            <div class="col-lg-8 col-md-6 col-12">
+                <form method="post" action="@Url.Action("AddComboToCart", "Cart")">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="quantity-controls d-flex align-items-center">
+                            <label for="quantity" class="me-2">Số lượng:</label>
+                            <button type="button" class="btn-quantity btn-decrease">-</button>
+                            <input type="number" id="quantity" name="quantity" value="1" class="form-control mx-1">
+                            <button type="button" class="btn-quantity btn-increase">+</button>
+                            <input type="hidden" name="ComboID" value="@Model.Combo.ComboID" />
+                        </div>
+                        <button type="submit" class="btn-add-to-cart">Thêm vào giỏ hàng</button>
+                    </div>
+                </form>
+                 @await Component.InvokeAsync("More",new {comboID = @Model.Combo.ComboID})
 
-        </div>
+            </div>
+         
 
-    </div>
 </div>
+
+<style>
+    .quantity-controls input {
+        width: 70px;
+        text-align: center;
+    }
+
+    .btn-quantity {
+        background-color: #f8d7da;
+        border: none;
+        padding: 5px 10px;
+        color: #d9534f;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .btn-add-to-cart {
+        background-color: #d9534f;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+        .btn-add-to-cart:hover {
+            background-color: #c9302c;
+        }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const decreaseButton = document.querySelector(".btn-decrease");
+        const increaseButton = document.querySelector(".btn-increase");
+        const quantityInput = document.getElementById("quantity");
+
+        // Giảm số lượng
+        decreaseButton.addEventListener("click", function () {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        // Tăng số lượng
+        increaseButton.addEventListener("click", function () {
+            let currentValue = parseInt(quantityInput.value);
+            quantityInput.value = currentValue + 1;
+        });
+    });
+</script>

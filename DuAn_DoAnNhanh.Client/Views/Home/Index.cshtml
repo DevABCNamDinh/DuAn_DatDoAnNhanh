@@ -1,53 +1,87 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model List<DuAn_DoAnNhanh.Client.Controllers.HomeController.SlideModel>
+<style>
+    .carousel-item img {
+        width: 100%;
+        height: auto; /* Đảm bảo tỷ lệ ảnh */
+        max-height: 400px; /* Giới hạn chiều cao tối đa */
+        object-fit: cover; /* Cắt ảnh nếu cần để lấp đầy */
+    }
+</style>
 
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i"
+                    class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : null)" aria-label="Slide @(i + 1)"></button>
+        }
+    </div>
+    <div class="carousel-inner">
+        @foreach (var slide in Model)
+        {
+            <div class="carousel-item @(Model.IndexOf(slide) == 0 ? "active" : "")">
+                <img src="@slide.imgurl" class="d-block w-100" alt="Slide @(Model.IndexOf(slide) + 1)">
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao Diện Bán Đồ Ăn Nhanh</title>
-</head>
-<body>
-   @*  <header>
-        <h1>Nhà Hàng Đồ Ăn Nhanh</h1>
-        <p>Thực Đơn Ngon Miệng Đang Chờ Bạn!</p>
-    </header>
-    <nav>
-        <a href="#home">Trang Chủ</a>
-        <a href="#menu">Thực Đơn</a>
-        <a href="#contact">Liên Hệ</a>
-    </nav>
-    <div class="menu">
-        <div class="item">
-            <img src="burger.jpg" alt="Burger">
-            <h3>Burger Thịt Bò</h3>
-            <p>Giá: 50.000 VNĐ</p>
-            <button>Đặt Hàng</button>
+            </div>
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<div class="container my-4">
+    <h2 class="fw-bold">DANH MỤC MÓN ĂN</h2>
+    <hr>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <!-- Danh mục 1 -->
+        <div class="col">
+            <div class="card">
+                <img src="https://static.kfcvietnam.com.vn/images/category/lg/KHUYEN%20MAI.jpg?v=LEDZN3" style="height:200px" class="card-img-top" alt="Ưu Đãi">
+                <div class="card-body text-center">
+                <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#uudai"> Ưu Đãi &gt;</a>
+                </div>
+            </div>
         </div>
-        <div class="item">
-            <img src="fries.jpg" alt="Khoai tây chiên">
-            <h3>Khoai Tây Chiên</h3>
-            <p>Giá: 20.000 VNĐ</p>
-            <button>Đặt Hàng</button>
+      
+        <!-- Danh mục 2 -->
+        <div class="col">
+            <div class="card">
+                <img src="https://www.lotteria.vn/media/catalog/product/cache/400x400/2/2/222278_4.png.webp" style="height:200px" class="card-img-top" alt="Combo 1 Người">
+                <div class="card-body text-center">
+                    <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#sanpham"> Gà rán &gt;</a>                  
+                </div>
+            </div>
         </div>
-        <div class="item">
-            <img src="pizza.jpg" alt="Pizza">
-            <h3>Pizza Phô Mai</h3>
-            <p>Giá: 100.000 VNĐ</p>
-            <button>Đặt Hàng</button>
+        <!-- Danh mục 3 -->
+        <div class="col">
+            <div class="card">
+                <img src="https://www.lotteria.vn/media/catalog/product/cache/400x400/b/u/burger_bulgogi_4.png.webp" style="height:200px" class="card-img-top" alt="Combo 1 Người">
+                <div class="card-body text-center">
+                    <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#burger"> Burger &gt;</a>
+                </div>
+            </div>
         </div>
-        <div class="item">
-            <img src="drink.jpg" alt="Nước uống">
-            <h3>Nước Ngọt</h3>
-            <p>Giá: 15.000 VNĐ</p>
-            <button>Đặt Hàng</button>
+        <!-- Danh mục 4 -->
+        <div class="col">
+            <div class="card">
+                <img src="https://www.lotteria.vn/media/catalog/product/c/o/combo_update_bulgogi_1.jpg" style="height:200px" class="card-img-top" alt="Combo Nhóm">
+                <div class="card-body text-center">
+                    <a class="nav-link text-muted fw-bold fs-5 active" href="/Home/OrderHome#combo"> Combo &gt;</a>              
+                </div>
+            </div>
         </div>
-    </div> *@
-  @*   <footer>
-        <p>&copy; 2024 Nhà Hàng Đồ Ăn Nhanh. Tất cả quyền được bảo lưu.</p>
-    </footer> *@
-</body>
-</html>
+      
+      
+    </div>
+</div>
+<div class="container my-4">
+    <h2 class="fw-bold">CÓ THỂ BẠN THÍCH MÓN NÀY</h2>
+    <hr>
+            @await Component.InvokeAsync("Endow")
+    
+</div>

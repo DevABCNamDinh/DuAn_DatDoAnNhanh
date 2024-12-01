@@ -4,6 +4,7 @@ using DuAn_DoAnNhanh.Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DuAn_DoAnNhanh.Data.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    partial class MyDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241120093141_db")]
+    partial class db
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,9 +64,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("TotalAmountEndow")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<Guid>("UserID")
                         .HasColumnType("uniqueidentifier");
 
@@ -92,9 +92,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("PriceEndow")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
@@ -136,10 +133,10 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<Guid>("CartID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ComboID")
+                    b.Property<Guid>("ComboID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProductID")
+                    b.Property<Guid>("ProductID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
@@ -177,9 +174,6 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("SetupPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
@@ -330,11 +324,15 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.Combo", "Combo")
                         .WithMany("CartItemes")
-                        .HasForeignKey("ComboID");
+                        .HasForeignKey("ComboID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.Product", "Product")
                         .WithMany("CartItemes")
-                        .HasForeignKey("ProductID");
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cart");
 

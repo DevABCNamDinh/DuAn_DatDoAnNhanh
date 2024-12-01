@@ -40,6 +40,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(productCombo.ComboID);
+                combo.SetupPrice = null;
                 _myDBContext.Combos.Update(combo);
                 _myDBContext.SaveChanges();
             }
@@ -47,14 +48,15 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         public void DeleteComboDetailsByproductIDcomboID(Guid productID, Guid comboID)
         {
             var productComboDelete = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productID && x.ComboID == comboID && x.Status == StatusCombo.Activity);
-            productComboDelete.Status = StatusCombo.InActivity;
-            _myDBContext.Update(productComboDelete);
+           
+            _myDBContext.Remove(productComboDelete);
             _myDBContext.SaveChanges();
             var combo = _myDBContext.Combos.Find(comboID);
             if (combo != null)
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(comboID);
+                combo.SetupPrice= null;
                 _myDBContext.Combos.Update(combo);
                 _myDBContext.SaveChanges();
             }
@@ -85,7 +87,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         {
             var productComboEdit = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productCombo.ProductID && x.ComboID == productCombo.ComboID && x.Status == StatusCombo.Activity);
             productComboEdit.Quantity = productCombo.Quantity;
-            _genericRepository.update(productCombo);
+            _genericRepository.update(productComboEdit);
             _genericRepository.save();
             var combo = _myDBContext.Combos.Find(productCombo.ComboID);
 
@@ -93,6 +95,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(productCombo.ComboID);
+                combo.SetupPrice = null;
 
                 _myDBContext.Combos.Update(combo);
                 _myDBContext.SaveChanges();

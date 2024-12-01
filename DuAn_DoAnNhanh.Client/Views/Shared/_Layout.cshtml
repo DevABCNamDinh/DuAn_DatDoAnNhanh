@@ -15,33 +15,36 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DuAn_DoAnNhanh.Client</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+            <div class="container">
+                <!-- Logo hoặc tiêu đề -->
+                <a class="navbar-brand" href="#">ĐẶT ĐỒ ĂN NHANH</a>
+
+                <!-- Nút ba gạch ngang -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Menu -->
+                <div class="collapse navbar-collapse fs-5" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
-                   
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
+                            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="OrderHome">Đặt hàng</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Combo" asp-action="GetAll">Combo</a>
-                        </li>
-                        
+                       
                     </ul>
+                    <!-- Nút Login -->
+                    
                     <ul class="navbar-nav navbar-right">
                         @{
                             var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
-                          
+
                             var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName");
-                           
+
                         }
                         @if (userId != null)
                         {
@@ -51,30 +54,39 @@
 
                             <li class="nav-item">
                                 <a href="@Url.Action("Cart", "Cart")">
-                                    <span class="nav-link navbar-text">Cart (@cartItemCount)</span>
+                                    <span class="nav-link navbar-text"><img src="https://www.lotteria.vn/grs-static/images/icon-cart.svg" alt="Alternate Text" /> (@cartItemCount)</span>
+                                    
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a >
+                                    <span class="nav-link navbar-text"><img src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg" alt="Alternate Text" /></span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <span class="nav-link navbar-text">Hello, @userName</span>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-danger" asp-controller="User" asp-action="Logout">Logout</a>
+                                <a class="btn btn-warning text-white rounded-pill" asp-controller="User" asp-action="Logout">Logout</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a id="openModal" class="btn btn-primary" >
-                                        Đăng nhập/Đăng ký
-                                 </a>                       
+                                <a id="openModal" class="btn btn-danger text-white rounded-pill">
+                                    Đăng nhập/Đăng ký
+                                </a>
                             </li>
-                          
-                         }
+
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
+     
     </header>
+   
+
     <div class="container">
         <main role="main" class="pb-3">
             <div id="productModal" class="modal" tabindex="-1" role="dialog">
@@ -88,6 +100,9 @@
                     </div>
                 </div>
             </div>
+            <marquee behavior="scroll" direction="left" style="color: red; font-size: 20px; font-weight: bold;padding:10px">
+                Kính chào quý khách! Chúc quý khách ngày mới tốt lành.
+            </marquee>
             @RenderBody()
         </main>
     </div>
@@ -112,3 +127,41 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function () {
+        // Kiểm tra nếu TempData yêu cầu mở modal
+    @if (TempData["OpenSignInModal"] != null && (bool)TempData["OpenSignInModal"] == true)
+    {
+        <text>
+                $("#productModal").modal('show');
+        </text>
+    }
+        });
+</script>
+@if (TempData["Message"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            var message = "@TempData["Message"]";
+            // Hiển thị thông báo thành công ở góc trên bên phải
+            var alertBox = $('<div class="alert alert-success position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
+            $('body').append(alertBox);
+
+            // Tự động ẩn thông báo sau 1,5 giây
+            setTimeout(function () {
+                alertBox.fadeOut();
+            }, 1500);
+        });
+    </script>
+}
+<style>
+    .alert {
+        opacity: 1;
+        transition: opacity 1s ease-in-out;
+    }
+
+    main {
+        margin-top: 70px; /* Điều chỉnh khoảng cách tùy theo chiều cao của menu */
+    }
+
+</style>

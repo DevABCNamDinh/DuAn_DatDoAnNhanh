@@ -41,7 +41,7 @@
             </div>
         </div>
     </div>
-    <br/>
+    <br />
     @if (status == 0)
     {
         <form asp-action="UpdateStatus" method="post">
@@ -77,49 +77,43 @@
         </form>
     }
 </div>
-<br/>
+<br />
 <table class="table">
     <thead class="table-dark">
         <tr>
             <th>
-               
+
             </th>
             <th>
                 Tên
             </th>
-                
             <th>
-               Giá
+                Loại
+            </th>
+            <th>
+                Giá
             </th>
             <th>
                 Số lượng
             </th>
-          
+
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.BillDetails) {
-        <tr>
+        @foreach (var item in Model.BillDetails)
+        {
+            <tr>
                 <td><img @* class="card-img-top" *@ src="@item.Image" style="height: 100px;width:100px; object-fit: cover;"></td>
-            <td>@item.PCName</td>          
-            <td>
-                    @if (item.Price == item.PriceEndow)
-                    {
-                        <p>@item.Price.ToString("N0") đ</p>
-                    }
-                    else
-                    {
-                        <p><del>@item.Price.ToString("N0")</del> đ</p>
-                        <p>@item.PriceEndow.ToString("N0") đ</p>
+                <td>@item.PCName</td>
+                <td>
+                    @item.Price.ToString("N0") đ
+                </td>
+                <td>
+                    @item.Quantity
+                </td>
 
-                    }
-            </td>           
-            <td>
-               @item.Quantity
-            </td>
-        
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>
 <style>

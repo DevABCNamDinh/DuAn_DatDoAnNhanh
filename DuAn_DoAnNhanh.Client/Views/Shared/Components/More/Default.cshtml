@@ -1,36 +1,39 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
 
 
-<h1>Danh sách Combo</h1>
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-warning" role="alert">
-        Combo trống.
-    </div>
-}
-else
-{
-    <div class="row">
+
+<br />
+<hr/>
+<hr/>
+<div style="border-left: 2px solid;margin:20px" class="row">
+    <h3>Lựa chọn khác</h3>
         @foreach (var combo in Model)
         {
-            <div class="col-md-3 col-sm-6 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 position-relative combo-card">
 
                     <!-- Liên kết đến chi tiết combo -->
                     <a href="@Url.Action("Details", "Combo", new { id = combo.Combo.ComboID })">
                         <img class="card-img-top" src="@combo.Combo.Image" style="height: 200px; object-fit: cover;">
                     </a>
-                   
+
                     <div class="card-body">
-                       
+
                         <h3 class="card-title">@combo.Combo.ComboName</h3>
 
                         @foreach (var item in combo.Products)
                         {
                             <p class="card-title ">@item.Quantity @item.ProductName</p>
                         }
-                        <p class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></p>
-                        
+                        @if (combo.Combo.SetupPrice == null)
+                        {
+                            <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
+                        }
+                        else
+                        {
+                            <p class="card-title style=" style="color: red;"><b><del>@combo.Combo.Price.ToString("N0")</del> đ</b></p>
+                            <h3 class="card-title style=" style="color: red;"><b>@(combo.Combo.SetupPrice.HasValue ? combo.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                        }
                         <form method="post" action="@Url.Action("AddComboToCart", "Cart")" class="d-inline">
                             <input type="hidden" name="ComboId" value="@combo.Combo.ComboID" />
                             <input type="hidden" name="quantity" value="1" />
@@ -39,10 +42,10 @@ else
                             </button>
                         </form>
 
-                       
+
                     </div>
                 </div>
             </div>
         }
     </div>
-}
+

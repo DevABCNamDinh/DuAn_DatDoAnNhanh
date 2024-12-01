@@ -1,27 +1,8 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Product>
-
-
-
-@{
-    ViewData["Title"] = "Danh sách sản phẩm";
-}
-
-
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-</head>
-<body>
-    <div class="container">
-
-   
-    <h1>@ViewData["Title"]</h1>
-    <div class="row">
-        @foreach (var product in Model)
-        {
+<br />
+        <div class="row">
+            @foreach (var product in Model)
+            {
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="card h-100 position-relative combo-card">
 
@@ -30,15 +11,15 @@
                             <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
                         </a>
 
-                         <div class="card-body">
+                        <div class="card-body">
                             <h3 class="card-title">@product.ProductName</h3>
-                            <p class="card-title style=" style="color: red;"><b>@product.Price.ToString("N0") đ</b></p>
-                        @*     <a method="post" href="@Url.Action("AddToCart", "Cart", new { ProductId = product.ProductID  , quantity = 1  })"
-                               class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn"
-                               style="padding-right:10px;padding-left:10px"
-                               title="Thêm sản phẩm">
-                                +
-                            </a> *@
+                            <h3 class="card-title style=" style="color: red;"><b>@product.Price.ToString("N0") đ</b></h3>
+                            @*     <a method="post" href="@Url.Action("AddToCart", "Cart", new { ProductId = product.ProductID  , quantity = 1  })"
+                        class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn"
+                        style="padding-right:10px;padding-left:10px"
+                        title="Thêm sản phẩm">
+                        +
+                        </a> *@
                             <form method="post" action="@Url.Action("AddToCart", "Cart")" class="d-inline">
                                 <input type="hidden" name="ProductId" value="@product.ProductID" />
                                 <input type="hidden" name="quantity" value="1" />
@@ -48,14 +29,13 @@
                             </form>
 
 
-                        </div> 
+                        </div>
 
                     </div>
                 </div>
-           
-        }
-    </div>
-    </div>
-</body>
-</html>
+
+            }
+        </div>
+
+
 

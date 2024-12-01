@@ -3,12 +3,20 @@ using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
+using DuAn_DoAnNhanh.Data.ViewModel;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.FileProviders;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian tồn tại của session
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; // Bắt buộc cookie session hoạt động
+});
 
 builder.Services.AddDbContext<MyDBContext>(options =>
 {
@@ -20,12 +28,14 @@ builder.Services.AddSingleton<IDesignTimeDbContextFactory<MyDBContext>, MyDbCont
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IComboService, ComboSevice>();
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
 builder.Services.AddScoped<IBillService, BillService>();
+builder.Services.AddScoped<BillViewModel>();
 
 
 
@@ -42,7 +52,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseSession();
 
 // Cấu hình để truy cập thư mục Images trong DuAn_DoAnNhanh.Application
 var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");

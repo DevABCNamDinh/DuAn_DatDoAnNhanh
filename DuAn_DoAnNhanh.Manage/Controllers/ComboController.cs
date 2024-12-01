@@ -152,8 +152,9 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             }
 
             var comboEdit = _comboService.GetComboById(combo.ComboID);    
-                comboEdit.Image = combo.Image;   
+            comboEdit.Image = combo.Image;   
             comboEdit.ComboName= combo.ComboName;
+            comboEdit.SetupPrice = combo.SetupPrice;
             _comboService.UpdateCombo(comboEdit);
             return RedirectToAction("Details", new {id =combo.ComboID});
             //return ViewComponent("ComboDetails", new { comboID =combo.ComboID});

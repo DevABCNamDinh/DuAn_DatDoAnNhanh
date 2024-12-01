@@ -16,6 +16,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
 
         public int Quantity { get; set; }
         public decimal Price { get; set; }
+        public decimal PriceEndow { get; set; }
+
         public StatusOrder Status { get; set; }
 
         public virtual Bill Order { get; set; }

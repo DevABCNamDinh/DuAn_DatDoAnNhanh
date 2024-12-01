@@ -16,6 +16,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public DateTime BillDate { get; set; }
         public StatusOrder Status { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal TotalAmountEndow { get; set; }
+
         public virtual User User { get; set; }
         public virtual List<BillDetails> BillDetails { get; set; }
 

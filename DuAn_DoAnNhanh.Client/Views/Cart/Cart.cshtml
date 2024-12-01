@@ -1,93 +1,198 @@
 ﻿ @model IEnumerable<DuAn_DoAnNhanh.Data.Entities.CartItem> 
 @{
     decimal totalCartPrice = 0;
+    decimal totalCartPriceEndow = 0;
+
 }
+<!-- Modal -->
+<div id="checkOutModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="checkOutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">         
+            <div class="modal-body">
+                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                @await Component.InvokeAsync("CheckOut")
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container mt-5">
     <h2 class="mb-4">Giỏ hàng của bạn</h2>
+ 
     @if (!Model.Any())
     {
         <div class="alert alert-info">
             Giỏ hàng của bạn trống.
-            <a href="@Url.Action("Index", "Product")">Quay lại mua sắm</a>
+            <a href="@Url.Action("OrderHome", "Home")">Quay lại mua sắm</a>
         </div>
     }
     else
     {
+
         <div class="row">
             <div class="col-lg-8">
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Image</th>
-                          
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
+                                <th></th>
+                                <th>Tên sản phẩm</th>                   
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
                              
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                var totalItemPrice = item.Product.Price * item.Quantity;
-                                totalCartPrice += totalItemPrice;
+                                @if (item.Combo == null && item.Product != null)
+                                {
+                                    var totalItemPrice = item.Product.Price * item.Quantity;
+                                    totalCartPrice += totalItemPrice;
+                                    totalCartPriceEndow += totalItemPrice;
 
-                                <tr>
-                                    <td style="width: 15%;">
-                                        <img src="@item.Product.ImageUrl"  class="img-fluid" style="max-height: 100px;" />
-                                    </td>
-                                  
-                                    <td style="vertical-align: middle;">
-                                        @item.Product.Price.ToString("C")
-                                    </td>
-                                    <td style="vertical-align: middle;">
-                                        <form method="post" action="@Url.Action("UpdateCartItem", "Cart", new { cartItemId = item.CartItemID, quantity = item.Quantity })" class="d-inline">
-                                            <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control d-inline w-auto" />
-                                            @* <button type="submit" class="btn btn-sm btn-secondary">Update</button> *@
-                                        </form>
-                                    </td>
-                                    <td style="vertical-align: middle;">
-                                        @totalItemPrice.ToString("C")
-                                    </td>
-                                    <td style="vertical-align: middle;">
-                                        <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
-                                        </form>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td style="width: 15%;">
+                                            <img src="@item.Product.ImageUrl" class="img-fluid" style="max-height: 100px;" />
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            @item.Product.ProductName
+                                        </td>
+                                        <td style="vertical-align: middle;">
+
+                                            @item.Product.Price.ToString("N0") đ
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            <form method="post" action="@Url.Action("UpdateCartItem", "Cart", new { cartItemId = item.CartItemID, quantity = item.Quantity })" class="d-inline">
+                                                <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control d-inline " style="width:70px" />
+                                                 <button type="submit" class="btn btn-sm btn-secondary">Lưu</button> 
+                                            </form>
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            @totalItemPrice.ToString("N0") đ
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+
+                                @if (item.Combo != null && item.Product == null)
+                                {
+                                    
+                                    decimal totalItemPrice;
+                                    decimal totalItemPriceEndow=0;
+
+
+                                    @if (item.Combo.SetupPrice.HasValue)
+                                    {
+                                        totalItemPriceEndow = item.Combo.SetupPrice.Value * item.Quantity;
+                                        totalCartPriceEndow += totalItemPriceEndow;
+                                        totalItemPrice = item.Combo.Price * item.Quantity;
+                                        totalCartPrice += totalItemPrice;
+                                        
+                                    }
+                                    else
+                                    {
+                                        totalItemPrice = item.Combo.Price * item.Quantity;
+                                        totalCartPrice += totalItemPrice;
+                                        totalCartPriceEndow += totalItemPrice;                                    
+                                    }
+                                    <tr>
+                                        <td style="width: 15%;">
+                                            <img src="@item.Combo.Image" class="img-fluid" style="max-height: 100px;" />
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            @item.Combo.ComboName
+                                            <br />
+                                            @foreach (var x in @item.Combo.ProductComboes)
+                                            {
+                                                <p style="font-size:12px; margin:0px">@x.Quantity @x.Product.ProductName</p>
+                                            }
+                                            
+                                            
+                                            
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            @if (@item.Combo.SetupPrice == null)
+                                            {
+                                                <p class="card-title">@item.Combo.Price.ToString("N0") đ</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="card-title style=" ><del>@item.Combo.Price.ToString("N0")</del> đ</p>
+                                                <p class="card-title style=" >@(item.Combo.SetupPrice.HasValue ? item.Combo.SetupPrice.Value.ToString("N0") : "0") đ</p>
+                                            }
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            <form method="post" action="@Url.Action("UpdateCartItem", "Cart", new { cartItemId = item.CartItemID, quantity = item.Quantity })" class="d-inline">
+                                                <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control d-inline " style="width:70px"/>
+                                                <button type="submit" class="btn btn-sm btn-secondary">Lưu</button> 
+                                            </form>
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            @if (@item.Combo.SetupPrice == null)
+                                            {
+                                                <p class="card-title">@totalItemPrice.ToString("N0") đ</p>
+                                            }
+                                            else
+                                            {
+                                                <p class="card-title"><del>@totalItemPrice.ToString("N0")</del> đ</p>
+                                                <p class="card-title">@totalItemPriceEndow.ToString("N0") đ</p>
+
+                                               
+
+                                            }
+                                     
+                                        </td>
+                                        <td style="vertical-align: middle;">
+                                            <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>
                 </div>
             </div>
-           @*  <div class="col-lg-4">
+            <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Order Summary</h4>
-                        <p class="card-text">Items: @Model.Sum(item => item.Quantity)</p>
-                        <p class="card-text">Total: @totalCartPrice.ToString("C")</p>
-                        <a href="@Url.Action("Checkout", "Order")" class="btn btn-primary btn-lg btn-block">Proceed to Checkout</a>
+                        <h4 class="card-title">Tóm tắt đơn hàng</h4>
+                        <p class="card-text">Mặt hàng: @Model.Sum(item => item.Quantity)</p>
+                        @if (totalCartPriceEndow == totalCartPrice)
+                        {
+                            <p class="card-text">Tổng: @totalCartPrice.ToString("N0") đ</p>
+                        }else{
+                            <p class="card-title style="><del>@totalCartPrice.ToString("N0")</del> đ</p>
+                            <p class="card-title style=">Tổng: @totalCartPriceEndow.ToString("N0") đ</p>
+
+                        }
+                      
+                        <!-- Nút mở modal -->
+                        @* <a id="openModalX" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#checkOutModal">Tiến hành thanh toán</a> *@
+                        @* <a method="post" action="@Url.Action("CheckOut", "Cart")" class="btn btn-primary btn-lg btn-block">Tiến hành thanh toán</a> *@
+                        <form method="post" action="@Url.Action("CheckOut", "Cart")" class="mt-3">
+                            <button type="submit" class="btn btn-primary btn-block">Tiến hành thanh toán</button>
+                        </form>
+
                         <form method="post" action="@Url.Action("ClearCart", "Cart")" class="mt-3">
-                            <button type="submit" class="btn btn-warning btn-block">Clear Cart</button>
+                            <button type="submit" class="btn btn-warning btn-block">Xóa tất cả giỏ hàng</button>
                         </form>
                     </div>
                 </div>
-            </div> *@
+            </div>
         </div>
     }
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["Message"]
-        </div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
-    }
+   
 
     </div>
+
+<!-- Gắn jQuery và Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>

@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
 
 
-<h1>Danh sách Combo</h1>
+<br/>
 @if (Model == null || !Model.Any())
 {
     <div class="alert alert-warning" role="alert">
-        Combo trống.
+        Khuyến mãi trống.
     </div>
 }
 else
@@ -20,17 +20,24 @@ else
                     <a href="@Url.Action("Details", "Combo", new { id = combo.Combo.ComboID })">
                         <img class="card-img-top" src="@combo.Combo.Image" style="height: 200px; object-fit: cover;">
                     </a>
-                   
+
                     <div class="card-body">
-                       
+
                         <h3 class="card-title">@combo.Combo.ComboName</h3>
 
                         @foreach (var item in combo.Products)
                         {
                             <p class="card-title ">@item.Quantity @item.ProductName</p>
+                        }                
+                        @if (combo.Combo.SetupPrice == null)
+                        {
+                            <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
                         }
-                        <p class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></p>
-                        
+                        else
+                        {
+                            <p class="card-title style=" style="color: red;"><b><del>@combo.Combo.Price.ToString("N0")</del> đ</b></p>
+                            <h3 class="card-title style=" style="color: red;"><b>@(combo.Combo.SetupPrice.HasValue ? combo.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                        }
                         <form method="post" action="@Url.Action("AddComboToCart", "Cart")" class="d-inline">
                             <input type="hidden" name="ComboId" value="@combo.Combo.ComboID" />
                             <input type="hidden" name="quantity" value="1" />
@@ -39,7 +46,7 @@ else
                             </button>
                         </form>
 
-                       
+
                     </div>
                 </div>
             </div>
