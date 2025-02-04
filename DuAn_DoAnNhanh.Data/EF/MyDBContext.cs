@@ -45,6 +45,8 @@ namespace DuAn_DoAnNhanh.Data.EF
         public DbSet<ProductCombo> productCombos { get; set; }
         public DbSet<Address> addresses { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Store> Stores { get; set; }
+
 
 
     }

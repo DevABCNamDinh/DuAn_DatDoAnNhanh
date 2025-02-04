@@ -1,0 +1,132 @@
+﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Bill>
+@using DuAn_DoAnNhanh.Data.Enum
+@{
+    var quantity = Model.Count();
+    var pendingQuantity = Model.Where(x => x.Status == StatusOrder.Pending).Count();
+    var confirmedQuantity = Model.Where(x => x.Status == StatusOrder.Confirmed).Count();
+    var shippingQuantity = Model.Where(x => x.Status == StatusOrder.Shipping).Count();
+    var completedQuantity = Model.Where(x => x.Status == StatusOrder.Completed).Count();
+    var cancelledQuantity = Model.Where(x => x.Status == StatusOrder.Cancelled).Count();
+
+}
+<div class="container my-3">
+    <div class="mb-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link " asp-action="History">Tất cả@* (@quantity) *@</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("History", "User",new { status = StatusOrder.Pending })">Chờ xác nhận@* (@pendingQuantity) *@</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("History", "User",new { status = StatusOrder.Confirmed })">Đã xác nhận@* (@confirmedQuantity) *@</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("History", "User",new { status = StatusOrder.Shipping })">Đang giao hàng@* (@shippingQuantity) *@</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("History", "User",new { status = StatusOrder.Completed })">Hoàn thành@* (@completedQuantity) *@</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("History", "User",new { status = StatusOrder.Cancelled })">Đã hủy@* (@cancelledQuantity) *@</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Trả hàng/Hoàn tiền</a>
+            </li>
+        </ul>
+    </div>
+
+    @foreach (var bill in Model)
+    {
+
+        <!-- Order Item -->
+        <div class="card mb-3 shadow-sm">
+            <div class="row g-0">
+                <div class="col-md-12 col-sm-12">
+                    @{
+                        string cssClass = bill.Status switch
+                        {
+                            StatusOrder.Pending => "text-warning",    // Màu vàng
+                            StatusOrder.Confirmed => "text-primary", // Màu xanh
+                            StatusOrder.Shipping => "text-info",     // Màu xanh nhạt
+                            StatusOrder.Completed => "text-success", // Màu xanh lá
+                            StatusOrder.Cancelled => "text-danger",  // Màu đỏ
+                            _ => "text-dark"                         // Mặc định
+                        };
+                        string statusText = bill.Status switch
+                        {
+                            StatusOrder.Pending => "Chờ xác nhận",
+                            StatusOrder.Confirmed => "Đã xác nhận",
+                            StatusOrder.Shipping => "Đang giao hàng",
+                            StatusOrder.Completed => "Hoàn thành",
+                            StatusOrder.Cancelled => "Đã hủy",
+                            _ => "Không xác định"
+                        };
+                    }
+                    <h5 class="card-text text-end @cssClass m-2">@statusText</h5>
+                    <hr style="margin:0"/>
+                    @foreach (var billDetails in bill.BillDetails)
+                    {
+                        <div class="row">
+                            <div class="card-body col-md-2 col-sm-2">
+                                <img src="@billDetails.Image" class="img-fluid rounded-start" alt="Product Image">
+                            </div>
+                            <div class="row card-body col-md-10 col-sm-10">
+                                <div class="col-md-9 col-sm-9">
+                                    <h5 class="card-title">@billDetails.PCName</h5>
+                                    <p>X @billDetails.Quantity</p>
+                                </div>
+                                <div class="col-md-3 col-sm-3" >
+                                    <h5 class="card-title text-end " >
+                                        @if (billDetails.PriceEndow == billDetails.Price)
+                                        {
+                                            <p style="margin-right:10px;color:red">@billDetails.Price.ToString("N0") đ</p>
+                                        }
+                                        else
+                                        {
+                                            <p style="margin-right:10px"><del>@billDetails.Price.ToString("N0")</del> đ</p>
+                                            <p style="margin-right:10px; color:red">@billDetails.PriceEndow.ToString("N0") đ</p>
+
+                                        }
+                                    </h5>
+                                </div>
+                                
+                            </div>
+                        </div>   
+                        <hr style="margin:0"/>
+                    }
+                </div>           
+            </div>
+            
+            <div class="col-md-12 col-sm-12">
+                <div class="card-body text-end">
+                    
+                    <h5 class="card-text">
+                        Thành tiền:
+                        @if (bill.TotalAmount == bill.TotalAmountEndow)
+                        {
+                            <p style="color:red">@bill.TotalAmount.ToString("N0") đ</p>
+                        }
+                        else
+                        {
+                            <p style="margin-bottom:0"><del>@bill.TotalAmount.ToString("N0")</del> đ</p>
+                            <p style="color:red">@bill.TotalAmountEndow.ToString("N0") đ</p>
+
+                        }
+                    </h5>
+                 
+                   
+                    <button class="btn btn-primary btn-sm">Liên Hệ Người Bán</button>
+                    @if (bill.Status == StatusOrder.Pending)//chờ xác nhận
+                    {
+                        <form asp-action="UpdateStatus" method="post">
+                            <input type="hidden" name="billId" value="bill.BillID" />
+                            <input type="hidden" name="status" value="4" />
+                            <button type="submit" class="btn btn-danger btn-sm">Hủy Đơn Hàng</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

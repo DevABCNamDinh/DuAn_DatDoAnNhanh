@@ -174,8 +174,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             }
 
             var listBillDetails = _billDetailsRepository.GetAll().Where(x=>x.BillID==bill.BillID);
-            decimal TotalAmount = listBillDetails.Sum(x => x.Price);
-            decimal TotalAmountEndow = listBillDetails.Sum(x => x.PriceEndow);
+            decimal TotalAmount = listBillDetails.Sum(x => x.Price*x.Quantity);
+            decimal TotalAmountEndow = listBillDetails.Sum(x => x.PriceEndow * x.Quantity);
             var billUpdate = _billRepository.GetById(bill.BillID);
             bill.TotalAmount= TotalAmount;
             bill.TotalAmountEndow= TotalAmountEndow;

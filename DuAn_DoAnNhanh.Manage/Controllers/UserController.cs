@@ -6,6 +6,7 @@ using DuAn_DoAnNhanh.Data.ViewModel;
 using DuAn_DoAnNhanh.Manage.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {
@@ -35,7 +36,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             var billList = _dbContext.Bill.Where(x=>x.UserID == id).Include(x=>x.User).ToList();
 
 
-            return View(billList);
+            return RedirectToAction("GetAll", "Bill", new {userId=id});
 
 
         }

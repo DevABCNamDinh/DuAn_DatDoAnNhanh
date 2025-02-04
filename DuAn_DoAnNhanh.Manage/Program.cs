@@ -36,6 +36,7 @@ builder.Services.AddScoped<IComboService, ComboSevice>();
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
 builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<BillViewModel>();
+builder.Services.AddHttpClient(); // Thêm dòng này để sử dụng HttpClient
 
 
 

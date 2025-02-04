@@ -59,7 +59,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a >
+                                <a href="@Url.Action("History", "User")">
                                     <span class="nav-link navbar-text"><img src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg" alt="Alternate Text" /></span>
                                 </a>
                             </li>
@@ -103,7 +103,30 @@
             <marquee behavior="scroll" direction="left" style="color: red; font-size: 20px; font-weight: bold;padding:10px">
                 Kính chào quý khách! Chúc quý khách ngày mới tốt lành.
             </marquee>
-            @RenderBody()
+            <div class="container-fluid mt-3">
+                <div class="row">
+                    @if (ViewBag.ShowSidebar == true)
+                    {
+                        <div class="col-md-3 sidebar bg-light">
+                            <!-- Thanh menu dọc -->
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <a href="@Url.Action("Information", "User")">Thông tin tài khoản</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="@Url.Action("Address", "User")">Địa chỉ</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="@Url.Action("History", "User")">Đơn mua</a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    <div class="col @((ViewBag.ShowSidebar == true) ? "col-md-9" : "col-12") main-content">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
