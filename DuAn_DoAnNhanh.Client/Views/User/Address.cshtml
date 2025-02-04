@@ -1,0 +1,84 @@
+﻿@using DuAn_DoAnNhanh.Data.Enum
+@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Address>
+
+<div class="shadow p-3 mb-5">
+    <div class="row">
+        <div class="mb-3 mt-3 col-md-6">
+            <h5>Địa chỉ của tôi</h5>
+        </div>
+        <!-- Nút mở modal tạo sản phẩm mới -->
+        <div class="mb-3 mt-3 col-md-6 text-end">
+            <p>
+                <a id="openModal1" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
+                    Thêm địa chỉ
+                </a>
+            </p>
+        </div>
+    </div>
+    @if (Model == null || !Model.Any())
+    {
+        <hr/>
+        <div class="alert alert-warning" role="alert">
+            Combo trống.
+        </div>
+    }
+    else
+    {
+        foreach (var item in Model)
+        {
+            <hr />
+            <div class="row">
+                <div class="col-md-9">                   
+                    <h5>@item.FullName |@item.NumberPhone</h5>
+                    <p>@item.SpecificAddress</p>
+                    <p>@item.Ward, @item.District, @item.Province</p>
+                    @if (item.AddressType == AddressType.Default)
+                    {
+                        <p>Mặc định</p>
+                    }
+                </div>
+                <div class="col-md-3 text-end">
+                    <button>Cập nhật</button>
+                    @if (item.AddressType == AddressType.Normal)
+                    {
+                        <form asp-action="UpdateAddressType" asp-controller="User" method="post">
+                            <input type="hidden" name="AddressType" value="@AddressType.Default"></input>
+                            <input type="hidden" name="AddressID" value="@item.AddressID"></input>
+                            <button type="submit">Thiết lập mặc định</button>
+                        </form>
+                    }
+                    
+                </div>
+            </div>
+            
+            
+            
+        }
+    }
+</div>
+<div id="addressModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                @await Component.InvokeAsync("AddAddress")
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thêm script cho jQuery và Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Khi nhấn nút mở modal
+        $("#openModal1").click(function () {
+            $("#addressModal").modal('show');
+        });   
+        // Khi nhấn nút đóng modal
+        $(".close").click(function () {
+            $("#addressModal").modal('hide');
+        });
+    });
+</script>

@@ -24,10 +24,10 @@
                         <div class="group">
                             <button type="submit" class="btn btn-primary">Đăng nhập</button>
                         </div>
-                        @if (TempData["Error"] != null)
+                        @if (TempData["ErrorPassword"] != null)
                         {
                             <div class="alert alert-danger">
-                                @TempData["Error"]
+                                @TempData["ErrorPassword"]
                             </div>
                         }
                     </form>

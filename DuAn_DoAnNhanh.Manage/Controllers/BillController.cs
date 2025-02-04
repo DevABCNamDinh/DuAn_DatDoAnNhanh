@@ -16,12 +16,28 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             _billService = billService;
             _dbContext = dBContext;
         }
-        public IActionResult GetAll()
+        public IActionResult GetAll(Guid? userId, StatusOrder? status)
         {
-            //var billList= _billService.GetAllBill();
-            var billList = _dbContext.Bill.Include(x=>x.User).ToList().OrderByDescending(x=>x.BillDate);
-                
+            var bills = _dbContext.Bill
+            .Include(x => x.User)
+            .OrderByDescending(x => x.BillDate)
+            .AsQueryable();
+            if (userId != null && userId !=Guid.Empty)
+            {
+                bills = bills.Where(x => x.UserID == userId);
+                    
+            }
+
+            if (status != null)
+            {
+                // Lọc theo trạng thái nếu status được truyền
+                bills = bills.Where(x => x.Status == status);
+            }
+
+            var billList = bills.OrderByDescending(x => x.BillDate).ToList();
+            ViewBag.SelectedStatus = status; // Gửi trạng thái đã chọn về View
             return View(billList);
+
         }
         public IActionResult Details(Guid id) {
           

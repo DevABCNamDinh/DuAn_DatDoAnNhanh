@@ -22,7 +22,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             var bill1 = _dbContext.Bill.Where(b => b.Status == Data.Enum.StatusOrder.Pending).ToList();
             var bill2 = _dbContext.Bill.Where(b => b.Status == Data.Enum.StatusOrder.Shipping).ToList();
 
-            var totalAmount = bill.Sum(b => b.TotalAmount);
+            var totalAmount = bill.Sum(b => b.TotalAmountEndow);
             var sumBill = bill.Count();
             var sumBill1 = bill1.Count();
             var sumBill2 = bill2.Count();

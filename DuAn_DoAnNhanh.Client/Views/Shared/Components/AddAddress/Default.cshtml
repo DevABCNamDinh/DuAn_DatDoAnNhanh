@@ -1,0 +1,101 @@
+﻿@model DuAn_DoAnNhanh.Data.Entities.Address
+
+
+<div class="container mt-5">
+    <h2>Địa chỉ mới</h2>
+    <form asp-controller="User" asp-action="SaveAddress" method="post" enctype="multipart/form-data" class="form-container">
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <input asp-for="FullName" type="text"
+                       class="form-control"
+                       placeholder="Họ và tên" />
+            </div> <div class="mb-3 col-md-6">
+                <input asp-for="NumberPhone" type="text"
+                       class="form-control"
+                       placeholder="Số điện thoại" />
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Chọn Tỉnh/Thành phố -->
+                <div class="mb-3 col-md-6">
+                    <select asp-for="Province" id="province" class="form-control" >
+                    <option value="">Tỉnh/Thành phố</option>
+                </select>
+            </div>
+
+            <!-- Chọn Quận/Huyện -->
+                <div class="mb-3 col-md-6">
+                    <select asp-for="District" id="district" class="form-control">
+                    <option value="">Quận/Huyện</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Chọn Xã -->
+        <div class="mb-3">
+                <select asp-for="Ward" id="ward" class="form-control">
+                <option value="">Xã/Phường</option>
+            </select>
+        </div>
+
+        <!-- Ô nhập địa chỉ cụ thể (Autocomplete từ HERE) -->
+        <div class="mb-3">
+                <input asp-for="SpecificAddress" type="text"
+                    class="form-control"
+                    placeholder="Nhập địa chỉ cụ thể" />
+        </div>
+        <button type="submit" class="btn btn-primary" >Lưu Địa Chỉ</button>
+    </form>
+</div>
+<!-- Thêm script cho jQuery và Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 1️⃣ Lấy danh sách tỉnh/thành phố
+        $.getJSON("https://provinces.open-api.vn/api/?depth=2", function (data) {
+            data.forEach((province) => {
+                $("#province").append(
+                    `<option value="${province.name}" data-code="${province.code}">${province.name}</option>`
+                );
+            });
+        });
+
+        // 2️⃣ Khi chọn Tỉnh/Thành phố, load Quận/Huyện
+        $("#province").change(function () {
+            let provinceCode = $("#province option:selected").data("code");
+            $("#district").html('<option value="">Quận/Huyện</option>');
+            $("#ward").html('<option value="">Xã/Phường</option>');
+
+            if (provinceCode) {
+                $.getJSON(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`, function (data) {
+                    data.districts.forEach((district) => {
+                        $("#district").append(
+                            `<option value="${district.name}" data-code="${district.code}">${district.name}</option>`
+                        );
+                    });
+                });
+            }
+        });
+
+        // 3️⃣ Khi chọn Quận/Huyện, load Xã/Phường
+        $("#district").change(function () {
+            let districtCode = $("#district option:selected").data("code");
+            $("#ward").html('<option value="">Xã/Phường</option>');
+
+            if (districtCode) {
+                $.getJSON(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`, function (data) {
+                    data.wards.forEach((ward) => {
+                        $("#ward").append(
+                            `<option value="${ward.name}">${ward.name}</option>`
+                        );
+                    });
+                });
+            }
+        });
+    });
+
+</script>
+

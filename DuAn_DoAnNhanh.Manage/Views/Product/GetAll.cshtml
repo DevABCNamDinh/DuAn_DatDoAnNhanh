@@ -52,6 +52,48 @@
             $("#productModal").modal('hide');
         });
     });
+    $(document).ready(function () {
+        let currentPage = 1;
+        const itemsPerPage = 6;
+        const $productItems = $('.product-item');
+        const totalPages = Math.ceil($productItems.length / itemsPerPage);
+
+        // Hiển thị sản phẩm cho trang hiện tại
+        function showPage(page) {
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+
+            $productItems.hide();
+
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            $productItems.slice(startIndex, endIndex).fadeIn();
+
+            $("#pageNumbers").html('');
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = $(`<button class="btn ${i === page ? 'btn-primary' : 'btn-secondary'} page-btn" data-page="${i}">${i}</button>`);
+                $("#pageNumbers").append(pageButton);
+            }
+        }
+
+        $(document).on('click', '.page-btn', function () {
+            const selectedPage = parseInt($(this).data('page'));
+            if (selectedPage) {
+                currentPage = selectedPage;
+                showPage(currentPage);
+            }
+        });
+
+        $("#searchInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $productItems.filter(function () {
+                $(this).toggle($(this).find(".card-title b").text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
+        showPage(currentPage);
+    });
 
 </script>
 
@@ -61,18 +103,9 @@
 <body>
 
     <article>
-        <form asp-action="GetAll" asp-controller="Product">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" name="search">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-                </div>
-            </div>
-        </form>
-     
-        <br />
-
-
+        <div class="search-container mb-4">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." class="form-control" />
+        </div>
         <!-- Nút mở modal tạo sản phẩm mới -->
         <p>
             <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
@@ -91,8 +124,8 @@
             <div class="row">
                 @foreach (var product in Model)
                 {
-                    <div class="col-md-4 col-sm-6 mb-4 ">
-                        <div class="card h-100 position-relative combo-card">
+                    <div class="col-md-4 col-sm-6 mb-4 product-item">
+                        <div class="card h-100 position-relative combo-card ">
                             <!-- Nút "X" hiển thị khi hover -->
                             <a href="@Url.Action("Delete", "Product", new { id = product.ProductID })"
                                class="btn btn-danger position-absolute top-0 end-0 m-2 delete-combo-btn"
@@ -140,6 +173,7 @@
                 }
             </div>
         }
+        <div id="pageNumbers" class="mt-3"></div>
     </article>
 </body>
 </html>

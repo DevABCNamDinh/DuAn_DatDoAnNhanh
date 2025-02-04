@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DuAn_DoAnNhanh.Data.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public string Email { get; set; }
         public string Password { get; set; }
         public DateTime CreateDate { get; set; }
+        public Status Status { get; set; }
+        public Role Role { get; set; }
         public virtual Cart Cart { get; set; }
         public virtual List<Bill> Orderes { get; set; }
         public virtual List<Address> Addresses { get; set; }
