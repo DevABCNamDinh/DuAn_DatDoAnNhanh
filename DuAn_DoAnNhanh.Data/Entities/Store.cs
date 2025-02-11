@@ -13,6 +13,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public string StoreName { get; set; }
         public Status Status { get; set; }
         public virtual Address Address { get; set; }
+        public virtual User User { get; set; }
+
         public virtual List<Bill> Bills { get; set; }
 
 

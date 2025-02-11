@@ -10,6 +10,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
     public class User
     {
         public Guid UserID { get; set; }
+        public Guid? StoreID { get; set; }
+
 
         public string FullName { get; set; }
         public string Email { get; set; }
@@ -18,6 +20,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public Status Status { get; set; }
         public Role Role { get; set; }
         public virtual Cart Cart { get; set; }
+        public virtual Store? Store { get; set; }
+
         public virtual List<Bill> Orderes { get; set; }
         public virtual List<Address> Addresses { get; set; }
 
