@@ -133,6 +133,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             bill.UserID = _cartRepository.GetById(cartId).UserID;
             bill.TotalAmount = 0;
             bill.TotalAmountEndow = 0;
+            bill.AddressID = null;
             _billRepository.insert(bill);
             _billRepository.save();
             //BillDetails

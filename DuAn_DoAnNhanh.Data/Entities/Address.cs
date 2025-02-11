@@ -23,7 +23,7 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public double Longitude { get; set; } // kinh độ
         public string FullAddress { get; set; }
         public DateTime CreateDate { get; set; }
-        public AddressType AddressType { get; set; }
+        public AddressType? AddressType { get; set; }
         public Status status { get; set; }
 
         public virtual User User { get; set; }

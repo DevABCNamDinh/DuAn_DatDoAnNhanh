@@ -17,7 +17,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0-rc.2.24474.1")
+                .HasAnnotation("ProductVersion", "8.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -28,18 +28,60 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AddressName")
+                    b.Property<int?>("AddressType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("District")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<string>("NumberPhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserID")
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpecificAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("StoreID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Ward")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
                     b.HasKey("AddressID");
+
+                    b.HasIndex("StoreID")
+                        .IsUnique()
+                        .HasFilter("[StoreID] IS NOT NULL");
 
                     b.HasIndex("UserID");
 
@@ -52,11 +94,20 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AddressID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("BillDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("PaymentType")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("StoreID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -68,6 +119,8 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillID");
+
+                    b.HasIndex("StoreID");
 
                     b.HasIndex("UserID");
 
@@ -250,6 +303,24 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.ToTable("ProductCombos", (string)null);
                 });
 
+            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Store", b =>
+                {
+                    b.Property<Guid>("StoreID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StoreName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("StoreID");
+
+                    b.ToTable("Stores");
+                });
+
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("UserID")
@@ -271,29 +342,60 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("StoreID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("UserID");
+
+                    b.HasIndex("StoreID")
+                        .IsUnique()
+                        .HasFilter("[StoreID] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Address", b =>
                 {
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
+                        .WithOne("Address")
+                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.Address", "StoreID");
+
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.User", "User")
                         .WithMany("Addresses")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserID");
+
+                    b.Navigation("Store");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Bill", b =>
                 {
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
+                        .WithMany("Bills")
+                        .HasForeignKey("StoreID");
+
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Address", "Address")
+                        .WithMany("Bills")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.User", "User")
                         .WithMany("Orderes")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Store");
 
                     b.Navigation("User");
                 });
@@ -362,6 +464,20 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
+                {
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
+                        .WithOne("User")
+                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.User", "StoreID");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Address", b =>
+                {
+                    b.Navigation("Bills");
+                });
+
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Bill", b =>
                 {
                     b.Navigation("BillDetails");
@@ -384,6 +500,17 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Navigation("CartItemes");
 
                     b.Navigation("ProductComboes");
+                });
+
+            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Store", b =>
+                {
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("Bills");
+
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>

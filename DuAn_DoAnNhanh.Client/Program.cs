@@ -30,6 +30,8 @@ builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
 builder.Services.AddScoped<IComboService, ComboSevice>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+
 builder.Services.AddHttpClient(); // Thêm dòng này để sử dụng HttpClient
 
 var app = builder.Build();

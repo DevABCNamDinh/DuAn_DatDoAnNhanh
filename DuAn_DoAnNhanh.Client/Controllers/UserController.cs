@@ -13,14 +13,14 @@ namespace DuAn_DoAnNhanh.Client.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IAddressService _addressService;
         private readonly MyDBContext _dbContext;
-        private readonly HttpClient _httpClient;
-        private readonly string _apiKey = "GTzwweyhgu0GBvSH0XJjPkPDwYeFkVV_ok80Oyas_qA";
-        public UserController(IUserService userService,MyDBContext dbContext,HttpClient httpClient)
+        public UserController(IUserService userService,IAddressService addressService,MyDBContext dbContext)
         {
             _userService = userService;
+            _addressService = addressService;
             _dbContext = dbContext;
-            _httpClient = httpClient;
+
         }
         public IActionResult Login()
         {
@@ -134,7 +134,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             var fullAddress = $"{specificAddress}, {ward}, {district}, {province}";
 
             // Gọi API để lấy kinh độ và vĩ độ
-            var coordinates = GetCoordinates(fullAddress);
+            var coordinates = _addressService.GetCoordinates(fullAddress);
             if (coordinates == (0.0,0.0))
             {
                 return BadRequest("Không thể lấy tọa độ từ địa chỉ.");
@@ -173,7 +173,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             }
             else
             {
-                var coordinates = GetCoordinates(address.FullAddress);
+                var coordinates = _addressService.GetCoordinates(address.FullAddress);
                 var addressUpdate = _dbContext.addresses.Find(address.AddressID);
                 addressUpdate.FullAddress = address.FullAddress;
                 addressUpdate.FullName = address.FullName;
@@ -212,29 +212,29 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             }
             return RedirectToAction("Address");
         }
-        private (double Latitude, double Longitude) GetCoordinates(string address)
-        {
-            string url = $"https://geocode.search.hereapi.com/v1/geocode?q={address}&apiKey={_apiKey}";
+        //private (double Latitude, double Longitude) GetCoordinates(string address)
+        //{
+        //    string url = $"https://geocode.search.hereapi.com/v1/geocode?q={address}&apiKey={_apiKey}";
 
-            var response = _httpClient.GetAsync(url).Result; // Chuyển thành đồng bộ
-            if (!response.IsSuccessStatusCode)
-                return (0.0, 0.0);
+        //    var response = _httpClient.GetAsync(url).Result; // Chuyển thành đồng bộ
+        //    if (!response.IsSuccessStatusCode)
+        //        return (0.0, 0.0);
 
-            var result = response.Content.ReadAsStringAsync().Result; // Chuyển thành đồng bộ
+        //    var result = response.Content.ReadAsStringAsync().Result; // Chuyển thành đồng bộ
 
-            // Parse kết quả JSON trả về từ Here API để lấy tọa độ
-            // Giả sử kết quả trả về có dạng:
-            // {"items":[{"position":{"lat":21.0285,"lng":105.8542}}]}
-            var coordinates = JsonConvert.DeserializeObject<dynamic>(result);
-            if (coordinates.items != null && coordinates.items.Count > 0)
-            {
-                double latitude = coordinates.items[0].position.lat;
-                double longitude = coordinates.items[0].position.lng;
-                return (latitude, longitude);
-            }
+        //    // Parse kết quả JSON trả về từ Here API để lấy tọa độ
+        //    // Giả sử kết quả trả về có dạng:
+        //    // {"items":[{"position":{"lat":21.0285,"lng":105.8542}}]}
+        //    var coordinates = JsonConvert.DeserializeObject<dynamic>(result);
+        //    if (coordinates.items != null && coordinates.items.Count > 0)
+        //    {
+        //        double latitude = coordinates.items[0].position.lat;
+        //        double longitude = coordinates.items[0].position.lng;
+        //        return (latitude, longitude);
+        //    }
 
-            return (0.0, 0.0);
-        }
+        //    return (0.0, 0.0);
+        //}
 
     }
 }

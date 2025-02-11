@@ -69,7 +69,15 @@
         <a asp-action="GetAll" asp-controller="Product">Sản phẩm</a>
         <a asp-action="GetAll" asp-controller="Combo">Combo</a>
         <a asp-action="Index" asp-controller="User">Khách hàng</a>
-
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action text-white" data-bs-toggle="collapse" data-bs-target="#menuCuaHang" style="background-color: #2c3e50; border: none;">
+                Hệ thống ▼
+            </a>
+            <div class="collapse" id="menuCuaHang">
+                <a href="#" class="list-group-item list-group-item-action text-white ps-4" style="background-color: #34495e; border: none;">Cửa hàng</a>
+                <a href="#" class="list-group-item list-group-item-action text-white ps-4" style="background-color: #34495e; border: none;">Tài khoản</a>
+            </div>
+        </div>
     </div>
 
     <div class="main-content">

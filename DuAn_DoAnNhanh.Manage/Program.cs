@@ -35,6 +35,8 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IComboService, ComboSevice>();
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
 builder.Services.AddScoped<IBillService, BillService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+
 builder.Services.AddScoped<BillViewModel>();
 builder.Services.AddHttpClient(); // Thêm dòng này để sử dụng HttpClient
 
@@ -71,6 +73,10 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
