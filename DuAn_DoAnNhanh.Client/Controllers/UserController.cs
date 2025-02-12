@@ -57,25 +57,28 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         }
         [HttpPost]
         public IActionResult Register(RegisterViewModel registerViewModel)
-        {
-            if (ModelState.IsValid)
-            {
+        {       
                 var user = new User()
                 {
                     UserID = Guid.NewGuid(),
                     FullName = registerViewModel.FullName,
                     Email = registerViewModel.Email,
-                    Password = registerViewModel.Password
+                    Password = registerViewModel.Password,
+                    CreateDate=DateTime.Now,
+                    Role=Role.Customer,
+                    Status=Status.Activity,
                     
                 };
                 var registeredUser = _userService.Register(user);
                 HttpContext.Session.SetString("UserEmail", user.Email);
-                return RedirectToAction("Login");
-            }
-            else
+            LoginViewModel loginViewModel= new LoginViewModel()
             {
-                return View(registerViewModel);
-            }
+                Email = registerViewModel.Email,
+                Password = registerViewModel.Password,
+            };
+            Login(loginViewModel);
+            return RedirectToAction("Index","Home");
+           
         }
         public IActionResult Logout()
         {

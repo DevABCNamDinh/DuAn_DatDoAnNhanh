@@ -1,5 +1,83 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@using DuAn_DoAnNhanh.Data.Enum
+@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Store>
+
+<div class="search-container mb-4">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm cửa hàng..." class="form-control" />
+</div>
+
+<p>
+    <a id="openModal" style="color: white; background-color: red; padding: 10px 20px; border-radius: 5px; text-decoration: none; cursor: pointer;">
+        Thêm cửa hàng
+    </a>
+</p>
+<!-- Modal cho việc tạo sản phẩm mới -->
+<div id="storeModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
+                @await Component.InvokeAsync("StoreCreate")
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning" role="alert">
+        Cửa hàng trống.
+    </div>
 }
+else
+{
+    <div class="row" id="comboList">
+        @foreach (var store in Model)
+        {
+            <div class="col-md-4 col-sm-6 mb-4 combo-item">
+                <div class="card card-custom bg-primary-custom">
+                    <h5>@store.StoreName</h5>
+                    <h6>@store.Address.NumberPhone</h6>
+                    <hr/>
+                    <p>@store.Address.SpecificAddress</p>
+                    <p>@store.Address.Ward, @store.Address.District, @store.Address.Province</p>
+                    <hr/>
+                    @foreach(var user in store.Users)
+                    {
+                        <span>Quản lý:</span>
+                        if (user.Role == Role.Manager)
+                        {
+                            <span>@user.FullName|@user.Email</span>
+                        }
+                    }
+                    @* <p>Quản lý: @store.User.FullName</p> *@
+                    <span class="my-2 badge bg-success ">@store.Status</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        // Khi nhấn nút mở modal
+        $("#openModal").click(function () {
+            $("#storeModal").modal('show');
+        });
+
+        // Khi nhấn nút đóng modal
+        $(".close").click(function () {
+            $("#storeModal").modal('hide');
+        });
+    });
+</script>
+<style>
+    .card-custom {
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: left;
+    }
+
+    .bg-primary-custom {
+        background-color: #007bff;
+    }
+</style>
