@@ -24,9 +24,4 @@
     <ProjectReference Include="..\DuAn_DoAnNhanh.Application\DuAn_DoAnNhanh.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Manage\Data\" />
-    <Folder Include="Areas\Manage\Models\" />
-  </ItemGroup>
-
 </Project>

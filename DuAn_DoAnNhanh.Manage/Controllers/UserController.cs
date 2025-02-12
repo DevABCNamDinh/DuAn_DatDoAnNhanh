@@ -2,6 +2,7 @@
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using DuAn_DoAnNhanh.Manage.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         public IActionResult Index( )
         {
 
-            var userList = _userService.GetAllUser();    
+            var userList = _userService.GetAllUser().Where(x=>x.Role==Role.Customer);    
             return View(userList);
         }
         [HttpGet]

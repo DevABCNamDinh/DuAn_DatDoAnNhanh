@@ -3,20 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuAn_DoAnNhanh.Data", "DuAn_DoAnNhanh.Data\DuAn_DoAnNhanh.Data.csproj", "{1BDFBB29-6D2E-45BA-BF0E-53868B237A06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuAn_DoAnNhanh.Data", "DuAn_DoAnNhanh.Data\DuAn_DoAnNhanh.Data.csproj", "{1BDFBB29-6D2E-45BA-BF0E-53868B237A06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuAn_DoAnNhanh.Client", "DuAn_DoAnNhanh.Client\DuAn_DoAnNhanh.Client.csproj", "{1A71613E-C10B-452E-BF2B-5D2D4FA64D99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuAn_DoAnNhanh.Client", "DuAn_DoAnNhanh.Client\DuAn_DoAnNhanh.Client.csproj", "{1A71613E-C10B-452E-BF2B-5D2D4FA64D99}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B245258A-3F5B-47DD-B638-78C2DD8296DD} = {B245258A-3F5B-47DD-B638-78C2DD8296DD}
 		{EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9} = {EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuAn_DoAnNhanh.Manage", "DuAn_DoAnNhanh.Manage\DuAn_DoAnNhanh.Manage.csproj", "{B245258A-3F5B-47DD-B638-78C2DD8296DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuAn_DoAnNhanh.Manage", "DuAn_DoAnNhanh.Manage\DuAn_DoAnNhanh.Manage.csproj", "{B245258A-3F5B-47DD-B638-78C2DD8296DD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1BDFBB29-6D2E-45BA-BF0E-53868B237A06} = {1BDFBB29-6D2E-45BA-BF0E-53868B237A06}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuAn_DoAnNhanh.Application", "DuAn_DoAnNhanh.Application\DuAn_DoAnNhanh.Application.csproj", "{EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuAn_DoAnNhanh.Application", "DuAn_DoAnNhanh.Application\DuAn_DoAnNhanh.Application.csproj", "{EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuAn_DoAnNhanh.Store", "DuAn_DoAnNhanh.Store\DuAn_DoAnNhanh.Store.csproj", "{5580A8FD-8961-456A-A060-AB3B90E0B2CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,6 +42,10 @@ Global
 		{EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EECE52F5-83AB-4BB9-93B9-5D9A728DC2D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5580A8FD-8961-456A-A060-AB3B90E0B2CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5580A8FD-8961-456A-A060-AB3B90E0B2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5580A8FD-8961-456A-A060-AB3B90E0B2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5580A8FD-8961-456A-A060-AB3B90E0B2CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
