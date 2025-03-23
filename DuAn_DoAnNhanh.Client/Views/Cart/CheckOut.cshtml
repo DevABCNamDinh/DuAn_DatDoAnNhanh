@@ -1,0 +1,222 @@
+﻿@using DuAn_DoAnNhanh.Data.Enum
+@using DuAn_DoAnNhanh.Data.ViewModel
+@model CheckOutViewModel
+@{
+    decimal totalCartPrice = 0;
+    decimal totalCartPriceEndow = 0;
+    var address = @Model.Address.FirstOrDefault(x => x.AddressType == AddressType.Default);
+}
+<script>
+    $(document).ready(function () {
+      $("input[name='payment']").change(function () {
+        $("label").removeClass("border-danger text-danger shadow border-2");
+        $(this)
+          .closest("label")
+          .addClass("border-danger text-danger shadow border-2");
+      });
+    });
+</script>
+<div class="row">
+    <div class="col-7">
+
+        <div class="container p-0">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title d-flex justify-content-between">
+                        <span>CHI TIẾT ĐƠN HÀNG</span>
+                        <span class="text-primary" style="cursor: pointer">✎</span>
+                    </h4>
+                    @foreach (var item in Model.cartItemes)
+                    {
+                        @if (item.Combo == null && item.Product != null)
+                        {
+                            var totalItemPrice = item.Product.Price * item.Quantity;
+                            totalCartPrice += totalItemPrice;
+                            totalCartPriceEndow += totalItemPrice;
+                            <div class="row align-items-center border-bottom pb-2">
+                                <div class="col-2">
+                                    <img src="@item.Product.ImageUrl" alt="@item.Product.ProductName" class="img-fluid rounded">
+                                </div>
+                                <div class="col-10">
+                                    <p class="my-1 fw-bold">@item.Product.ProductName</p>
+                                    <p class="my-2 text-muted">x @item.Quantity <span class="float-end fw-bold">@item.Product.Price.ToString("N0") đ</span></p>
+                                </div>
+                            </div>
+                        }
+                        else if (item.Combo != null && item.Product == null)
+                        {
+                            decimal totalItemPrice;
+                            decimal totalItemPriceEndow = 0;
+
+
+                            @if (item.Combo.SetupPrice.HasValue)
+                            {
+                                totalItemPriceEndow = item.Combo.SetupPrice.Value * item.Quantity;
+                                totalCartPriceEndow += totalItemPriceEndow;
+                                totalItemPrice = item.Combo.Price * item.Quantity;
+                                totalCartPrice += totalItemPrice;
+
+                            }
+                            else
+                            {
+                                totalItemPrice = item.Combo.Price * item.Quantity;
+                                totalCartPrice += totalItemPrice;
+                                totalCartPriceEndow += totalItemPrice;
+                            }
+                            <div class="row align-items-center border-bottom pb-2">
+                                <div class="col-2">
+                                    <img src="@item.Combo.Image" alt="@item.Combo.ComboName" class="img-fluid rounded">
+                                </div>
+                                <div class="col-10">
+                                    <p class="my-1 fw-bold">@item.Combo.ComboName</p>
+                                    @foreach (var x in @item.Combo.ProductComboes)
+                                    {
+                                        <p style="font-size:12px; margin:0px">@x.Quantity @x.Product.ProductName</p>
+                                    }
+                                    @if (@item.Combo.SetupPrice == null)
+                                    {
+                                        <p class="my-2 text-muted">x @item.Quantity <span class="float-end fw-bold">@totalItemPrice.ToString("N0") đ</span></p>
+
+                                    }
+                                    else
+                                    {
+                                        <p class="my-2 text-muted">x @item.Quantity <span class="float-end fw-bold"><del class="float-end">@totalItemPrice.ToString("N0") đ</del> <br />@totalItemPriceEndow.ToString("N0") đ</span></p>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                    }
+                    <div class="mt-3">
+                        <p class="d-flex justify-content-between my-2">
+                            Tổng <span class="fw-bold">@totalCartPrice.ToString("N0") đ</span>
+                        </p>
+                        <p class="d-flex justify-content-between my-2">
+                            Khuyến mại <span class="fw-bold">@((totalCartPrice - totalCartPriceEndow).ToString("N0")) đ</span>
+                        </p>
+                        <hr/>
+                        <p class="d-flex justify-content-between my-2">
+                            Chi phí tạm tính
+                            <span class="fw-bold">
+                                @if (totalCartPriceEndow == totalCartPrice)
+                                {
+                                    <span>@totalCartPrice.ToString("N0") đ</span>
+                                }
+                                else
+                                {
+                                    <span> @totalCartPriceEndow.ToString("N0") đ</span>
+                                }
+                            </span>
+                        </p>
+                        <p class="text-danger small">Đã bao gồm thuế VAT 8%</p>
+                        <p class="d-flex justify-content-between mb-1">
+                            Phí giao hàng <span class="fw-bold">10,000 đ</span>
+                        </p>
+                    </div>
+
+                    <hr />
+
+                    <!-- Khuyến mãi -->
+                    <div>
+                        <p class="fw-bold">Áp dụng khuyến mãi</p>
+                        <button class="btn btn-warning w-100 mb-2">Duyệt voucher</button>
+                        <div class="input-group">
+                            <input type="text"
+                            class="form-control"
+                            placeholder="Nhập mã phiếu quà tặng" />
+                            <button class="btn btn-danger">ÁP DỤNG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-5">
+        <form method="post" action="@Url.Action("CheckOut", "Cart")">
+            <div class="container p-0">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title d-flex justify-content-between">
+                            <span>Thông tin người nhận</span>
+                            <span class="text-primary" style="cursor: pointer">✎</span>
+                        </h4>
+                        @if (address == null)
+                        {
+                            <div class="alert alert-info">
+                                Địa chỉ của bạn trống.
+                                <a href="@Url.Action("Address", "User")">Thêm địa chỉ</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="p-0">@address.FullName</p>
+                            <p>@address.NumberPhone</p>
+                            <p>@address.FullAddress</p>
+                            <input type="hidden" name="addressId" value="@address.AddressID" />
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="container p-0 mt-2">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title d-flex justify-content-between">
+                            <span>Cửa hàng</span>
+                            <span class="text-primary" style="cursor: pointer">✎</span>
+                        </h4>
+                        <select class="form-control" name="storeId" required>
+                            <option value="">-- Chọn cửa hàng --</option>
+                            @foreach (var store in Model.Stores)
+                            {
+                                <option value="@store.StoreID">@store.StoreName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="container mt-2 p-0">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="fw-bold">THANH TOÁN</h4>
+                        <div class="row mt-3 g-3">
+                            <!-- Tiền mặt -->
+                            <div class="col-md-4">
+                                <label class="border rounded p-3 d-flex flex-column align-items-center justify-content-center shadow-sm position-relative w-100 active">
+                                    <input type="radio" name="payment" value="cash" class="form-check-input position-absolute top-0 start-0 m-2" checked>
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2331/2331949.png" alt="Tiền mặt" width="50">
+                                    <h6 class="mt-2">Tiền mặt</h6>
+                                </label>
+                            </div>
+
+                            <!-- ZaloPay -->
+                            <div class="col-md-4">
+                                <label class="border rounded p-3 d-flex flex-column align-items-center justify-content-center shadow-sm position-relative w-100">
+                                    <input type="radio" name="payment" value="zalopay" class="form-check-input position-absolute top-0 start-0 m-2">
+                                    <img src="https://www.lotteria.vn/grs-static/images/zalopay.svg" alt="ZaloPay" width="50">
+                                    <h6 class="mt-2">ZaloPay</h6>
+                                </label>
+                            </div>
+
+                            <!-- MoMo -->
+                            <div class="col-md-4">
+                                <label class="border rounded p-3 d-flex flex-column align-items-center justify-content-center shadow-sm position-relative w-100">
+                                    <input type="radio" name="payment" value="momo" class="form-check-input position-absolute top-0 start-0 m-2">
+                                    <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo E-Wallet" width="50">
+                                    <h6 class="mt-2">MoMo E-Wallet</h6>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container  mt-2 p-0 text-end">
+                <button type="submit" class="btn btn-danger">Đặt hàng</button>
+            </div>
+        </form>
+       
+    </div>
+   
+
+</div>

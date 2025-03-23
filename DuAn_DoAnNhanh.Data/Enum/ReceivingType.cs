@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DuAn_DoAnNhanh.Data.Enum
 {
-    public enum PaymentType
+    public enum ReceivingType
     {
-        Transfer = 0,//chuyển khoản
-        Cash=1,//tiền mặt
+        PickUpAtStore = 0,
+        HomeDelivery = 1,
     }
 }

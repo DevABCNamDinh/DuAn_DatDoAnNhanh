@@ -24,7 +24,7 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public string FullAddress { get; set; }
         public DateTime CreateDate { get; set; }
         public AddressType? AddressType { get; set; }
-        public Status status { get; set; }
+        public Status Status { get; set; }
 
         public virtual User User { get; set; }
         public virtual Store Store { get; set; }

@@ -56,7 +56,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
                 Longitude=coordinates.Longitude,
                 AddressType=AddressType.Default,
                 CreateDate=DateTime.Now,
-                status=Status.Activity,
+                Status=Status.Activity,
             };
             _dbContext.addresses.Add(address);
             _dbContext.SaveChanges();
