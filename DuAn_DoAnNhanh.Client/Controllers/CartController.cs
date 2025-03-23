@@ -1,5 +1,6 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DuAn_DoAnNhanh.Client.Controllers
@@ -13,14 +14,6 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         }
         public IActionResult Cart ()
         {
-        //var cart = _cartService.GetCartFromUserId(userId); 
-        //if (cart == null)
-        //{
-        //    return View("EmptyCart"); 
-        //}
-
-        //var cartItems = _cartService.GetCartItems(cart.CartID); 
-        //return View(cartItems);
         try
         {
             var UserId = HttpContext.Session.GetString("UserId");
@@ -121,14 +114,22 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             }
             return RedirectToAction("Cart");
         }
+        [HttpGet]
+        public IActionResult CheckOut(ReceivingType receivingType)
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+            var checkOutView= _cartService.CheckOutView(Guid.Parse(userId), cart.CartID);
+            return View(checkOutView);
+        }
         [HttpPost]
-        public IActionResult CheckOut()
+        public IActionResult CheckOut(Guid addressId,Guid storeId)
         {
             try
             {
-                var UserId = HttpContext.Session.GetString("UserId");
-                var cart = _cartService.GetCartFromUserId(Guid.Parse(UserId));
-                _cartService.CheckOut(cart.CartID);
+                var userId = HttpContext.Session.GetString("UserId");
+                var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+                _cartService.CheckOut(cart.CartID,addressId,storeId);
                 TempData["Message"] = "Đặt hàng thành công";
                 if (cart != null)
                 {
@@ -139,11 +140,11 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
             }
             catch (Exception)
-                {
-                    TempData["OpenSignInModal"] = true;
-                    return RedirectToAction("Index", "Home");
-                }
+            {
+                TempData["Message"] = "Đặt hàng thất bại";
+                return RedirectToAction("Index", "Home");
             }
+        }
 
     }
 }

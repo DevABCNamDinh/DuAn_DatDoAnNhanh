@@ -3,6 +3,7 @@ using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
+using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             _context = context;
         }
 
+       
         public void AddComboToCart(Guid userId, Guid ComboID, int quantity)
         {
             var cart = GetCartFromUserId(userId);
@@ -123,17 +125,22 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             _cartItemRepository.save();
         }
 
-        public void CheckOut(Guid cartId)
+       
+
+        public void CheckOut(Guid cartId,Guid addressId, Guid storeId)
         {
             var cartItems = GetCartItems(cartId);
             //bill
             Bill bill = new Bill();
-            bill.BillDate = DateTime.Now;
-            bill.Status = StatusOrder.Pending;
             bill.UserID = _cartRepository.GetById(cartId).UserID;
+            bill.AddressID = addressId;
+            bill.StoreID = storeId;
+            bill.BillDate = DateTime.Now;   
             bill.TotalAmount = 0;
             bill.TotalAmountEndow = 0;
-            bill.AddressID = null;
+            bill.PaymentType = PaymentType.Cash;
+            bill.ReceivingType = ReceivingType.HomeDelivery;
+            bill.Status = StatusOrder.Pending;
             _billRepository.insert(bill);
             _billRepository.save();
             //BillDetails
@@ -186,6 +193,35 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         }
 
+        public CheckOutViewModel CheckOutView(Guid userId, Guid cartId)
+        {
+            try
+            {
+                var addresses = _context.addresses.Where(x => x.UserID == userId).ToList();
+                var stores = _context.Stores.Where(x=>x.Status== Status.Activity).ToList();
+                var cartItems = _context.CartItems.Include(x => x.Cart)
+                   .Include(y => y.Combo)
+                   .ThenInclude(x => x.ProductComboes)
+                   .ThenInclude(x => x.Product)
+                   .Include(z => z.Product)
+                   .Where(ci => ci.CartID == cartId
+                   && (ci.Combo.Status ==StatusCombo.Activity
+                   || ci.Product.Status == StatusProduct.Activity)).ToList();
+            return new CheckOutViewModel
+            {
+                Address = addresses,
+                Stores = stores,
+                cartItemes = cartItems
+            };
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+          
+        }
+
         public void ClearCart(Guid cartId)
         {
             var cart = _cartRepository.GetById(cartId);
@@ -212,8 +248,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 .ThenInclude(x => x.Product)
                 .Include(z=>z.Product) 
                 .Where(ci => ci.CartID == cartId
-                &&(ci.Combo.Status==Data.Enum.StatusCombo.Activity
-                ||ci.Product.Status==Data.Enum.StatusProduct.Activity)).ToList();
+                &&(ci.Combo.Status==StatusCombo.Activity
+                ||ci.Product.Status==StatusProduct.Activity)).ToList();
             if (cartItems != null)
             {
                 return cartItems;
@@ -233,41 +269,6 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 _cartItemRepository.save();
             }
         }
-
-       
-
-        //public IEnumerable<CartItemViewModel> GetCartItemsWithDetails(Guid cartId)
-        //{
-        //    // Lấy danh sách CartItems theo CartId
-        //    var cartItems = _cartItemRepository.GetAll()
-        //        .Where(ci => ci.CartID == cartId)
-        //        .ToList();
-
-        //    // Lấy danh sách ProductIDs để giảm số lần truy vấn
-        //    var productIds = cartItems.Select(ci => ci.ProductID).Distinct().ToList();
-
-        //    // Lấy toàn bộ thông tin sản phẩm từ ProductRepository
-        //    var products = _productRepository.GetAll()
-        //        .Where(p => productIds.Contains(p.ProductID))
-        //        .ToDictionary(p => p.ProductID, p => p); // Chuyển sang Dictionary để tra cứu nhanh
-
-        //    // Join CartItems với Product để tạo CartItemViewModel
-        //    var cartItemDetails = cartItems
-        //        .Select(ci =>
-        //        {
-        //            var product = products.ContainsKey(ci.ProductID) ? products[ci.ProductID] : null;
-        //            return new CartItemViewModel
-        //            {
-        //                ProductId = ci.ProductID,
-        //                ProductName = product?.ProductName ?? "Unknown Product", // Giá trị mặc định nếu không tìm thấy
-        //                Price = product?.Price ?? 0, // Giá trị mặc định nếu không tìm thấy
-        //                Quantity = ci.Quantity
-        //            };
-        //        })
-        //        .ToList();
-
-        //    return cartItemDetails; // Trả về danh sách CartItemViewModel
-        //}
 
         public void UpdateCartItem(Guid cartItemId, int quantity)
         {

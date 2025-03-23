@@ -156,7 +156,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
                 FullName = fullName,
                 NumberPhone = numberPhone,
                 UserID = userId,
-                AddressType=AddressType.Normal,
+                AddressType=AddressType.Default,
                 CreateDate = DateTime.Now,
             };
 

@@ -17,7 +17,7 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.HasKey(x => x.AddressID);
             builder.Property(x => x.AddressID).ValueGeneratedOnAdd();
             builder.HasOne(x => x.User).WithMany(x => x.Addresses).HasForeignKey(x=>x.UserID);
-            builder.HasMany(x => x.Bills).WithOne(x => x.Address).HasForeignKey(x => x.UserID);
+            builder.HasMany(x => x.Bills).WithOne(x => x.Address).HasForeignKey(x => x.AddressID);
 
 
 
