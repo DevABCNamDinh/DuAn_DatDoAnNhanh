@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DuAn_DoAnNhanh.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class db : Migration
+    public partial class _1st : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,7 +53,8 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                 {
                     StoreID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StoreName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -315,9 +316,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Users_StoreID",
                 table: "Users",
-                column: "StoreID",
-                unique: true,
-                filter: "[StoreID] IS NOT NULL");
+                column: "StoreID");
         }
 
         /// <inheritdoc />

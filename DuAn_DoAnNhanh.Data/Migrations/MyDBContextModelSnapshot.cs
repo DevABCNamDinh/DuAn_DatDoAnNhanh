@@ -309,6 +309,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -353,9 +356,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.HasKey("UserID");
 
-                    b.HasIndex("StoreID")
-                        .IsUnique()
-                        .HasFilter("[StoreID] IS NOT NULL");
+                    b.HasIndex("StoreID");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -467,8 +468,8 @@ namespace DuAn_DoAnNhanh.Data.Migrations
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
                 {
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
-                        .WithOne("User")
-                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.User", "StoreID");
+                        .WithMany("Users")
+                        .HasForeignKey("StoreID");
 
                     b.Navigation("Store");
                 });
@@ -509,8 +510,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.Navigation("Bills");
 
-                    b.Navigation("User")
-                        .IsRequired();
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
