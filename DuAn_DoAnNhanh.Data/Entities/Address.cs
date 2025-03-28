@@ -25,6 +25,7 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public DateTime CreateDate { get; set; }
         public AddressType? AddressType { get; set; }
         public Status Status { get; set; }
+        public string? Description { get; set; }
 
         public virtual User User { get; set; }
         public virtual Store Store { get; set; }
