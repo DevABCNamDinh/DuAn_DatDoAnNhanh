@@ -261,7 +261,14 @@ namespace DuAn_DoAnNhanh.Data.EF
                     StoreID = Guid.Parse("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"),
                     StoreName="BB Chicken-Hàm Nghi",
                     Status=Status.Activity
-                });
+                }, 
+                new Store
+                {
+                    StoreID = Guid.Parse("931F07E5-46D8-4449-B77E-533BF4F33AA3"),
+                    StoreName = "BB Chicken-Lê Đức Thọ",
+                    Status = Status.Activity
+                }
+                );
             modelBuilder.Entity<Address>().HasData(
                 new Address
                 {
@@ -269,18 +276,38 @@ namespace DuAn_DoAnNhanh.Data.EF
                     StoreID = Guid.Parse("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"),
                     UserID=null,
                     FullName= "BB Chicken-Hàm Nghi",
-                    NumberPhone="05593123456",
-                    Province="A",
-                    District="B",
-                    Ward="C",   
-                    SpecificAddress="D",
-                    FullAddress="ABCD",
-                    Latitude=0,
-                    Longitude=0,
-                    AddressType=null,
+                    NumberPhone="055931234",
+                    Province= "Thành phố Hà Nội",
+                    District= "Quận Nam Từ Liêm",
+                    Ward="Phường Cầu Diễn",   
+                    SpecificAddress="Số 36 Hàm Nghi",
+                    FullAddress= "Số 36 Hàm Nghi, Phường Cầu Diễn, Quận Nam Từ Liêm, Thành phố Hà Nội",
+                    Latitude= 21.02983,
+                    Longitude= 105.76913,
+                    AddressType=AddressType.Store,
                     CreateDate=DateTime.Now,
                     Status = Status.Activity
-                });
+                }, 
+                new Address
+                {
+                    AddressID = Guid.NewGuid(),
+                    StoreID = Guid.Parse("931F07E5-46D8-4449-B77E-533BF4F33AA3"),
+                    UserID = null,
+                    FullName = "BB Chicken-Lê Đức Thọ",
+                    NumberPhone = "0828277707",
+                    Province = "Thành phố Hà Nội",
+                    District = "Quận Nam Từ Liêm",
+                    Ward = "Phường Mỹ Đình 2",
+                    SpecificAddress = "Số 7 Lê Đức Thọ",
+                    FullAddress = "Số 7 Lê Đức Thọ, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Thành phố Hà Nội",
+                    Latitude = 21.02983,
+                    Longitude = 105.76913,
+                    AddressType = AddressType.Store,
+                    CreateDate = DateTime.Now,
+                    Status = Status.Activity
+                }
+                );
+
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
@@ -292,7 +319,30 @@ namespace DuAn_DoAnNhanh.Data.EF
                     CreateDate=DateTime.Now,
                     Role=Role.Admin,                 
                     Status = Status.Activity
-                });
+                },
+                new User
+                {
+                    UserID = Guid.NewGuid(),
+                    StoreID = Guid.Parse("931F07E5-46D8-4449-B77E-533BF4F33AA3"),
+                    FullName = "Phạm Viết Manh",
+                    Password = "manhdb123",
+                    Email = "manhdb123@gmail.com",
+                    CreateDate = DateTime.Now,
+                    Role = Role.Manager,
+                    Status = Status.Activity
+                },
+                new User
+                {
+                    UserID = Guid.NewGuid(),
+                    StoreID = Guid.Parse("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"),
+                    FullName = "Nguyễn Phương Linh",
+                    Password = "linhdb123",
+                    Email = "linhdb123@gmail.com",
+                    CreateDate = DateTime.Now,
+                    Role = Role.Manager,
+                    Status = Status.Activity
+                }
+                );
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
