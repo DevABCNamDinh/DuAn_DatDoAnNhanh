@@ -14,14 +14,11 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public Guid UserID { get; set; }
         public Guid? AddressID { get; set; }
         public Guid? StoreID { get; set; }
-
-
-
         public DateTime BillDate { get; set; }
         public StatusOrder Status { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal TotalAmountEndow { get; set; }
-
+        public ReceivingType ReceivingType { get; set; } //phương thức nhận hàng
         public PaymentType PaymentType { get; set; }
         public virtual User User { get; set; }
         public virtual Store Store { get; set; }

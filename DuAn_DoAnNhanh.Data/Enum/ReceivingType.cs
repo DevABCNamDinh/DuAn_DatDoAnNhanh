@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace DuAn_DoAnNhanh.Data.Enum
 {
-    public enum AddressType
+    public enum ReceivingType
     {
-        Normal = 0,//Bình thường
-        Default = 1,//Mặc định
-        Store=2,//Cửa hàng
+        PickUpAtStore = 0,
+        HomeDelivery = 1,
     }
 }
