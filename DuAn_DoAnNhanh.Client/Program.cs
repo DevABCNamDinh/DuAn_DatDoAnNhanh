@@ -1,8 +1,13 @@
-﻿using DuAn_DoAnNhanh.Application.Implements.Repository;
+﻿
 using DuAn_DoAnNhanh.Application.Implements.Service;
-using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
+
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
+using DuAn_DoAnNhanh.Application.Share.Middlewares;
 using DuAn_DoAnNhanh.Data.EF;
+using DuAn_DoAnNhanh.Data.Implements.Repository;
+using DuAn_DoAnNhanh.Data.Implements.UnitOfWork;
+using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
+using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -22,7 +27,7 @@ builder.Services.AddSingleton<IDesignTimeDbContextFactory<MyDBContext>, MyDbCont
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -36,6 +41,8 @@ builder.Services.AddHttpClient(); // Thêm dòng này để sử dụng HttpClie
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -43,7 +50,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 
 // C?u hình ?? truy c?p th? m?c Images trong DuAn_DoAnNhanh.Application

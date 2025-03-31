@@ -14,7 +14,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         User Login( string Email, string Password);
 
 
-		List<User> GetAllUser();
+        IEnumerable<User> GetAllUser();
 		User GetUserById(Guid id);
         User GetUserWithBills(Guid userId); // Lấy thông tin người dùng cùng với hóa đơn
     }

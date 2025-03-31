@@ -9,7 +9,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
 {
     public interface IBillService
     {
-        List<Bill> GetAllBill();
+        IEnumerable<Bill> GetAllBill();
         Bill GetBillById(Guid id);
         void AddBill(Bill bill);
         

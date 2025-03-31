@@ -1,5 +1,5 @@
-﻿using DuAn_DoAnNhanh.Application.Implements.Repository;
-using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
+﻿using DuAn_DoAnNhanh.Data.Implements.Repository;
+using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
@@ -10,38 +10,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
 
 namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        private readonly IGenericRepository<Cart> _cartRepository;
-        private readonly IGenericRepository<Bill> _billRepository;
- 
-
-        public UserService(IGenericRepository<User> userRepository, 
-            IGenericRepository<Cart> cartRepository, MyDBContext dbContext)
+        public UserService(IUnitOfWork unitOfWork)
         {
-            _cartRepository = cartRepository;
-            _userRepository = userRepository;
-            //_dbContext = dbContext;
+            _unitOfWork = unitOfWork;
         }
 
-		public List<User> GetAllUser()
+		public IEnumerable<User> GetAllUser()
 		{
-			 return _userRepository.GetAll();
+			 return _unitOfWork.UserRepo.GetAll();
 		}
 
 		public User GetUserById(Guid id)
 		{
-			return _userRepository.GetById(id);
+			return _unitOfWork.UserRepo.GetById(id);
 		}
 
         public User GetUserWithBills(Guid userId)
         {
-            var user = _userRepository.GetById(userId); // Lấy thông tin người dùng
+            var user = _unitOfWork.UserRepo.GetById(userId); // Lấy thông tin người dùng
             if (user != null)
             {
                 user.Orderes = GetUserBills(userId); // Tải hóa đơn cho người dùng
@@ -51,24 +45,24 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         }
         private List<Bill> GetUserBills(Guid userId)
         {
-            return _billRepository.GetAll().Where(b => b.UserID == userId).ToList(); // Lấy hóa đơn của người dùng
+            return _unitOfWork.BillRepo.GetAll().Where(b => b.UserID == userId).ToList(); // Lấy hóa đơn của người dùng
         }
 
         public User Login(string Email, string Password)
         {
-            return _userRepository.GetAll()
+            return _unitOfWork.UserRepo.GetAll()
                  .FirstOrDefault(u=> u.Email == Email && u.Password == Password);
         }
 
         public User Register(User user)
         {
-            if (_userRepository.FindBy(u => u.Email == user.Email) != null)
+            if (_unitOfWork.UserRepo.Find(u => u.Email == user.Email) != null)
             {
                 throw new Exception("Username already exists.");
             }
 
-            _userRepository.insert(user);
-            _userRepository.save();
+            _unitOfWork.UserRepo.Add(user);
+            _unitOfWork.UserRepo.SaveChanges();
 
             var cart = new Cart()
             {
@@ -76,8 +70,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 UserID = user.UserID
             };
 
-            _cartRepository.insert(cart);
-            _cartRepository.save();
+            _unitOfWork.CartRepo.Add(cart);
+            _unitOfWork.CartRepo.SaveChanges();
 
             return user;
         }
