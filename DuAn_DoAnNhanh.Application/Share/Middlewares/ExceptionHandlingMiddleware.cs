@@ -23,7 +23,6 @@ namespace DuAn_DoAnNhanh.Application.Share.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            Console.WriteLine("Middleware đang chạy...");
             try
             {
                 await _next(context);
