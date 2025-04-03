@@ -60,6 +60,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+app.UseSession();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<JwtSessionMiddleware>();
 app.UseMiddleware<AuthorizationMiddleware>();
@@ -82,7 +83,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images"
 });
 app.UseStaticFiles();
-app.UseSession();
+
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllerRoute(
