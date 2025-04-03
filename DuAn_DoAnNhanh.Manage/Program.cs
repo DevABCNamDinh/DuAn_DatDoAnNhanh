@@ -63,6 +63,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 var app = builder.Build();
+app.UseSession();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<JwtSessionMiddleware>();
 
@@ -76,7 +77,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseSession();
+
 // Cấu hình để truy cập thư mục Images trong DuAn_DoAnNhanh.Application
 var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
 // Kiểm tra nếu thư mục Images chưa tồn tại, thì tự động tạo
