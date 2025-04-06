@@ -13,10 +13,13 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
     public class ComboSevice : IComboService
     {
-        private readonly IGenericRepository<Combo> _genericRepository; 
-        public ComboSevice(IGenericRepository<Combo> genericRepository)
+        private readonly IGenericRepository<Combo> _genericRepository;
+        private readonly IGenericRepository<ProductCombo> _productComboRepository;
+
+        public ComboSevice(IGenericRepository<Combo> comboRepository, IGenericRepository<ProductCombo> productComboRepository)
         {
-            _genericRepository = genericRepository;
+            _genericRepository = comboRepository;
+            _productComboRepository = productComboRepository;
         }
         public void AddCombo(Combo combo)
         {
@@ -48,6 +51,23 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         {
             _genericRepository.update(combo);
             _genericRepository.save();
+        }
+        public async Task<Guid> CreateComboAsync(Combo combo, List<ProductCombo> productCombos)
+        {
+            // Thêm combo mới vào cơ sở dữ liệu
+            _genericRepository.insert(combo);
+            _genericRepository.save();
+
+            // Thêm các sản phẩm vào combo
+            foreach (var productCombo in productCombos)
+            {
+                productCombo.ComboID = combo.ComboID; // Liên kết ProductCombo với Combo vừa tạo
+                _productComboRepository.insert(productCombo);
+            }
+            _productComboRepository.save();
+
+            // Trả về ID của combo vừa tạo
+            return combo.ComboID;
         }
     }
 }

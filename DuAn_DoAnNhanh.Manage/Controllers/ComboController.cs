@@ -60,30 +60,108 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             return View(comboWithProductsList);
         }
 
-        public IActionResult Create() { 
-            return ViewComponent("ComboCreate");
-        }
-        [HttpPost]
-        public async Task<IActionResult> Create(IFormFile ImageFile, Combo combo)
+        //public IActionResult Create() { 
+        //    return ViewComponent("ComboCreate");
+        //}
+        //[HttpPost]
+        //public async Task<IActionResult> Create(IFormFile ImageFile, Combo combo)
+        //{
+        //    if (ImageFile != null && ImageFile.Length > 0)
+        //    {
+        //        var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
+        //        if (!string.IsNullOrEmpty(imageUrl))
+        //        {
+        //            combo.Image = imageUrl; // Gán đường dẫn ảnh vào combo
+        //        }
+        //    }
+        //    // Tạo product mới và lưu vào cơ sở dữ liệu
+        //    Combo comboCreate = new Combo
+        //    {
+        //        ComboName = combo.ComboName,
+        //        Description = combo.Description,
+        //        Price = combo.Price,                          
+        //        Image = combo.Image, // Địa chỉ ảnh đã tạo
+        //    };
+
+        //    _comboService.AddCombo(comboCreate);
+
+        //    return RedirectToAction("GetAll", "Combo");
+        //}
+
+        //private async Task<string> SaveImageAsync2(IFormFile imageFile)
+        //{
+        //    if (imageFile != null && imageFile.Length > 0)
+        //    {
+        //        // Đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
+        //        var dataProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
+
+        //        // Kiểm tra nếu thư mục Images không tồn tại thì tạo mới
+        //        if (!Directory.Exists(dataProjectPath))
+        //        {
+        //            Directory.CreateDirectory(dataProjectPath);
+        //        }
+
+        //        // Lấy tên file
+        //        var fileName = Path.GetFileName(imageFile.FileName);
+        //        var filePath = Path.Combine(dataProjectPath, fileName);
+
+        //        // Lưu ảnh vào thư mục Images
+        //        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await imageFile.CopyToAsync(fileStream);
+        //        }
+
+        //        // Trả về đường dẫn tương đối đến ảnh (tùy thuộc vào cách bạn muốn sử dụng đường dẫn này)
+        //        return $"/images/{fileName}";
+        //    }
+        //    return null;
+        //}
+        [HttpGet]
+        public IActionResult Create()
         {
+            ComboCreateViewModel model = new ComboCreateViewModel();
+            return View(model);// Trả về view với ComboCreateViewModel thay vì ViewComponent
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(ComboCreateViewModel model, IFormFile ImageFile)
+        {
+            // Kiểm tra nếu không chọn ít nhất 2 sản phẩm
+            if (model.SelectedProducts == null || model.SelectedProducts.Count < 2)
+            {
+                ModelState.AddModelError("", "Vui lòng chọn ít nhất 2 sản phẩm để tạo combo.");
+                model.AvailableProducts = _productService.GetAllProduct(); // Cung cấp lại danh sách sản phẩm
+                return View("~/Views/Shared/Components/ComboCreate/Default.cshtml", model);
+            }
+
+            // Xử lý upload ảnh
+            string imageUrl = null;
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
-                if (!string.IsNullOrEmpty(imageUrl))
-                {
-                    combo.Image = imageUrl; // Gán đường dẫn ảnh vào combo
-                }
+                imageUrl = await SaveImageAsync2(ImageFile);
             }
-            // Tạo product mới và lưu vào cơ sở dữ liệu
-            Combo comboCreate = new Combo
+
+            // Tạo đối tượng Combo từ dữ liệu form
+            var combo = new Combo
             {
-                ComboName = combo.ComboName,
-                Description = combo.Description,
-                Price = combo.Price,                          
-                Image = combo.Image, // Địa chỉ ảnh đã tạo
+                ComboName = model.ComboName,
+                Description = model.Description,
+                Image = imageUrl,
+                Price = 0, // Giá sẽ được tính tự động trong ComboDetailsService
+                Status = StatusCombo.Activity,
+                CreteDate = DateTime.Now
             };
 
-            _comboService.AddCombo(comboCreate);
+            // Tạo danh sách ProductCombo từ SelectedProducts
+            var productCombos = model.SelectedProducts.Select(sp => new ProductCombo
+            {
+                ProductID = sp.ProductID,
+                Quantity = sp.Quantity,
+                Status = StatusCombo.Activity
+            }).ToList();
+
+            // Gọi service để tạo combo và thêm sản phẩm
+            await _comboService.CreateComboAsync(combo, productCombos);
 
             return RedirectToAction("GetAll", "Combo");
         }
@@ -92,31 +170,22 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
                 var dataProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
-
-                // Kiểm tra nếu thư mục Images không tồn tại thì tạo mới
                 if (!Directory.Exists(dataProjectPath))
                 {
                     Directory.CreateDirectory(dataProjectPath);
                 }
-
-                // Lấy tên file
                 var fileName = Path.GetFileName(imageFile.FileName);
                 var filePath = Path.Combine(dataProjectPath, fileName);
-
-                // Lưu ảnh vào thư mục Images
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await imageFile.CopyToAsync(fileStream);
                 }
-
-                // Trả về đường dẫn tương đối đến ảnh (tùy thuộc vào cách bạn muốn sử dụng đường dẫn này)
                 return $"/images/{fileName}";
             }
             return null;
         }
-
+    
         public IActionResult Details(Guid id)
         {
             var comboDetail = new ComboWithProductsViewModel();
