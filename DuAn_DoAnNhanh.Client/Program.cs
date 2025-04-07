@@ -60,10 +60,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
-app.UseSession();
+
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<JwtSessionMiddleware>();
-app.UseMiddleware<AuthorizationMiddleware>();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -83,9 +81,12 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images"
 });
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<JwtSessionMiddleware>();
+app.UseMiddleware<AuthorizationMiddleware>();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

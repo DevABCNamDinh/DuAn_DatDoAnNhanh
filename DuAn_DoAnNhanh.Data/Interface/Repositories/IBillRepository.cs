@@ -10,5 +10,7 @@ namespace DuAn_DoAnNhanh.Data.Interface.Repositories
 {
     public interface IBillRepository : IGenericRepository<Bill>
     {
+        IEnumerable<Bill> GetAllBillIncludeUser();
+
     }
 }
