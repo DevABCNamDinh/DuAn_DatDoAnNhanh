@@ -65,10 +65,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 app.UseSession();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<JwtSessionMiddleware>();
-
-app.UseMiddleware<AuthorizationMiddleware>();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -91,7 +87,10 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images"
 });
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<JwtSessionMiddleware>();
+app.UseMiddleware<AuthorizationMiddleware>();
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
