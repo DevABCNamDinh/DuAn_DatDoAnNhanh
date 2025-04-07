@@ -26,60 +26,82 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         {
             return View();
         }
+      
+
         [HttpPost]
         public IActionResult Login(LoginViewModel loginViewModel)
         {
-            var user = _userService.Login(loginViewModel.Email, loginViewModel.Password);
-            TempData["ReturnUrl"] = Request.Headers["Referer"].ToString();
+           
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorPassword"] = "Vui lòng nhập đầy đủ thông tin";
+                TempData["OpenSignInModal"] = true;
+                return RedirectToAction("Login");
+            }
+
+            var user = _userService.Login(loginViewModel.Email);
+
+            var returnUrl = Request.Headers["Referer"].ToString();
+            TempData["ReturnUrl"] = string.IsNullOrEmpty(returnUrl) ? Url.Action("Index", "Home") : returnUrl;
 
             if (user != null)
             {
-                HttpContext.Session.SetString("UserId", user.UserID.ToString());
-                HttpContext.Session.SetString("UserName", user.FullName.ToString());
-                TempData["Message"] = "Đăng nhập thành công";
+                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(loginViewModel.Password, user.Password);
 
-                if (TempData["ReturnUrl"] != null)
+                if (isPasswordCorrect)
                 {
+                    HttpContext.Session.SetString("UserId", user.UserID.ToString());
+                    HttpContext.Session.SetString("UserName", user.FullName);
+                    TempData["Message"] = "Đăng nhập thành công";
+
                     return Redirect(TempData["ReturnUrl"].ToString());
                 }
-                return RedirectToAction("Index", "Home");
             }
-            else
-            {
-                TempData["ErrorPassword"] = " Email hoặc mật khẩu không chính xác";
-                TempData["OpenSignInModal"] = true;
-                return Redirect(TempData["ReturnUrl"].ToString());
-            }
+
+            TempData["ErrorPassword"] = "Email hoặc mật khẩu không chính xác";
+            TempData["OpenSignInModal"] = true;
+            return Redirect(TempData["ReturnUrl"].ToString());
         }
+
         public IActionResult Register()
         {
             return View();
         }
+       
+
         [HttpPost]
         public IActionResult Register(RegisterViewModel registerViewModel)
-        {       
-                var user = new User()
+        {
+
+            
+                try
                 {
-                    UserID = Guid.NewGuid(),
-                    FullName = registerViewModel.FullName,
-                    Email = registerViewModel.Email,
-                    Password = registerViewModel.Password,
-                    CreateDate=DateTime.Now,
-                    Role=Role.Customer,
-                    Status=Status.Activity,
-                    
-                };
-                var registeredUser = _userService.Register(user);
-                HttpContext.Session.SetString("UserEmail", user.Email);
-            LoginViewModel loginViewModel= new LoginViewModel()
-            {
-                Email = registerViewModel.Email,
-                Password = registerViewModel.Password,
-            };
-            Login(loginViewModel);
-            return RedirectToAction("Index","Home");
-           
-        }
+                    var user = new User()
+                    {
+                        UserID = Guid.NewGuid(),
+                        FullName = registerViewModel.FullName,
+                        Email = registerViewModel.Email.Trim().ToLower(),
+                        Password = BCrypt.Net.BCrypt.HashPassword(registerViewModel.Password),
+                        CreateDate = DateTime.Now,
+                        Role = Role.Customer,
+                        Status = Status.Activity
+                    };
+
+                    _userService.Register(user);
+                    TempData["Message"] = "Đăng ký thành công!"; // Có thể thêm thông báo này
+                    return RedirectToAction("Login"); // hoặc Redirect về trang Home nếu muốn login tự động
+                }
+                catch (Exception ex)
+                {
+                    TempData["RegisterError"] = ex.Message;
+                    TempData["OpenSignInModal"] = true; // để mở lại modal
+                    return RedirectToAction("Index", "Home"); // hoặc nơi có modal
+                }
+            }
+
+          
+        
+
         public IActionResult Logout()
         {
             HttpContext.Session.Remove("UserId");
