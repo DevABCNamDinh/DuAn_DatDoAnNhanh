@@ -37,6 +37,14 @@
                 </div>
                 <div class="sign-up-htm">
 
+
+                    @if (TempData["RegisterError"] != null)
+                    {
+                        <div class="alert alert-danger text-center">
+                            @TempData["RegisterError"]
+                        </div>
+                    }
+
                     <form asp-controller="User" asp-action="Register" method="post">
                         <div class="group">
                             <label asp-for="@Model.FullName" class="form-label">Họ và tên</label>

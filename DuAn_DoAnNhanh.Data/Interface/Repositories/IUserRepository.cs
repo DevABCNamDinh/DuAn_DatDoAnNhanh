@@ -10,5 +10,10 @@ namespace DuAn_DoAnNhanh.Data.Interface.Repositories
 {
     public interface IUserRepository : IGenericRepository<User>
     {
+        public interface IUserRepository
+        {
+			User Authenticate(string email, string password);
+		}
+
     }
 }

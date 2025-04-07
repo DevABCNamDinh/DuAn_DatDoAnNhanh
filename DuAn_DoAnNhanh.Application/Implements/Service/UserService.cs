@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
+using DuAn_DoAnNhanh.Data.Enum;
+using BCrypt.Net;
 
 namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
@@ -48,28 +50,47 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             return _unitOfWork.BillRepo.GetAll().Where(b => b.UserID == userId).ToList(); // Lấy hóa đơn của người dùng
         }
 
-        public User Login(string Email, string Password)
+       
+        public User Login(string email)
         {
-            return _unitOfWork.UserRepo.GetAll()
-                 .FirstOrDefault(u=> u.Email == Email && u.Password == Password);
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
+            var normalizedEmail = email.Trim().ToLower();
+
+            return _unitOfWork.UserRepo
+                .GetAll()
+                .FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
         }
 
+
+    
         public User Register(User user)
         {
-            if (_unitOfWork.UserRepo.Find(u => u.Email == user.Email) != null)
+            // Chuẩn hóa email
+            var normalizedEmail = user.Email.Trim().ToLower();
+
+            // Kiểm tra trùng email
+            if (_unitOfWork.UserRepo.Find(u => u.Email.ToLower() == normalizedEmail) != null)
             {
-                throw new Exception("Username already exists.");
+                throw new Exception("Email đã tồn tại.");
             }
 
+            // Mã hóa mật khẩu
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+            // Lưu email đã chuẩn hóa
+            user.Email = normalizedEmail;
+
+            // Thêm user
             _unitOfWork.UserRepo.Add(user);
             _unitOfWork.UserRepo.SaveChanges();
 
+            // Tạo cart
             var cart = new Cart()
             {
                 CartID = Guid.NewGuid(),
                 UserID = user.UserID
             };
-
             _unitOfWork.CartRepo.Add(cart);
             _unitOfWork.CartRepo.SaveChanges();
 
@@ -78,9 +99,40 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
 
 
-       
 
 
-       
+
+        public User Authenticate(string email, string password)
+        {
+            var user = _unitOfWork.UserRepo.GetAll()
+        .FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
+            {
+                return null; // Không tìm thấy user
+            }
+
+            if (user.Role == Role.Customer)
+            {
+                return null; // Không có quyền truy cập
+            }
+
+            if (user.Password != password) // ⚠️ Cần hash mật khẩu trong thực tế
+            {
+                return null;
+            }
+
+            return user;
+        }
+
+        // Băm mật khẩu
+        public User GetUserByEmail(string email)
+        {
+            return _unitOfWork.UserRepo.GetAll()
+                .FirstOrDefault(u => u.Email == email);
+        }
+
+
+
     }
 }
