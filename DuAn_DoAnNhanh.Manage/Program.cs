@@ -34,6 +34,7 @@
     builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
     builder.Services.AddScoped<IProductService, ProductService>();
+
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ICartService, CartService>();
     builder.Services.AddScoped<IComboService, ComboSevice>();
@@ -84,6 +85,6 @@
 
     app.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Statistical}/{action=Index}/{id?}");
+        pattern: "{controller=Account}/{action=Login}/{id?}");
 
     app.Run();
