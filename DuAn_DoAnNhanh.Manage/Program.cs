@@ -1,4 +1,5 @@
-﻿    using DuAn_DoAnNhanh.Application.Implements.Service;
+
+    using DuAn_DoAnNhanh.Application.Implements.Service;
     using DuAn_DoAnNhanh.Application.Interfaces.Service;
     using DuAn_DoAnNhanh.Application.Share.Middlewares;
     using DuAn_DoAnNhanh.Data.EF;
@@ -71,21 +72,57 @@ builder.Services.AddScoped<BillViewModel>();
         Directory.CreateDirectory(imagesPath);
     }
     app.UseStaticFiles(new StaticFileOptions
+
     {
-        FileProvider = new PhysicalFileProvider(imagesPath),
-        RequestPath = "/images"
+        // Lấy các giá trị từ appsettings.json trực tiếp
+        var secretKey = builder.Configuration["JwtSettings:SecretKey"];
+        var expiresInMinutes = int.Parse(builder.Configuration["JwtSettings:ExpiresInMinutes"]);
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,  // Không kiểm tra Issuer
+            ValidateAudience = false,  // Không kiểm tra Audience
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero  // Không có độ trễ khi kiểm tra thời gian
+        };
     });
 
-    app.UseRouting();
 
-    app.UseAuthorization();
 
-    app.MapControllerRoute(
-        name: "areas",
-        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+var app = builder.Build();
+app.UseSession();
+//app.UseMiddleware<ExceptionHandlingMiddleware>();
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-    app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Statistical}/{action=Index}/{id?}");
-
-    app.Run();
+// Cấu hình để truy cập thư mục Images trong DuAn_DoAnNhanh.Application
+var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
+// Kiểm tra nếu thư mục Images chưa tồn tại, thì tự động tạo
+if (!Directory.Exists(imagesPath))
+{
+    Directory.CreateDirectory(imagesPath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imagesPath),
+    RequestPath = "/images"
+});
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<JwtSessionMiddleware>();
+app.UseMiddleware<AuthorizationMiddleware>();
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Statistical}/{action=Index}/{id?}");
+app.Run();

@@ -26,9 +26,15 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             _unitOfWork.Complete();
         }
 
-        public IEnumerable<Bill> GetAllBill()
+        public IEnumerable<Bill> GetAllBill(Guid? userId)
         {
-            return _unitOfWork.BillRepo.GetAll();
+            var bills= _unitOfWork.BillRepo.GetAllBillIncludeUser();
+            if (userId != null && userId != Guid.Empty)
+            {
+                bills = bills.Where(x => x.UserID == userId);
+
+            }
+            return bills;
         }
 
         public Bill GetBillById(Guid id)
