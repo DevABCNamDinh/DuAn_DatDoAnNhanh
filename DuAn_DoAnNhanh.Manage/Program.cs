@@ -40,6 +40,7 @@ builder.Services.AddScoped<IComboService, ComboSevice>();
 builder.Services.AddScoped<IComboDetailsService, ComboDetailsService>();
 builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<BillViewModel>();
 builder.Services.AddHttpClient(); 
 builder.Services.AddSingleton<IJwtService, JwtService>();
