@@ -1,5 +1,6 @@
 ﻿@using DuAn_DoAnNhanh.Application.Implements.Service
 @using DuAn_DoAnNhanh.Application.Interfaces.Service
+@using DuAn_DoAnNhanh.Client.Models.ViewModel
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ICartService _cartService
@@ -91,14 +92,19 @@
    
 
     <div class="container">
+        @{
+            var loginModel = ViewData["LoginModel"] as RegisterViewModel;
+        }
+
         <main role="main">
             <div id="productModal" class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
 
+
                         <div class="modal-body p-2">
                             <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                            @await Component.InvokeAsync("SignUpSignIn")
+                            @await Component.InvokeAsync("SignUpSignIn", new { model = loginModel })
                         </div>
                     </div>
                 </div>
@@ -141,6 +147,10 @@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+ 
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
@@ -164,6 +174,17 @@
         {
             <text>
                         $("#productModal").modal('show');
+            </text>
+
+
+        }
+
+        @if (TempData["ShowRegisterTab"] != null && (bool)TempData["ShowRegisterTab"] == true)
+        {
+            <text>
+                    setTimeout(function () {
+                        $('#signUpTab').tab('show');
+                    }, 300); // delay 1 chút để modal load xong
             </text>
         }
             });

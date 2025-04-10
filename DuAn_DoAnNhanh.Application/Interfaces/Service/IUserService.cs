@@ -11,7 +11,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
     public interface IUserService
     {
         User Register(User user);
-        User Login( string Email/*, string Password*/);
+        User Login( string Email, string Password);
 
 
         IEnumerable<User> GetAllUser();

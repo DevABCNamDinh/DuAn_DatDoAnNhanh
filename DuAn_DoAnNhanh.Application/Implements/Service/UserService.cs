@@ -51,51 +51,69 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         }
 
        
-        public User Login(string email)
+        public User Login(string email, string Password)
         {
-            if (string.IsNullOrWhiteSpace(email))
-                return null;
-            var normalizedEmail = email.Trim().ToLower();
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(Password))
+                    return null;
 
-            return _unitOfWork.UserRepo
-                .GetAll()
-                .FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
+                var normalizedEmail = email.Trim().ToLower();
+
+                var user = _unitOfWork.UserRepo
+                    .GetAll()
+                    .FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
+
+                if (user == null)
+                    return null;
+
+                // So sánh mật khẩu nhập vào với mật khẩu đã hash
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(Password, user.Password);
+
+                return isPasswordValid ? user : null;
+            
+
         }
 
 
-    
+
         public User Register(User user)
         {
-            // Chuẩn hóa email
-            var normalizedEmail = user.Email.Trim().ToLower();
+			if (user == null)
+				throw new ArgumentNullException(nameof(user));
 
-            // Kiểm tra trùng email
-            if (_unitOfWork.UserRepo.Find(u => u.Email.ToLower() == normalizedEmail) != null)
-            {
-                throw new Exception("Email đã tồn tại.");
-            }
+			// 1. Chuẩn hoá email
+			var normalizedEmail = user.Email?.Trim().ToLowerInvariant();
+			if (string.IsNullOrWhiteSpace(normalizedEmail))
+				throw new ArgumentException("Email không được để trống.");
 
-            // Mã hóa mật khẩu
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+			// 2. Kiểm tra trùng email
+			bool exists = _unitOfWork.UserRepo
+				.GetAll()
+				.Any(u => u.Email.ToLowerInvariant() == normalizedEmail);
+			if (exists)
+				throw new InvalidOperationException("Email đã tồn tại.");
 
-            // Lưu email đã chuẩn hóa
-            user.Email = normalizedEmail;
+			// 3. Gán các trường hệ thống
+			user.UserID = Guid.NewGuid();
+			user.Email = normalizedEmail;
+			user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+			user.CreateDate = DateTime.UtcNow;
+			user.Role = Role.Customer;
+			user.Status = Status.Activity;
 
-            // Thêm user
-            _unitOfWork.UserRepo.Add(user);
-            _unitOfWork.UserRepo.SaveChanges();
+			// 4. Thêm User và Cart
+			_unitOfWork.UserRepo.Add(user);
+			var cart = new Cart
+			{
+				CartID = Guid.NewGuid(),
+				UserID = user.UserID
+			};
+			_unitOfWork.CartRepo.Add(cart);
 
-            // Tạo cart
-            var cart = new Cart()
-            {
-                CartID = Guid.NewGuid(),
-                UserID = user.UserID
-            };
-            _unitOfWork.CartRepo.Add(cart);
-            _unitOfWork.CartRepo.SaveChanges();
+			// 5. Lưu một lần cho cả hai
+			_unitOfWork.Complete();  // hoặc SaveChanges()
 
-            return user;
-        }
+			return user;
+		}
 
 
 

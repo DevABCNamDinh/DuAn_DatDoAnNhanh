@@ -4,15 +4,20 @@
     <div class="login-wrap">
         <div class="login-html">
             <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
-            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
+
+            <input id="tab-2" type="radio" name="tab" class="sign-up" checked><label for="tab-2" class="tab">Sign Up</label>
             <div class="login-form">
                 <div class="sign-in-htm">
+                
+                  
+
 
                     <form asp-controller="User" asp-action="Login" method="post">
 
                         <div class="group">
                             <label asp-for="@Model.Email" class="form-label"></label>
                             <input asp-for="@Model.Email" class="form-control">
+
                             <span asp-validation-for="@Model.Email" class="text-danger"></span>
                         </div>
                         <div class="group">
@@ -30,6 +35,11 @@
                                 @TempData["ErrorPassword"]
                             </div>
                         }
+
+                       
+
+
+                      
                     </form>
 
                     
@@ -74,6 +84,10 @@
             </div>
         </div>
     </div>
+
+
+
+
 </body>
 
 </html>
@@ -281,3 +295,20 @@
         text-align: center;
     }
 </style>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            var openSignIn = '@TempData["OpenSignInModal"]' === 'True';
+            if (openSignIn) {
+                $('#tab-1').prop('checked', true); // Tab đăng nhập
+                $('#tab-2').prop('checked', false);
+            }
+        });
+    </script>
+}
+
+
