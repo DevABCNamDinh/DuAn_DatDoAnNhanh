@@ -31,73 +31,86 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         [HttpPost]
         public IActionResult Login(LoginViewModel loginViewModel)
         {
-           
+
             if (!ModelState.IsValid)
             {
-                TempData["ErrorPassword"] = "Vui lòng nhập đầy đủ thông tin";
+                //ViewBag.ShowLoginTab = true;
+                TempData["LoginError"] = "Thông tin đăng nhập không hợp lệ.";
+                // Truyền model vào ViewBag hoặc ViewData
                 TempData["OpenSignInModal"] = true;
-                return RedirectToAction("Login");
+                ViewData["LoginModel"] = loginViewModel;
+                return RedirectToAction("Index", "Home");
+
             }
 
-            var user = _userService.Login(loginViewModel.Email);
+            var user = _userService.Login(loginViewModel.Email, loginViewModel.Password);
 
-            var returnUrl = Request.Headers["Referer"].ToString();
-            TempData["ReturnUrl"] = string.IsNullOrEmpty(returnUrl) ? Url.Action("Index", "Home") : returnUrl;
-
-            if (user != null)
+            if (user == null)
             {
-                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(loginViewModel.Password, user.Password);
+                TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
+                ViewBag.ShowLoginTab = true;
+                return RedirectToAction("Index", "Home");
 
-                if (isPasswordCorrect)
-                {
-                    HttpContext.Session.SetString("UserId", user.UserID.ToString());
-                    HttpContext.Session.SetString("UserName", user.FullName);
-                    TempData["Message"] = "Đăng nhập thành công";
-
-                    return Redirect(TempData["ReturnUrl"].ToString());
-                }
             }
 
-            TempData["ErrorPassword"] = "Email hoặc mật khẩu không chính xác";
-            TempData["OpenSignInModal"] = true;
-            return Redirect(TempData["ReturnUrl"].ToString());
+            HttpContext.Session.SetString("UserId", user.UserID.ToString());
+            HttpContext.Session.SetString("UserName", user.FullName);
+            TempData["Message"] = "Đăng nhập thành công!";
+
+            return RedirectToAction("Index", "Home");
+
+
         }
 
         public IActionResult Register()
         {
             return View();
         }
-       
+
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel registerViewModel)
+	
+		public IActionResult Register(RegisterViewModel registerViewModel)
         {
+			// Kiểm tra dữ liệu model hợp lệ chưa
+			if (!ModelState.IsValid)
+			{
+				//TempData["RegisterError"] = "Thông tin đăng ký không hợp lệ.";
+                TempData["OpenSignInModal"] = true;
+                TempData["ShowRegisterTab"] = true;
+              
+                return ViewComponent("SignUpSignIn", registerViewModel); // KHÔNG dùng Redirect
 
-            
-                try
-                {
-                    var user = new User()
-                    {
-                        UserID = Guid.NewGuid(),
-                        FullName = registerViewModel.FullName,
-                        Email = registerViewModel.Email.Trim().ToLower(),
-                        Password = BCrypt.Net.BCrypt.HashPassword(registerViewModel.Password),
-                        CreateDate = DateTime.Now,
-                        Role = Role.Customer,
-                        Status = Status.Activity
-                    };
-
-                    _userService.Register(user);
-                    TempData["Message"] = "Đăng ký thành công!"; // Có thể thêm thông báo này
-                    return RedirectToAction("Login"); // hoặc Redirect về trang Home nếu muốn login tự động
-                }
-                catch (Exception ex)
-                {
-                    TempData["RegisterError"] = ex.Message;
-                    TempData["OpenSignInModal"] = true; // để mở lại modal
-                    return RedirectToAction("Index", "Home"); // hoặc nơi có modal
-                }
             }
+
+            try
+			{
+				// Tạo user mới từ view model (mã hóa, role, status sẽ xử lý bên service)
+				var user = new User()
+				{
+					FullName = registerViewModel.FullName?.Trim(),
+					Email = registerViewModel.Email,
+					Password = registerViewModel.Password // sẽ được hash bên service
+				};
+
+				_userService.Register(user);
+
+				TempData["Message"] = "Đăng ký thành công! Mời bạn đăng nhập.";
+				TempData["OpenSignInModal"] = true;
+				return RedirectToAction("Index", "Home");
+
+			}
+			catch (Exception ex)
+			{
+				TempData["RegisterError"] = ex.Message;
+				TempData["OpenSignInModal"] = true;
+                TempData["ShowRegisterTab"] = true; 
+                return RedirectToAction("Index", "Home");
+			}
+
+			
+		}
+        
 
           
         

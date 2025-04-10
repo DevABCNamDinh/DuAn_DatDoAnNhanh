@@ -78,30 +78,46 @@
        
     </style>
 </head>
+
 <body>
     <center>
-		<div class="login-container">
-			<h2>Đăng nhập</h2>
-			<form asp-action="Login" method="post">
-				<div class="input-group">
-					<label>Email:</label>
-					<input type="email" asp-for="Email" required placeholder="Nhập email..." />
-				</div>
+        <div class="login-container">
+            <h2>Đăng nhập</h2>
+            <form asp-action="Login" method="post">
+                <div class="input-group">
+                    <label>Email:</label>
+                    <input type="email" asp-for="Email"/>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <br>
 				<div class="input-group">
 					<label>Password:</label>
-					<input type="password" asp-for="Password" required placeholder="Nhập mật khẩu..." />
+					<input type="password" asp-for="Password"/>
+					<span asp-validation-for="Password" class="text-danger"></span>
 				</div>
+            </br>
+               
+                <br>
 				<button type="submit" class="btn-login">Đăng nhập</button>
-			</form>
+            </br>
+                
+            </form>
 
-			@if (ViewBag.Error != null)
-			{
-				<p class="error-message">@ViewBag.Error</p>
-			}
-		</div>
+            @if (ViewBag.Error != null)
+            {
+                <p class="error-message">@ViewBag.Error</p>
+            }
+        </div>
     </center>
-   
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
 </body>
+
+
 </html>
 
 
