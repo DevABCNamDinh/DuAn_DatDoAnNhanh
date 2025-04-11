@@ -1,7 +1,8 @@
 ﻿@using DuAn_DoAnNhanh.Application.Implements.Service
 @using DuAn_DoAnNhanh.Application.Interfaces.Service
-@using DuAn_DoAnNhanh.Client.Models.ViewModel
+@using DuAn_DoAnNhanh.Data.ViewModel
 @using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ICartService _cartService
 <!DOCTYPE html>
@@ -93,7 +94,9 @@
 
     <div class="container">
         @{
-            var loginModel = ViewData["LoginModel"] as RegisterViewModel;
+            var model = TempData["LoginRegisterModel"] != null
+            ? JsonConvert.DeserializeObject<LoginRegisterViewModel>(TempData["LoginRegisterModel"].ToString())
+            : new LoginRegisterViewModel();
         }
 
         <main role="main">
@@ -104,7 +107,7 @@
 
                         <div class="modal-body p-2">
                             <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                            @await Component.InvokeAsync("SignUpSignIn", new { model = loginModel })
+                            @await Component.InvokeAsync("SignUpSignIn", new { model = model })
                         </div>
                     </div>
                 </div>
@@ -179,14 +182,7 @@
 
         }
 
-        @if (TempData["ShowRegisterTab"] != null && (bool)TempData["ShowRegisterTab"] == true)
-        {
-            <text>
-                    setTimeout(function () {
-                        $('#signUpTab').tab('show');
-                    }, 300); // delay 1 chút để modal load xong
-            </text>
-        }
+       
             });
     </script>
     @if (TempData["Message"] != null)
