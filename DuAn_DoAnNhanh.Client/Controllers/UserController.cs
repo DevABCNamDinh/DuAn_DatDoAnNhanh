@@ -36,24 +36,36 @@ namespace DuAn_DoAnNhanh.Client.Controllers
                 return RedirectToAction("Index", "Home");
 
             }
-
-            var user = _userService.Login(loginViewModel.Login);
-
-            if (user == null)
+            try
             {
-                TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
+                var user = _userService.Login(loginViewModel.Login);
+
+                if (user == null)
+                {
+                    TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
+                    TempData["OpenSignInModal"] = true;
+                    TempData["ActiveTab"] = "login";
+                    TempData["LoginRegisterModel"] = JsonConvert.SerializeObject(loginViewModel);
+                    return RedirectToAction("Index", "Home");
+
+                }
+
+                HttpContext.Session.SetString("UserId", user.UserID.ToString());
+                HttpContext.Session.SetString("UserName", user.FullName);
+                TempData["Message"] = "Đăng nhập thành công!";
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+
+                TempData["LoginError"] = ex.Message;
                 TempData["OpenSignInModal"] = true;
                 TempData["ActiveTab"] = "login";
                 TempData["LoginRegisterModel"] = JsonConvert.SerializeObject(loginViewModel);
                 return RedirectToAction("Index", "Home");
-
             }
-
-            HttpContext.Session.SetString("UserId", user.UserID.ToString());
-            HttpContext.Session.SetString("UserName", user.FullName);
-            TempData["Message"] = "Đăng nhập thành công!";
-
-            return RedirectToAction("Index", "Home");
+            
 
 
         }
