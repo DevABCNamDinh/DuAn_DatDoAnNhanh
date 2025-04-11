@@ -41,9 +41,7 @@
     builder.Services.AddScoped<IBillService, BillService>();
     builder.Services.AddScoped<IAddressService, AddressService>();
 
-builder.Services.AddScoped<IStoreService, StoreService>();
-
-builder.Services.AddTransient<IEmailService, EmailService>();  //đăng ký email
+    builder.Services.AddTransient<IEmailService, EmailService>();  //đăng ký email
 
 builder.Services.AddScoped<BillViewModel>();
     builder.Services.AddHttpClient(); // Thêm dòng này để sử dụng HttpClient

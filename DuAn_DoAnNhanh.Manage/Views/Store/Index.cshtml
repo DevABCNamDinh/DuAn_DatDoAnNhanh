@@ -12,11 +12,11 @@
 </p>
 
 <!-- Modal tạo cửa hàng mới -->
-<div id="storeModal" class="modal fade" tabindex="-1" role="dialog">
+<div id="storeModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body" id="storeModalBody">
-                @await Component.InvokeAsync("StoreCreate", new { model = new DuAn_DoAnNhanh.Data.ViewModel.StoreViewModel() })
+            <div class="modal-body">
+                @await Component.InvokeAsync("StoreCreate")
             </div>
         </div>
     </div>
@@ -60,91 +60,81 @@ else
     <span id="pageNumbers"></span>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            let itemsPerPage = 6;
-            let currentPage = 1;
-            let $storeItems = $(".store-item");
-            let filteredItems = $storeItems;
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let itemsPerPage = 6;
+        let currentPage = 1;
+        let $storeItems = $(".store-item"); // Toàn bộ item ban đầu
+        let filteredItems = $storeItems; // Danh sách hiện tại sau khi lọc
 
-            // Mở modal
-            $("#openModal").click(function () {
-                $("#storeModal").modal('show');
-            });
+        // Mở modal
+        $("#openModal").click(function () {
+            $("#storeModal").modal('show');
+        });
 
-            // AJAX submit form
-            $(document).on("submit", "#store-form", function (e) {
-                e.preventDefault();
-                var form = $(this);
-                $.ajax({
-                    url: form.attr("action") || "/Store/CreateStore",
-                    method: form.attr("method"),
-                    data: form.serialize(),
-                    success: function (result) {
-                        if (result.success) {
-                            location.reload();
-                        } else {
-                            $("#storeModalBody").html(result);
-                        }
-                    },
-                    error: function () {
-                        alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-                    }
-                });
-            });
+        // Hàm cập nhật phân trang
+        function updatePagination() {
+            let totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
-            function updatePagination() {
-                let totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-                $storeItems.hide();
-                filteredItems.hide();
-                let start = (currentPage - 1) * itemsPerPage;
-                let end = start + itemsPerPage;
-                filteredItems.slice(start, end).fadeIn();
+            // Ẩn tất cả
+            $storeItems.hide();
+            filteredItems.hide();
 
-                $("#pageNumbers").html("");
-                for (let i = 1; i <= totalPages; i++) {
-                    const btn = $(`<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-secondary'} page-btn mx-1" data-page="${i}">${i}</button>`);
-                    $("#pageNumbers").append(btn);
-                }
+            // Hiện item theo trang
+            let start = (currentPage - 1) * itemsPerPage;
+            let end = start + itemsPerPage;
+            filteredItems.slice(start, end).fadeIn();
+
+            // Cập nhật nút phân trang
+            $("#pageNumbers").html("");
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = $(`<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-secondary'} page-btn mx-1" data-page="${i}">${i}</button>`);
+                $("#pageNumbers").append(btn);
             }
+        }
 
-            $("#searchInput").on("keyup", function () {
-                const keyword = $(this).val().toLowerCase();
+        // Xử lý tìm kiếm
+        $("#searchInput").on("keyup", function () {
+            const keyword = $(this).val().toLowerCase();
 
-                filteredItems = $storeItems.filter(function () {
-                    const storeName = $(this).find("h5").text().toLowerCase();
-                    return storeName.indexOf(keyword) > -1;
-                });
-
-                currentPage = 1;
-                updatePagination();
+            filteredItems = $storeItems.filter(function () {
+                const storeName = $(this).find("h5").text().toLowerCase();
+                return storeName.indexOf(keyword) > -1;
             });
 
-            $(document).on("click", ".page-btn", function () {
-                currentPage = parseInt($(this).data("page"));
-                updatePagination();
-            });
-
+            currentPage = 1;
             updatePagination();
         });
-    </script>
-    <style>
-        .card-custom {
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: left;
-        }
 
-        .bg-primary-custom {
-            background-color: #007bff;
-        }
+        // Click nút phân trang
+        $(document).on("click", ".page-btn", function () {
+            currentPage = parseInt($(this).data("page"));
+            updatePagination();
+        });
 
-        .page-btn {
-            min-width: 40px;
-        }
-    </style>
-}
+        // Hiển thị trang đầu tiên
+        updatePagination();
+    });
+</script>
+
+<style>
+    .card-custom {
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: left;
+    }
+
+    .bg-primary-custom {
+        background-color: #007bff;
+    }
+
+    .page-btn {
+        min-width: 40px;
+    }
+</style>
+
+
+

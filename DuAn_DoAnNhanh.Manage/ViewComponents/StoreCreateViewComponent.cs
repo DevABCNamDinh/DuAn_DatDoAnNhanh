@@ -1,10 +1,15 @@
-﻿using DuAn_DoAnNhanh.Data.ViewModel;
+﻿using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
-public class StoreCreateViewComponent : ViewComponent
+namespace DuAn_DoAnNhanh.Manage.ViewComponents
 {
-    public async Task<IViewComponentResult> InvokeAsync(StoreViewModel model)
+    public class StoreCreateViewComponent : ViewComponent
     {
-        return View(model);
+        public IViewComponentResult Invoke()
+        {
+            var store = new StoreViewModel(); // Tạo một đối tượng  mới
+            return View(store); // Truyền đối tượng  vào view
+        }
     }
 }
