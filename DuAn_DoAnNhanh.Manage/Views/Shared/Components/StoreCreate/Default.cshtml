@@ -1,70 +1,65 @@
 ﻿@model DuAn_DoAnNhanh.Data.ViewModel.StoreViewModel
 
-<form asp-controller="Store" asp-action="CreateStore" method="post" enctype="multipart/form-data" class="form-container">
-<div class="row container">
-    <div class="col-md-7 col-sm-7">
-    <h2>Thông tin cửa hàng</h2>  
-        <div class="row">
-            <div class="mb-3 col-md-6">
-                <input asp-for="StoreName" type="text"
-                       class="form-control"
-                       placeholder="Tên cửa hàng" />
-            </div> <div class="mb-3 col-md-6">
-                <input asp-for="NumberPhone" type="text"
-                       class="form-control"
-                       placeholder="Số điện thoại" />
+<form id="store-form" method="post" enctype="multipart/form-data">
+    <div class="row container">
+        <div class="col-md-7 col-sm-7">
+            <h2>Thông tin cửa hàng</h2>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <input asp-for="StoreName" class="form-control" placeholder="Tên cửa hàng" />
+                    <span asp-validation-for="StoreName" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <input asp-for="NumberPhone" class="form-control" placeholder="Số điện thoại" />
+                    <span asp-validation-for="NumberPhone" class="text-danger"></span>
+                </div>
             </div>
-        </div>       
-        <div class="row">
-            <!-- Chọn Tỉnh/Thành phố -->
-            <div class="mb-3 col-md-6">
-                <select asp-for="Province" id="province" class="form-control">
-                    <option value="">Tỉnh/Thành phố</option>
-                </select>
+
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <select asp-for="Province" id="province" class="form-control">
+                        <option value="">Tỉnh/Thành phố</option>
+                    </select>
+                    <span asp-validation-for="Province" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <select asp-for="District" id="district" class="form-control">
+                        <option value="">Quận/Huyện</option>
+                    </select>
+                    <span asp-validation-for="District" class="text-danger"></span>
+                </div>
             </div>
-            <!-- Chọn Quận/Huyện -->
-            <div class="mb-3 col-md-6">
-                <select asp-for="District" id="district" class="form-control">
-                    <option value="">Quận/Huyện</option>
-                </select>
-            </div>
-        </div>
-        <!-- Chọn Xã -->
-        <div class="mb-3">
-            <select asp-for="Ward" id="ward" class="form-control">
-                <option value="">Xã/Phường</option>
-            </select>
-        </div>
-        <!-- Ô nhập địa chỉ cụ thể (Autocomplete từ HERE) -->
-        <div class="mb-3">
-            <input asp-for="SpecificAddress" type="text"
-                   class="form-control"
-                   placeholder="Nhập địa chỉ cụ thể" />
-        </div>
-        
-    </div>
-    <div class ="col-md-5 col-sm-5">
-        <h2>Thông tin quản lý</h2>
-        
+
             <div class="mb-3">
-                <input asp-for="ManagerName" type="text"
-                       class="form-control"
-                       placeholder="Tên quản lý" />
-            </div> 
-            <div class="mb-3">
-                <input asp-for="Email" type="email"
-                       class="form-control"
-                       placeholder="Email" />
+                <select asp-for="Ward" id="ward" class="form-control">
+                    <option value="">Xã/Phường</option>
+                </select>
+                <span asp-validation-for="Ward" class="text-danger"></span>
             </div>
-       
-        <span>*Vui lòng nhập đúng Email để nhận thông báo về việc đăng ký tài khoản.</span>
-        <br/>
-        <br/>
-        <div>Quyền hạn: <input type="radio" checked></input> Quản lý</div>        
+
+            <div class="mb-3">
+                <input asp-for="SpecificAddress" class="form-control" placeholder="Nhập địa chỉ cụ thể" />
+                <span asp-validation-for="SpecificAddress" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-5 col-sm-5">
+            <h2>Thông tin quản lý</h2>
+            <div class="mb-3">
+                <input asp-for="ManagerName" class="form-control" placeholder="Tên quản lý" />
+                <span asp-validation-for="ManagerName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <span>*Vui lòng nhập đúng Email để nhận thông báo về việc đăng ký tài khoản.</span>
+            <div>Quyền hạn: <input type="radio" checked disabled /> Quản lý</div>
+        </div>
+        <button type="submit" class="btn btn-primary align-content-center">Đăng ký</button>
     </div>
-    <button type="submit" class="btn btn-primary align-content-center">Đăng ký</button>
-</div>
 </form>
+
 <!-- Thêm script cho jQuery và Bootstrap -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -115,5 +110,4 @@
     });
 
 </script>
-
 
