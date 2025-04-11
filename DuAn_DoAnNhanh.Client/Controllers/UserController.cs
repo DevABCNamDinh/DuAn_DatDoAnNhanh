@@ -1,8 +1,8 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
-using DuAn_DoAnNhanh.Client.Models.ViewModel;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
+using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -22,82 +22,102 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             _dbContext = dbContext;
 
         }
-        public IActionResult Login()
-        {
-            return View();
-        }
-      
+     
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel loginViewModel)
+        public IActionResult Login(LoginRegisterViewModel loginViewModel)
         {
-           
-            if (!ModelState.IsValid)
+
+            if (loginViewModel.Login.Email==null||loginViewModel.Login.Password==null)
             {
-                TempData["ErrorPassword"] = "Vui lòng nhập đầy đủ thông tin";
-                TempData["OpenSignInModal"] = true;
-                return RedirectToAction("Login");
+                TempData["ActiveTab"] = "login";
+                TempData["LoginRegisterModel"] =JsonConvert.SerializeObject(loginViewModel);
+                TempData["OpenSignInModal"] = true;              
+                return RedirectToAction("Index", "Home");
+
             }
-
-            var user = _userService.Login(loginViewModel.Email);
-
-            var returnUrl = Request.Headers["Referer"].ToString();
-            TempData["ReturnUrl"] = string.IsNullOrEmpty(returnUrl) ? Url.Action("Index", "Home") : returnUrl;
-
-            if (user != null)
+            try
             {
-                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(loginViewModel.Password, user.Password);
+                var user = _userService.Login(loginViewModel.Login);
 
-                if (isPasswordCorrect)
+                if (user == null)
                 {
-                    HttpContext.Session.SetString("UserId", user.UserID.ToString());
-                    HttpContext.Session.SetString("UserName", user.FullName);
-                    TempData["Message"] = "Đăng nhập thành công";
+                    TempData["LoginError"] = "Email hoặc mật khẩu không đúng.";
+                    TempData["OpenSignInModal"] = true;
+                    TempData["ActiveTab"] = "login";
+                    TempData["LoginRegisterModel"] = JsonConvert.SerializeObject(loginViewModel);
+                    return RedirectToAction("Index", "Home");
 
-                    return Redirect(TempData["ReturnUrl"].ToString());
                 }
+
+                HttpContext.Session.SetString("UserId", user.UserID.ToString());
+                HttpContext.Session.SetString("UserName", user.FullName);
+                TempData["Message"] = "Đăng nhập thành công!";
+
+                return RedirectToAction("Index", "Home");
             }
+            catch (Exception ex)
+            {
 
-            TempData["ErrorPassword"] = "Email hoặc mật khẩu không chính xác";
-            TempData["OpenSignInModal"] = true;
-            return Redirect(TempData["ReturnUrl"].ToString());
+                TempData["LoginError"] = ex.Message;
+                TempData["OpenSignInModal"] = true;
+                TempData["ActiveTab"] = "login";
+                TempData["LoginRegisterModel"] = JsonConvert.SerializeObject(loginViewModel);
+                return RedirectToAction("Index", "Home");
+            }
+            
+
+
         }
 
-        public IActionResult Register()
-        {
-            return View();
-        }
        
 
+
         [HttpPost]
-        public IActionResult Register(RegisterViewModel registerViewModel)
+	
+		public IActionResult Register(LoginRegisterViewModel registerViewModel)
         {
-
-            
-                try
-                {
-                    var user = new User()
-                    {
-                        UserID = Guid.NewGuid(),
-                        FullName = registerViewModel.FullName,
-                        Email = registerViewModel.Email.Trim().ToLower(),
-                        Password = BCrypt.Net.BCrypt.HashPassword(registerViewModel.Password),
-                        CreateDate = DateTime.Now,
-                        Role = Role.Customer,
-                        Status = Status.Activity
-                    };
-
-                    _userService.Register(user);
-                    TempData["Message"] = "Đăng ký thành công!"; // Có thể thêm thông báo này
-                    return RedirectToAction("Login"); // hoặc Redirect về trang Home nếu muốn login tự động
-                }
-                catch (Exception ex)
-                {
-                    TempData["RegisterError"] = ex.Message;
-                    TempData["OpenSignInModal"] = true; // để mở lại modal
-                    return RedirectToAction("Index", "Home"); // hoặc nơi có modal
-                }
+            //// Kiểm tra dữ liệu model hợp lệ chưa
+            if (registerViewModel.Register.Email==null|| registerViewModel.Register.Password == null 
+                || registerViewModel.Register.ConfirmPassword == null || registerViewModel.Register.FullName == null)
+            {
+                //TempData["RegisterError"] = "Thông tin đăng ký không hợp lệ.";
+                TempData["OpenSignInModal"] = true;
+                TempData["ShowRegisterTab"] = true;
+                TempData["ActiveTab"] = "register";
+                TempData["LoginRegisterModel"] = JsonConvert.SerializeObject(registerViewModel);
+                return RedirectToAction("Index", "Home");
             }
+
+            try
+			{
+				// Tạo user mới từ view model (mã hóa, role, status sẽ xử lý bên service)
+				var user = new User()
+				{
+					FullName = registerViewModel.Register.FullName,
+					Email = registerViewModel.Register.Email,
+					Password = registerViewModel.Register.Password 
+				};
+
+				_userService.Register(user);
+
+				TempData["Message"] = "Đăng ký thành công! Mời bạn đăng nhập.";
+				TempData["OpenSignInModal"] = true;
+				return RedirectToAction("Index", "Home");
+
+			}
+			catch (Exception ex)
+			{
+				TempData["RegisterError"] = ex.Message;
+				TempData["OpenSignInModal"] = true;
+                TempData["ActiveTab"] = "register";
+                TempData["LoginRegisterModel"] = JsonConvert.SerializeObject(registerViewModel);
+                return RedirectToAction("Index", "Home");
+			}
+
+			
+		}
+        
 
           
         
