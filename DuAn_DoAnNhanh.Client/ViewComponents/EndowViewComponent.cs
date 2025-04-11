@@ -1,5 +1,5 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
-using DuAn_DoAnNhanh.Client.Models.ViewModel;
+using DuAn_DoAnNhanh.Data.ViewModel;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;

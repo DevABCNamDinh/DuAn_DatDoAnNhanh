@@ -25,15 +25,15 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             _unitOfWork = unitOfWork;
         }
 
-		public IEnumerable<User> GetAllUser()
-		{
-			 return _unitOfWork.UserRepo.GetAll();
-		}
+        public IEnumerable<User> GetAllUser()
+        {
+            return _unitOfWork.UserRepo.GetAll();
+        }
 
-		public User GetUserById(Guid id)
-		{
-			return _unitOfWork.UserRepo.GetById(id);
-		}
+        public User GetUserById(Guid id)
+        {
+            return _unitOfWork.UserRepo.GetById(id);
+        }
 
         public User GetUserWithBills(Guid userId)
         {
@@ -42,7 +42,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 user.Orderes = GetUserBills(userId); // Tải hóa đơn cho người dùng
             }
-           
+
             return user;
         }
         private List<Bill> GetUserBills(Guid userId)
@@ -50,26 +50,26 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             return _unitOfWork.BillRepo.GetAll().Where(b => b.UserID == userId).ToList(); // Lấy hóa đơn của người dùng
         }
 
-       
-        public User Login(string email, string Password)
+
+        public User Login(LoginViewModel login)
         {
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(Password))
-                    return null;
+            if (string.IsNullOrWhiteSpace(login.Email) || string.IsNullOrWhiteSpace(login.Password))
+                return null;
 
-                var normalizedEmail = email.Trim().ToLower();
+            var normalizedEmail = login.Email.Trim().ToLower();
 
-                var user = _unitOfWork.UserRepo
-                    .GetAll()
-                    .FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
+            var user = _unitOfWork.UserRepo
+                .GetAll()
+                .FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
 
-                if (user == null)
-                    return null;
+            if (user == null)
+                return null;
 
-                // So sánh mật khẩu nhập vào với mật khẩu đã hash
-                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(Password, user.Password);
+            // So sánh mật khẩu nhập vào với mật khẩu đã hash
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(login.Password, user.Password);
 
-                return isPasswordValid ? user : null;
-            
+            return isPasswordValid ? user : null;
+
 
         }
 
@@ -77,43 +77,43 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public User Register(User user)
         {
-			if (user == null)
-				throw new ArgumentNullException(nameof(user));
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
 
-			// 1. Chuẩn hoá email
-			var normalizedEmail = user.Email?.Trim().ToLowerInvariant();
-			if (string.IsNullOrWhiteSpace(normalizedEmail))
-				throw new ArgumentException("Email không được để trống.");
+            // 1. Chuẩn hoá email
+            var normalizedEmail = user.Email.Trim().ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(normalizedEmail))
+                throw new ArgumentException("Email không được để trống.");
 
-			// 2. Kiểm tra trùng email
-			bool exists = _unitOfWork.UserRepo
-				.GetAll()
-				.Any(u => u.Email.ToLowerInvariant() == normalizedEmail);
-			if (exists)
-				throw new InvalidOperationException("Email đã tồn tại.");
+            // 2. Kiểm tra trùng email
+            bool exists = _unitOfWork.UserRepo
+                .GetAll()
+                .Any(u => u.Email.ToLowerInvariant() == normalizedEmail);
+            if (exists)
+                throw new InvalidOperationException("Email đã tồn tại.");
 
-			// 3. Gán các trường hệ thống
-			user.UserID = Guid.NewGuid();
-			user.Email = normalizedEmail;
-			user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-			user.CreateDate = DateTime.UtcNow;
-			user.Role = Role.Customer;
-			user.Status = Status.Activity;
+            // 3. Gán các trường hệ thống
+            user.UserID = Guid.NewGuid();
+            user.Email = normalizedEmail;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            user.CreateDate = DateTime.UtcNow;
+            user.Role = Role.Customer;
+            user.Status = Status.Activity;
 
-			// 4. Thêm User và Cart
-			_unitOfWork.UserRepo.Add(user);
-			var cart = new Cart
-			{
-				CartID = Guid.NewGuid(),
-				UserID = user.UserID
-			};
-			_unitOfWork.CartRepo.Add(cart);
+            // 4. Thêm User và Cart
+            _unitOfWork.UserRepo.Add(user);
+            var cart = new Cart
+            {
+                CartID = Guid.NewGuid(),
+                UserID = user.UserID
+            };
+            _unitOfWork.CartRepo.Add(cart);
 
-			// 5. Lưu một lần cho cả hai
-			_unitOfWork.Complete();  // hoặc SaveChanges()
+            // 5. Lưu một lần cho cả hai
+            _unitOfWork.Complete();  // hoặc SaveChanges()
 
-			return user;
-		}
+            return user;
+        }
 
 
 

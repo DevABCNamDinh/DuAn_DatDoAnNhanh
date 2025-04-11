@@ -1,4 +1,4 @@
-﻿using DuAn_DoAnNhanh.Client.Models.ViewModel;
+﻿using DuAn_DoAnNhanh.Data.ViewModel;
 using DuAn_DoAnNhanh.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 

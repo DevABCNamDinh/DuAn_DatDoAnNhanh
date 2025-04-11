@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DuAn_DoAnNhanh.Client.Models.ViewModel
+namespace DuAn_DoAnNhanh.Data.ViewModel
 {
     public class RegisterViewModel
     {
