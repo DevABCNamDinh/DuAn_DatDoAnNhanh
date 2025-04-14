@@ -9,6 +9,7 @@ using DuAn_DoAnNhanh.Data.Implements.UnitOfWork;
 using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
 using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Data.ViewModel;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true; // Bắt buộc cookie session hoạt động
 });
+
 builder.Services.AddDbContext<MyDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -62,10 +64,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";  // Đường dẫn đăng nhập
+        options.AccessDeniedPath = "/Account/Login"; // Khi không có quyền, chuyển hướng đến trang login
+    });
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
-app.UseSession();
+
+
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -88,15 +97,17 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(imagesPath),
     RequestPath = "/images"
 });
+app.UseSession();
+app.UseMiddleware<JwtSessionMiddleware>();
+app.UseMiddleware<AuthorizationMiddleware>();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<JwtSessionMiddleware>();
-app.UseMiddleware<AuthorizationMiddleware>();
+
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Statistical}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 app.Run();

@@ -24,7 +24,7 @@ namespace DuAn_DoAnNhanh.Application.Share.Middlewares
             if (context.Response.StatusCode == 403 || context.Response.StatusCode == 401)
             {
                 // chuyển hướng đến trang thông báo
-                context.Response.Redirect("/User/Login");
+                context.Response.Redirect("/Home/Index");
             }
         }
     }

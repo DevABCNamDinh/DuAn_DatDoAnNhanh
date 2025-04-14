@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,42 +15,51 @@
 
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Menu</h2>
-        @{
-            var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-            var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-        }
-        <a asp-action="Index" asp-controller="Statistical" class="nav_link @(currentAction == "Index" && currentController == "Statistical" ? "active" : "")">
-            <i class='bx bx-grid-alt  p-2' title="Thống kê"></i>
-            <span class="p-2">Thống kê</span>
-        </a>
+    <div class="sidebar d-flex flex-column" style="height: 100vh;">
+            <h2>Menu</h2>
+            @{
+                var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                var authToken = HttpContextAccessor.HttpContext.Session.GetString("AuthToken");
+                var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName");
+            }
+            <a asp-action="Index" asp-controller="Statistical" class="nav_link @(currentAction == "Index" && currentController == "Statistical" ? "active" : "")">
+                <i class='bx bx-grid-alt  p-2' title="Thống kê"></i>
+                <span class="p-2">Thống kê</span>
+            </a>
 
-        <a asp-action="GetAll" asp-controller="Bill" class="nav_link @(currentAction == "GetAll" && currentController == "Bill" ? "active" : "")">
-            <i class='bx bx-cart  p-2' title="Đơn hàng"></i>
-            <span class="p-2">Đơn hàng</span>
-        </a>
+            <a asp-action="GetAll" asp-controller="Bill" class="nav_link @(currentAction == "GetAll" && currentController == "Bill" ? "active" : "")">
+                <i class='bx bx-cart  p-2' title="Đơn hàng"></i>
+                <span class="p-2">Đơn hàng</span>
+            </a>
 
-        <a asp-action="GetAll" asp-controller="Product" class="nav_link @(currentAction == "GetAll" && currentController == "Product" ? "active" : "")">
-            <i class='bx bx-package  p-2' title="Sản phẩm"></i>
-            <span class="p-2">Sản phẩm</span>
-        </a>
+            <a asp-action="GetAll" asp-controller="Product" class="nav_link @(currentAction == "GetAll" && currentController == "Product" ? "active" : "")">
+                <i class='bx bx-package  p-2' title="Sản phẩm"></i>
+                <span class="p-2">Sản phẩm</span>
+            </a>
 
-        <a asp-action="GetAll" asp-controller="Combo" class="nav_link @(currentAction == "GetAll" && currentController == "Combo" ? "active" : "")">
-            <i class='bx bx-purchase-tag  p-2' title="Combo"></i>
-            <span class="p-2">Combo</span>
-        </a>
+            <a asp-action="GetAll" asp-controller="Combo" class="nav_link @(currentAction == "GetAll" && currentController == "Combo" ? "active" : "")">
+                <i class='bx bx-purchase-tag  p-2' title="Combo"></i>
+                <span class="p-2">Combo</span>
+            </a>
 
-        <a asp-action="Index" asp-controller="User" class="nav_link @(currentAction == "Index" && currentController == "User" ? "active" : "")">
-            <i class='bx bx-user  p-2' title="Khách hàng"></i>
-            <span class="p-2">Khách hàng</span>
-        </a>
+            <a asp-action="Index" asp-controller="User" class="nav_link @(currentAction == "Index" && currentController == "User" ? "active" : "")">
+                <i class='bx bx-user  p-2' title="Khách hàng"></i>
+                <span class="p-2">Khách hàng</span>
+            </a>
 
-        <a asp-action="Index" asp-controller="Store" class="nav_link @(currentAction == "Index" && currentController == "Store" ? "active" : "")">
-            <i class='bx bx-store  p-2' title="Cửa hàng"></i>
-            <span class="p-2">Cửa hàng</span>
-        </a>
-    </div>
+            <a asp-action="Index" asp-controller="Store" class="nav_link @(currentAction == "Index" && currentController == "Store" ? "active" : "")">
+                <i class='bx bx-store  p-2' title="Cửa hàng"></i>
+                <span class="p-2">Cửa hàng</span>
+            </a>
+            @if (authToken != null && userName != null)
+            {
+            <a asp-action="Logout" asp-controller="Account" class="nav_link mt-auto">
+                    <i class='bx bx-log-out  p-2' title="Đăng xuất"></i>
+                    <span class="p-2">Đăng xuất</span>
+                </a>
+            }
+        </div>
 
     <div class="main-content">
         <header>

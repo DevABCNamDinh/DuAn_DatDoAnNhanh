@@ -5,12 +5,15 @@ using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using DuAn_DoAnNhanh.Manage.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {
+    [Authorize(Roles = nameof(Role.Admin))]
+
     public class UserController : Controller
     {
         private readonly IUserService _userService; // Inject IUserService để sử dụng logic nghiệp vụ
@@ -51,16 +54,6 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             billViewModel.BillDetails = listBillDetails;
             return View(billViewModel);
         }
-
-
-
-
-        //}
-
-
     }
-
-
-
-    }
+}
 

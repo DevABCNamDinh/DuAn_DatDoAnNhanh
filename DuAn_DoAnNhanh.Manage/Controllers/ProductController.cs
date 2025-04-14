@@ -3,11 +3,15 @@ using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {
+
+    [Authorize(Roles = nameof(Role.Admin))]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
@@ -15,6 +19,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             _productService = productService;
         }
+        
         public IActionResult GetAll()
         {
             var product = _productService.GetAllProduct().OrderByDescending(p => p.CreteDate).ToList();

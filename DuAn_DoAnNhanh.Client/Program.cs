@@ -81,12 +81,12 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images"
 });
 app.UseStaticFiles();
-app.UseRouting();
 app.UseSession();
-app.UseAuthentication();
-app.UseAuthorization();
 app.UseMiddleware<JwtSessionMiddleware>();
 app.UseMiddleware<AuthorizationMiddleware>();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

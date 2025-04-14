@@ -51,26 +51,14 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         }
 
 
-        public User Login(LoginViewModel login)
+        public User? Login(LoginViewModel login)
         {
             if (string.IsNullOrWhiteSpace(login.Email) || string.IsNullOrWhiteSpace(login.Password))
-                return null;
-
-            var normalizedEmail = login.Email.Trim().ToLower();
-
+                return null;           
             var user = _unitOfWork.UserRepo
                 .GetAll()
-                .FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
-
-            if (user == null)
-                return null;
-
-            // So sánh mật khẩu nhập vào với mật khẩu đã hash
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(login.Password, user.Password);
-
-            return isPasswordValid ? user : null;
-
-
+                .FirstOrDefault(u => u.Email== login.Email.Trim().ToLower()&& BCrypt.Net.BCrypt.Verify(login.Password, u.Password));
+            return user;
         }
 
 
@@ -114,43 +102,5 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
             return user;
         }
-
-
-
-
-
-
-        public User Authenticate(string email, string password)
-        {
-            var user = _unitOfWork.UserRepo.GetAll()
-        .FirstOrDefault(u => u.Email == email);
-
-            if (user == null)
-            {
-                return null; // Không tìm thấy user
-            }
-
-            if (user.Role == Role.Customer)
-            {
-                return null; // Không có quyền truy cập
-            }
-
-            if (user.Password != password) // ⚠️ Cần hash mật khẩu trong thực tế
-            {
-                return null;
-            }
-
-            return user;
-        }
-
-        // Băm mật khẩu
-        public User GetUserByEmail(string email)
-        {
-            return _unitOfWork.UserRepo.GetAll()
-                .FirstOrDefault(u => u.Email == email);
-        }
-
-
-
     }
 }
