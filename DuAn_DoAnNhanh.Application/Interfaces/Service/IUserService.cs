@@ -11,15 +11,12 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
     public interface IUserService
     {
         User Register(User user);
-        User Login(LoginViewModel login);
+        User? Login(LoginViewModel login);
 
 
         IEnumerable<User> GetAllUser();
 		User GetUserById(Guid id);
         User GetUserWithBills(Guid userId); // Lấy thông tin người dùng cùng với hóa đơn
-
-
-		User Authenticate(string email, string password);
 
 	}
 }
