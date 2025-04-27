@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DuAn_DoAnNhanh.Data.Enum;
-
+using BCrypt.Net;
 namespace DuAn_DoAnNhanh.Data.EF
 {
     public class MyDBContext : DbContext
@@ -314,7 +314,7 @@ namespace DuAn_DoAnNhanh.Data.EF
                     UserID = Guid.NewGuid(),
                     StoreID = null,
                     FullName="Admin",
-                    Password="admin",
+                    Password= BCrypt.Net.BCrypt.HashPassword("admin"),
                     Email="admin@gmail.com",
                     CreateDate=DateTime.Now,
                     Role=Role.Admin,                 
@@ -325,7 +325,7 @@ namespace DuAn_DoAnNhanh.Data.EF
                     UserID = Guid.NewGuid(),
                     StoreID = Guid.Parse("931F07E5-46D8-4449-B77E-533BF4F33AA3"),
                     FullName = "Phạm Viết Manh",
-                    Password = "manhdb123",
+                    Password = BCrypt.Net.BCrypt.HashPassword("manhdb123"),
                     Email = "manhdb123@gmail.com",
                     CreateDate = DateTime.Now,
                     Role = Role.Manager,
@@ -336,7 +336,7 @@ namespace DuAn_DoAnNhanh.Data.EF
                     UserID = Guid.NewGuid(),
                     StoreID = Guid.Parse("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"),
                     FullName = "Nguyễn Phương Linh",
-                    Password = "linhdb123",
+                    Password = BCrypt.Net.BCrypt.HashPassword("linhdb123"),
                     Email = "linhdb123@gmail.com",
                     CreateDate = DateTime.Now,
                     Role = Role.Manager,
