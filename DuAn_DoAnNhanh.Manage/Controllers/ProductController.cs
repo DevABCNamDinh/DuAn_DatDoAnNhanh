@@ -56,7 +56,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
                 Price = product.Price,
                 Quantity = 0,
                 Status = product.Status,
-                ImageUrl = product.ImageUrl, // Địa chỉ ảnh đã tạo
+                ImageUrl = product.ImageUrl, // địa chỉ ảnh đã tạo
                 CreteDate = DateTime.Now
             };
 
@@ -130,7 +130,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             if (imageFile != null && imageFile.Length > 0)
             {
-                // Đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
+                // đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
                 var dataProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
 
                 // Kiểm tra nếu thư mục Images không tồn tại thì tạo mới

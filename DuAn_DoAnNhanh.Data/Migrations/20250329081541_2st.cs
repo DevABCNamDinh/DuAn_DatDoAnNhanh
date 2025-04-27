@@ -68,7 +68,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                 values: new object[,]
                 {
                     { new Guid("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "BB Chicken-Hàm Nghi" },
-                    { new Guid("931f07e5-46d8-4449-b77e-533bf4f33aa3"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "BB Chicken-Lê Đức Thọ" }
+                    { new Guid("931f07e5-46d8-4449-b77e-533bf4f33aa3"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "BB Chicken-Lê đức Thọ" }
                 });
 
             migrationBuilder.InsertData(
@@ -81,7 +81,7 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                 columns: new[] { "AddressID", "AddressType", "CreateDate", "Description", "District", "FullAddress", "FullName", "Latitude", "Longitude", "NumberPhone", "Province", "SpecificAddress", "Status", "StoreID", "UserID", "Ward" },
                 values: new object[,]
                 {
-                    { new Guid("8c8554dd-c872-4847-a811-fc29416ac68e"), 2, new DateTime(2025, 3, 29, 15, 15, 40, 296, DateTimeKind.Local).AddTicks(8424), null, "Quận Nam Từ Liêm", "Số 7 Lê Đức Thọ, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Thành phố Hà Nội", "BB Chicken-Lê Đức Thọ", 21.02983, 105.76913, "0828277707", "Thành phố Hà Nội", "Số 7 Lê Đức Thọ", 0, new Guid("931f07e5-46d8-4449-b77e-533bf4f33aa3"), null, "Phường Mỹ Đình 2" },
+                    { new Guid("8c8554dd-c872-4847-a811-fc29416ac68e"), 2, new DateTime(2025, 3, 29, 15, 15, 40, 296, DateTimeKind.Local).AddTicks(8424), null, "Quận Nam Từ Liêm", "Số 7 Lê đức Thọ, Phường Mỹ đình 2, Quận Nam Từ Liêm, Thành phố Hà Nội", "BB Chicken-Lê đức Thọ", 21.02983, 105.76913, "0828277707", "Thành phố Hà Nội", "Số 7 Lê đức Thọ", 0, new Guid("931f07e5-46d8-4449-b77e-533bf4f33aa3"), null, "Phường Mỹ đình 2" },
                     { new Guid("a137e13f-5b4b-4a98-b229-0e7341846b28"), 2, new DateTime(2025, 3, 29, 15, 15, 40, 296, DateTimeKind.Local).AddTicks(8400), null, "Quận Nam Từ Liêm", "Số 36 Hàm Nghi, Phường Cầu Diễn, Quận Nam Từ Liêm, Thành phố Hà Nội", "BB Chicken-Hàm Nghi", 21.02983, 105.76913, "055931234", "Thành phố Hà Nội", "Số 36 Hàm Nghi", 0, new Guid("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"), null, "Phường Cầu Diễn" }
                 });
 

@@ -98,7 +98,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         public IActionResult RemoveCartItem(Guid cartItemId)
         {
             _cartService.RemoveCartItem(cartItemId);
-            TempData["Message"] = "Đã xóa sản phẩm ra khỏi giỏ hàng.";
+            TempData["Message"] = "đã xóa sản phẩm ra khỏi giỏ hàng.";
             return RedirectToAction("Cart");
         }
 
@@ -110,7 +110,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             if (cart != null)
             {
                 _cartService.ClearCart(cart.CartID);
-                TempData["Message"] = "Đã xóa sạch giỏ hàng";
+                TempData["Message"] = "đã xóa sạch giỏ hàng";
             }
             return RedirectToAction("Cart");
         }
@@ -130,7 +130,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
                 var userId = HttpContext.Session.GetString("UserId");
                 var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
                 _cartService.CheckOut(cart.CartID,addressId,storeId);
-                TempData["Message"] = "Đặt hàng thành công";
+                TempData["Message"] = "đặt hàng thành công";
                 if (cart != null)
                 {
                     _cartService.ClearCart(cart.CartID);
@@ -141,7 +141,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             }
             catch (Exception)
             {
-                TempData["Message"] = "Đặt hàng thất bại";
+                TempData["Message"] = "đặt hàng thất bại";
                 return RedirectToAction("Index", "Home");
             }
         }

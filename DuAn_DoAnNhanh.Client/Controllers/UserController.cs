@@ -36,7 +36,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             {
                 HttpContext.Session.SetString("UserId", user.UserID.ToString());
                 HttpContext.Session.SetString("UserName", user.FullName.ToString());
-                TempData["Message"] = "Đăng nhập thành công";
+                TempData["Message"] = "đăng nhập thành công";
 
                 if (TempData["ReturnUrl"] != null)
                 {

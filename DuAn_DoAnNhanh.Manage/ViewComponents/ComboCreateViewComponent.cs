@@ -17,9 +17,9 @@ namespace DuAn_DoAnNhanh.Manage.ViewComponents
         {
             var model = new ComboCreateViewModel
             {
-                AvailableProducts = _productService.GetAllProduct() // Lấy toàn bộ sản phẩm từ cửa hàng
+                AvailableProducts = _productService.GetAllProduct()
             };
-            return View(model);
+            return View("~/Views/Shared/Components/ComboCreate/Default.cshtml", model);
         }
     }
 }
