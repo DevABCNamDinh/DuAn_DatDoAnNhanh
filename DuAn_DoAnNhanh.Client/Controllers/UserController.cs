@@ -30,11 +30,11 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
             if (loginViewModel.Login.Email==null||loginViewModel.Login.Password==null)
             {
+
                 TempData["ActiveTab"] = "login";
                 TempData["LoginRegisterModel"] =JsonConvert.SerializeObject(loginViewModel);
                 TempData["OpenSignInModal"] = true;              
                 return RedirectToAction("Index", "Home");
-
             }
             try
             {

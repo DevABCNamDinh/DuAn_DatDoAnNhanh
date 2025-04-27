@@ -4,6 +4,11 @@ using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {
@@ -14,34 +19,20 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         private readonly IComboService _comboService;
         private readonly IProductService _productService;
 
-
-        public ComboController(IComboDetailsService comboDetailsService,IComboService comboService, MyDBContext dbContext, IProductService productService)
+        public ComboController(IComboDetailsService comboDetailsService, IComboService comboService, MyDBContext dbContext, IProductService productService)
         {
             _comboService = comboService;
             _dbContext = dbContext;
-            _productService= productService;
+            _productService = productService;
             _comboDetailsService = comboDetailsService;
         }
-        //public IActionResult GetAll()
-        //{
-        //    // Lấy danh sách combo
-        //    var comboList = _comboService.GetAllCombo();
 
-        //    // Tạo danh sách ViewModel để chứa combo và sản phẩm của mỗi combo
-        //    var comboWithProductsList = comboList.Select(combo => new ComboWithProductsViewModel
-        //    {
-
-        //        Combo = combo,
-        //        Products = _comboDetailsService.listProductInCombo(combo.ComboID).ToList() // Giả sử bạn có dịch vụ _productService để lấy sản phẩm theo ComboID
-        //    }).ToList();
-
-        //    return View(comboWithProductsList);
-        //}
-
-
-        public IActionResult GetAll(string searchTerm = null)
+        // Hành động GET để lấy danh sách combo với phân trang
+        public IActionResult GetAll(int page = 1, string searchTerm = null)
         {
-            // Lấy danh sách combo
+            const int pageSize = 6; // Số combo trên mỗi trang
+
+            // Lấy danh sách combo từ service
             var comboList = _comboService.GetAllCombo();
 
             // Nếu có từ khóa tìm kiếm, lọc danh sách combo
@@ -50,122 +41,153 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
                 comboList = comboList.Where(combo => combo.ComboName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Tạo danh sách ViewModel để chứa combo và sản phẩm của mỗi combo
-            var comboWithProductsList = comboList.Select(combo => new ComboWithProductsViewModel
+            // Tính toán phân trang
+            int totalCombos = comboList.Count;
+            int totalPages = (int)Math.Ceiling((double)totalCombos / pageSize);
+            var paginatedCombos = comboList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tạo danh sách ViewModel chứa combo và sản phẩm
+            var comboWithProductsList = paginatedCombos.Select(combo => new ComboWithProductsViewModel
             {
                 Combo = combo,
                 Products = _comboDetailsService.listProductInCombo(combo.ComboID).ToList()
             }).ToList();
 
+            // Truyền dữ liệu phân trang vào ViewBag
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.SearchTerm = searchTerm;
+
             return View(comboWithProductsList);
         }
 
-        public IActionResult Create() { 
-            return ViewComponent("ComboCreate");
-        }
-        [HttpPost]
-        public async Task<IActionResult> Create(IFormFile ImageFile, Combo combo)
+        // Hành động GET cho trang tạo combo
+        [HttpGet]
+        public IActionResult Create()
         {
+            var model = new ComboCreateViewModel
+            {
+                AvailableProducts = _productService.GetAllProduct()
+            };
+            return View("~/Views/Shared/Components/ComboCreate/Default.cshtml", model);
+        }
+
+        // Hành động POST để tạo combo mới
+        [HttpPost]
+        public async Task<IActionResult> Create(ComboCreateViewModel model, IFormFile ImageFile)
+        {
+            // Kiểm tra nếu không chọn ít nhất 2 sản phẩm
+            if (model.SelectedProducts == null || model.SelectedProducts.Count < 2)
+            {
+                ModelState.AddModelError("", "Vui lòng chọn ít nhất 2 sản phẩm để tạo combo.");
+                model.AvailableProducts = _productService.GetAllProduct();
+               return View("~/Views/Shared/Components/ComboCreate/Default.cshtml", model);
+            }
+
+            // Xử lý upload ảnh
+            string imageUrl = null;
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
-                if (!string.IsNullOrEmpty(imageUrl))
-                {
-                    combo.Image = imageUrl; // Gán đường dẫn ảnh vào combo
-                }
+                imageUrl = await SaveImageAsync(ImageFile);
             }
-            // Tạo product mới và lưu vào cơ sở dữ liệu
-            Combo comboCreate = new Combo
+
+            // Tạo đối tượng Combo
+            var combo = new Combo
             {
-                ComboName = combo.ComboName,
-                Description = combo.Description,
-                Price = combo.Price,                          
-                Image = combo.Image, // Địa chỉ ảnh đã tạo
+                ComboName = model.ComboName,
+                Description = model.Description,
+                Image = imageUrl,
+                Price = 0, // Giá sẽ được tính tự động trong service
+                Status = StatusCombo.Activity,
+                CreteDate = DateTime.Now
             };
 
-            _comboService.AddCombo(comboCreate);
+            // Tạo danh sách ProductCombo
+            var productCombos = model.SelectedProducts.Select(sp => new ProductCombo
+            {
+                ProductID = sp.ProductID,
+                Quantity = sp.Quantity,
+                Status = StatusCombo.Activity
+            }).ToList();
+
+            // Gọi service để tạo combo
+            await _comboService.CreateComboAsync(combo, productCombos);
 
             return RedirectToAction("GetAll", "Combo");
         }
 
-        private async Task<string> SaveImageAsync2(IFormFile imageFile)
+        // Phương thức lưu ảnh
+        private async Task<string> SaveImageAsync(IFormFile imageFile)
         {
-            if (imageFile != null && imageFile.Length > 0)
+            if (imageFile == null || imageFile.Length == 0) return null;
+
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            if (!Directory.Exists(uploadPath))
             {
-                // Đường dẫn tới thư mục Images trong DuAn_DoAnNhanh.Data
-                var dataProjectPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DuAn_DoAnNhanh.Application", "Images");
-
-                // Kiểm tra nếu thư mục Images không tồn tại thì tạo mới
-                if (!Directory.Exists(dataProjectPath))
-                {
-                    Directory.CreateDirectory(dataProjectPath);
-                }
-
-                // Lấy tên file
-                var fileName = Path.GetFileName(imageFile.FileName);
-                var filePath = Path.Combine(dataProjectPath, fileName);
-
-                // Lưu ảnh vào thư mục Images
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await imageFile.CopyToAsync(fileStream);
-                }
-
-                // Trả về đường dẫn tương đối đến ảnh (tùy thuộc vào cách bạn muốn sử dụng đường dẫn này)
-                return $"/images/{fileName}";
+                Directory.CreateDirectory(uploadPath);
             }
-            return null;
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var filePath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            return $"/images/{fileName}";
         }
 
+        // Hành động xem chi tiết combo
         public IActionResult Details(Guid id)
         {
-            var comboDetail = new ComboWithProductsViewModel();
-            var listProductCombo = _dbContext.productCombos.Where(x=>x.ComboID==id&&x.Status==StatusCombo.Activity).ToList();
+            var combo = _comboService.GetComboById(id);
+            if (combo == null) return NotFound();
 
-           var combo = _comboService.GetComboById(id);
-            var products = new List<Product>();
-            foreach (var product in listProductCombo)
+            var products = _comboDetailsService.listProductInCombo(id).ToList();
+            var comboDetail = new ComboWithProductsViewModel
             {
-                var pr = _productService.GetProductById(product.ProductID);
-                pr.Quantity = product.Quantity;
-                products.Add(pr);
-            }
-            comboDetail.Combo = combo;
-            comboDetail.Products = products;
+                Combo = combo,
+                Products = products
+            };
+
             return View(comboDetail);
         }
+
+        // Hành động chỉnh sửa combo
+        [HttpPost]
         public async Task<IActionResult> Edit(IFormFile ImageFile, Combo combo)
         {
+            var existingCombo = _comboService.GetComboById(combo.ComboID);
+            if (existingCombo == null) return NotFound();
+
             if (ImageFile != null && ImageFile.Length > 0)
             {
-                var imageUrl = await SaveImageAsync2(ImageFile); // Gọi phương thức lưu ảnh
+                var imageUrl = await SaveImageAsync(ImageFile);
                 if (!string.IsNullOrEmpty(imageUrl))
                 {
-                    combo.Image = imageUrl; // Gán đường dẫn ảnh vào combo
+                    combo.Image = imageUrl;
                 }
             }
             else
             {
-                // Nếu không có ảnh mới, giữ nguyên giá trị ảnh cũ
-                var comboEditX = _comboService.GetComboById(combo.ComboID);
-                combo.Image = comboEditX.Image;  // Giữ lại ảnh cũ nếu không có ảnh mới
+                combo.Image = existingCombo.Image; // Giữ ảnh cũ nếu không có ảnh mới
             }
 
-            var comboEdit = _comboService.GetComboById(combo.ComboID);    
-            comboEdit.Image = combo.Image;   
-            comboEdit.ComboName= combo.ComboName;
-            comboEdit.SetupPrice = combo.SetupPrice;
-            _comboService.UpdateCombo(comboEdit);
-            return RedirectToAction("Details", new {id =combo.ComboID});
-            //return ViewComponent("ComboDetails", new { comboID =combo.ComboID});
+            existingCombo.ComboName = combo.ComboName;
+            existingCombo.Description = combo.Description;
+            existingCombo.Image = combo.Image;
+            existingCombo.SetupPrice = combo.SetupPrice;
 
+            _comboService.UpdateCombo(existingCombo);
+            return RedirectToAction("Details", new { id = combo.ComboID });
         }
 
+        // Hành động xóa combo
         public IActionResult Delete(Guid id)
         {
             _comboService.DeleteCombo(id);
             return RedirectToAction("GetAll");
         }
-       
     }
 }

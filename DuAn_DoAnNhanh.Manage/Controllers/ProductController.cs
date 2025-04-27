@@ -46,8 +46,7 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             {
                 TempData["Message"] = "Lỗi" + ex.Message;
                 throw;
-            }
-           
+            }          
         }
 
         public IActionResult Details(Guid id)
