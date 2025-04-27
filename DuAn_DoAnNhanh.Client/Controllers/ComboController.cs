@@ -45,7 +45,6 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         {
             var comboDetail = new ComboWithProductsViewModel();
             var listProductCombo = _dbContext.productCombos.Where(x => x.ComboID == id && x.Status == StatusCombo.Activity).ToList();
-
             var combo = _comboService.GetComboById(id);
             var products = new List<Product>();
             foreach (var product in listProductCombo)

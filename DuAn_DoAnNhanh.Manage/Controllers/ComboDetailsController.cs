@@ -21,22 +21,51 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         
         public IActionResult Create(ProductCombo productCombo)
         {
-           _comboDetailsService.AddProductCombo(productCombo);
-            return RedirectToAction("Details", "Combo", new { id = productCombo.ComboID });
+            try
+            {
+                _comboDetailsService.AddProductCombo(productCombo);
+                return RedirectToAction("Details", "Combo", new { id = productCombo.ComboID });
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Lỗi" + ex.Message;
+                throw;
+            }
+          
 
         }
 
         [HttpPost]
         public IActionResult Edit(ProductCombo productCombo)
         {
-           _comboDetailsService.UpdateProductCombo(productCombo);   
-            return RedirectToAction("Details", "Combo", new { id = productCombo.ComboID });
+            try
+            {
+              _comboDetailsService.UpdateProductCombo(productCombo);   
+              return RedirectToAction("Details", "Combo", new { id = productCombo.ComboID });
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Lỗi" + ex.Message;
+                throw;
+            }
+         
 
         }
 
-        public IActionResult Delete(Guid productID,Guid comboID) {
-           _comboDetailsService.DeleteComboDetailsByproductIDcomboID(productID, comboID);
-            return RedirectToAction("Details", "Combo", new {id=comboID});
+        public IActionResult Delete(Guid productID,Guid comboID) 
+        {
+            try
+            {
+                _comboDetailsService.DeleteComboDetailsByproductIDcomboID(productID, comboID);
+                return RedirectToAction("Details", "Combo", new { id = comboID });
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Lỗi" + ex.Message;
+
+                throw;
+            }
+          
         }
 
        

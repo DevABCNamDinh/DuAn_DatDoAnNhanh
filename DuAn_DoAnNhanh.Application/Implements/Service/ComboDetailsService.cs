@@ -1,4 +1,4 @@
-﻿using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
+﻿using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
@@ -9,22 +9,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
 
 namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
     public class ComboDetailsService : IComboDetailsService
     {
-        private readonly IGenericRepository<ProductCombo> _genericRepository;
-        private readonly IProductService _productService;
 
-        private readonly MyDBContext _myDBContext;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public ComboDetailsService(IGenericRepository<ProductCombo> genericRepository, MyDBContext myDBContext,IProductService productService)
+        public ComboDetailsService(IUnitOfWork unitOfWork)
         {
-            _genericRepository = genericRepository;
-            _productService = productService;
-            _myDBContext = myDBContext;
-
+            _unitOfWork = unitOfWork;
         }
         public void AddProductCombo(ProductCombo productCombo)
         {
@@ -33,32 +29,32 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             productComboAdd.ComboID = productCombo.ComboID;
             productComboAdd.Status = StatusCombo.Activity;
             productComboAdd.Quantity = productCombo.Quantity;
-            _genericRepository.insert(productCombo);
-            _genericRepository.save();
-            var combo = _myDBContext.Combos.Find(productCombo.ComboID);
+            _unitOfWork.ProductComboRepo.Add(productCombo);
+            _unitOfWork.ProductComboRepo.SaveChanges();
+            var combo = _unitOfWork.ComboRepo.GetById(productCombo.ComboID);
             if (combo != null)
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(productCombo.ComboID);
                 combo.SetupPrice = null;
-                _myDBContext.Combos.Update(combo);
-                _myDBContext.SaveChanges();
+                _unitOfWork.ComboRepo.Update(combo);
+                _unitOfWork.Complete();
             }
         }
         public void DeleteComboDetailsByproductIDcomboID(Guid productID, Guid comboID)
         {
-            var productComboDelete = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productID && x.ComboID == comboID && x.Status == StatusCombo.Activity);
-           
-            _myDBContext.Remove(productComboDelete);
-            _myDBContext.SaveChanges();
-            var combo = _myDBContext.Combos.Find(comboID);
+            var productComboDelete = _unitOfWork.ProductComboRepo.Find(x => x.ProductID == productID && x.ComboID == comboID && x.Status == StatusCombo.Activity);
+
+            _unitOfWork.ProductComboRepo.Delete(productComboDelete);
+            _unitOfWork.Complete();
+            var combo = _unitOfWork.ComboRepo.GetById(comboID);
             if (combo != null)
             {
                 // Tính toán lại giá cho Combo
                 combo.Price = totalAmount(comboID);
                 combo.SetupPrice= null;
-                _myDBContext.Combos.Update(combo);
-                _myDBContext.SaveChanges();
+                _unitOfWork.ComboRepo.Update(combo);
+                _unitOfWork.Complete();
             }
         }
 
@@ -69,13 +65,13 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public List<Product> listProductInCombo(Guid id)
         {
-            var listProductInCombo = _myDBContext.productCombos.Where(x => x.ComboID == id && x.Status == StatusCombo.Activity).ToList();
+            var listProductInCombo = _unitOfWork.ProductComboRepo.FindAll(x => x.ComboID == id && x.Status == StatusCombo.Activity);
 
 
             var products = new List<Product>();
             foreach (var product in listProductInCombo)
             {
-                var pr = _productService.GetProductById(product.ProductID);
+                var pr = _unitOfWork.ProductRepo.GetById(product.ProductID);
                 pr.Quantity = product.Quantity;
                 products.Add(pr);
             }
@@ -85,11 +81,12 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void UpdateProductCombo(ProductCombo productCombo)
         {
-            var productComboEdit = _myDBContext.productCombos.FirstOrDefault(x => x.ProductID == productCombo.ProductID && x.ComboID == productCombo.ComboID && x.Status == StatusCombo.Activity);
+            var productComboEdit =_unitOfWork.ProductComboRepo.Find(x => x.ProductID == productCombo.ProductID && x.ComboID == productCombo.ComboID && x.Status == StatusCombo.Activity);
             productComboEdit.Quantity = productCombo.Quantity;
-            _genericRepository.update(productComboEdit);
-            _genericRepository.save();
-            var combo = _myDBContext.Combos.Find(productCombo.ComboID);
+            _unitOfWork.ProductComboRepo.Update(productComboEdit);
+            _unitOfWork.Complete();
+            
+            var combo =_unitOfWork.ComboRepo.GetById(productCombo.ComboID);
 
             if (combo != null)
             {
@@ -97,22 +94,20 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 combo.Price = totalAmount(productCombo.ComboID);
                 combo.SetupPrice = null;
 
-                _myDBContext.Combos.Update(combo);
-                _myDBContext.SaveChanges();
+                _unitOfWork.ComboRepo.Update(combo);
+                _unitOfWork.Complete();
             }
         }
         private decimal totalAmount(Guid comboID)
         {
-            var combo = _myDBContext.Combos
-             .Include(c => c.ProductComboes) // Tải ProductCombos liên quan
-             .ThenInclude(pc => pc.Product) // Tải Product liên quan
-             .FirstOrDefault(c => c.ComboID == comboID);
+            var combo = _unitOfWork.ComboRepo.GetComboWithDetails(comboID);
 
+            if (combo != null)
+                // Tính toán lại giá cho Combo
+                return combo.Price = combo.ProductComboes.Where(x => x.Status == StatusCombo.Activity).Sum(pc => pc.Quantity * pc.Product.Price);
 
-            // Tính toán lại giá cho Combo
-            return combo.Price = combo.ProductComboes.Where(x => x.Status == StatusCombo.Activity).Sum(pc => pc.Quantity * pc.Product.Price);
-
-
+            else
+                return 0;
 
         }
     }

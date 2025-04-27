@@ -1,5 +1,5 @@
-﻿using DuAn_DoAnNhanh.Application.Implements.Repository;
-using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
+﻿using DuAn_DoAnNhanh.Data.Implements.Repository;
+using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
@@ -8,30 +8,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
 
 namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
     public class ComboSevice : IComboService
     {
+
         private readonly IGenericRepository<Combo> _genericRepository;
         private readonly IGenericRepository<ProductCombo> _productComboRepository;
-
-        public ComboSevice(IGenericRepository<Combo> comboRepository, IGenericRepository<ProductCombo> productComboRepository)
+ private readonly IUnitOfWork _unitOfWork;
+        public ComboSevice(IGenericRepository<Combo> comboRepository, IGenericRepository<ProductCombo> productComboRepository,IUnitOfWork unitOfWork)
         {
             _genericRepository = comboRepository;
             _productComboRepository = productComboRepository;
+            _unitOfWork = unitOfWork;
         }
         public void AddCombo(Combo combo)
         {
             combo.Status = StatusCombo.Activity;
             combo.CreteDate= DateTime.Now;
-           _genericRepository.insert(combo);
-            _genericRepository.save();
+           _unitOfWork.ComboRepo.Add(combo);
+            _unitOfWork.ComboRepo.SaveChanges();
         }
 
         public void DeleteCombo(Guid id)
         {
-           var comboDelete = _genericRepository.GetById(id);
+           var comboDelete = _unitOfWork.ComboRepo.GetById(id);
             comboDelete.Status = StatusCombo.InActivity;
           UpdateCombo(comboDelete);
 
@@ -39,18 +42,18 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public List<Combo> GetAllCombo()
         {
-            return _genericRepository.GetAll().Where(x=>x.Status==StatusCombo.Activity).OrderByDescending(p => p.CreteDate).ToList();
+            return _unitOfWork.ComboRepo.GetAll().Where(x=>x.Status==StatusCombo.Activity).OrderByDescending(p => p.CreteDate).ToList();
         }
 
         public Combo GetComboById(Guid id)
         {
-            return _genericRepository.GetById(id);
+            return _unitOfWork.ComboRepo.GetById(id);
         }
 
         public void UpdateCombo(Combo combo)
         {
-            _genericRepository.update(combo);
-            _genericRepository.save();
+            _unitOfWork.ComboRepo.Update(combo);
+            _unitOfWork.ComboRepo.SaveChanges();
         }
         public async Task<Guid> CreateComboAsync(Combo combo, List<ProductCombo> productCombos)
         {

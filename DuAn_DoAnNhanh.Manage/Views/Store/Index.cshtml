@@ -10,13 +10,13 @@
         Thêm cửa hàng
     </a>
 </p>
-<!-- Modal cho việc tạo sản phẩm mới -->
-<div id="storeModal" class="modal" tabindex="-1" role="dialog">
+
+<!-- Modal tạo cửa hàng mới -->
+<div id="storeModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                @await Component.InvokeAsync("StoreCreate")
+            <div class="modal-body" id="storeModalBody">
+                @await Component.InvokeAsync("StoreCreate", new { model = new DuAn_DoAnNhanh.Data.ViewModel.StoreViewModel() })
             </div>
         </div>
     </div>
@@ -30,54 +30,121 @@
 }
 else
 {
-    <div class="row" id="comboList">
+    <div class="row" id="storeList">
         @foreach (var store in Model)
         {
-            <div class="col-md-4 col-sm-6 mb-4 combo-item">
+            <div class="col-md-4 col-sm-6 mb-4 store-item">
                 <div class="card card-custom bg-primary-custom">
                     <h5>@store.StoreName</h5>
                     <h6>@store.Address.NumberPhone</h6>
-                    <hr/>
+                    <hr />
                     <p>@store.Address.SpecificAddress</p>
                     <p>@store.Address.Ward, @store.Address.District, @store.Address.Province</p>
-                    <hr/>
-                    @foreach(var user in store.Users)
+                    <hr />
+                    @foreach (var user in store.Users)
                     {
-                        <span>Quản lý:</span>
                         if (user.Role == Role.Manager)
                         {
-                            <span>@user.FullName|@user.Email</span>
+                            <span>Quản lý: @user.FullName | @user.Email</span>
                         }
                     }
-                    @* <p>Quản lý: @store.User.FullName</p> *@
-                    <span class="my-2 badge bg-success ">@store.Status</span>
+                    <span class="my-2 badge bg-success">@store.Status</span>
                 </div>
             </div>
         }
     </div>
 }
-<script>
-    $(document).ready(function () {
-        // Khi nhấn nút mở modal
-        $("#openModal").click(function () {
-            $("#storeModal").modal('show');
-        });
 
-        // Khi nhấn nút đóng modal
-        $(".close").click(function () {
-            $("#storeModal").modal('hide');
-        });
-    });
-</script>
-<style>
-    .card-custom {
-        color: white;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: left;
-    }
+<!-- Nút phân trang -->
+<div class="pagination text-center mt-4">
+    <span id="pageNumbers"></span>
+</div>
 
-    .bg-primary-custom {
-        background-color: #007bff;
-    }
-</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let itemsPerPage = 6;
+            let currentPage = 1;
+            let $storeItems = $(".store-item");
+            let filteredItems = $storeItems;
+
+            // Mở modal
+            $("#openModal").click(function () {
+                $("#storeModal").modal('show');
+            });
+
+            // AJAX submit form
+            $(document).on("submit", "#store-form", function (e) {
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: form.attr("action") || "/Store/CreateStore",
+                    method: form.attr("method"),
+                    data: form.serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            location.reload();
+                        } else {
+                            $("#storeModalBody").html(result);
+                        }
+                    },
+                    error: function () {
+                        alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+                    }
+                });
+            });
+
+            function updatePagination() {
+                let totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                $storeItems.hide();
+                filteredItems.hide();
+                let start = (currentPage - 1) * itemsPerPage;
+                let end = start + itemsPerPage;
+                filteredItems.slice(start, end).fadeIn();
+
+                $("#pageNumbers").html("");
+                for (let i = 1; i <= totalPages; i++) {
+                    const btn = $(`<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-secondary'} page-btn mx-1" data-page="${i}">${i}</button>`);
+                    $("#pageNumbers").append(btn);
+                }
+            }
+
+            $("#searchInput").on("keyup", function () {
+                const keyword = $(this).val().toLowerCase();
+
+                filteredItems = $storeItems.filter(function () {
+                    const storeName = $(this).find("h5").text().toLowerCase();
+                    return storeName.indexOf(keyword) > -1;
+                });
+
+                currentPage = 1;
+                updatePagination();
+            });
+
+            $(document).on("click", ".page-btn", function () {
+                currentPage = parseInt($(this).data("page"));
+                updatePagination();
+            });
+
+            updatePagination();
+        });
+    </script>
+    <style>
+        .card-custom {
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .bg-primary-custom {
+            background-color: #007bff;
+        }
+
+        .page-btn {
+            min-width: 40px;
+        }
+    </style>
+}

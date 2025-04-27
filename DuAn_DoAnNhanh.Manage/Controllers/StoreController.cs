@@ -1,80 +1,56 @@
-﻿using DuAn_DoAnNhanh.Application.Implements.Service;
-using DuAn_DoAnNhanh.Application.Interfaces.Service;
+﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
-using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {
     public class StoreController : Controller
     {
         private readonly MyDBContext _dbContext;
-        private readonly IAddressService _addressService;
-        public StoreController(MyDBContext dBContext, IAddressService addressService)
+        private readonly IStoreService _storeService;
+
+        public StoreController(MyDBContext dbContext, IStoreService storeService)
         {
-            _dbContext = dBContext;
-            _addressService = addressService;
+            _dbContext = dbContext;
+            _storeService = storeService;
         }
+
         public IActionResult Index()
         {
-            var storeList = _dbContext.Stores.Include(x=>x.Address)
-                .Include(x=>x.Users)
-                .Where(x=>x.Status==Status.Activity)
-                .OrderByDescending(x=>x.CreateDate)
+            var storeList = _dbContext.Stores
+                .Include(x => x.Address)
+                .Include(x => x.Users)
+                .Where(x => x.Status == Status.Activity)
+                .OrderByDescending(x => x.CreateDate)
                 .ToList();
+
             return View(storeList);
         }
-        public IActionResult CreateStore(StoreViewModel storeViewModel)
+
+        [HttpPost]
+        public async Task<IActionResult> CreateStore(StoreViewModel storeViewModel)
         {
-            Store store = new Store()
+            if (!ModelState.IsValid)
             {
-                StoreID=new Guid(),
-                StoreName = storeViewModel.StoreName,
-                Status=Status.Activity,
-                CreateDate=DateTime.Now,
-            };
-            _dbContext.Stores.Add(store);
-            _dbContext.SaveChanges();
-            var fullAddress = $"{storeViewModel.SpecificAddress}, {storeViewModel.Ward}, {storeViewModel.District}, {storeViewModel.Province}";
-            var coordinates = _addressService.GetCoordinates(fullAddress);
-            Address address = new Address()
+                return ViewComponent("StoreCreate", new { model = storeViewModel });
+            }
+
+            try
             {
-                AddressID = new Guid(),
-                StoreID = store.StoreID,
-                UserID = null,
-                FullName = store.StoreName,
-                NumberPhone = storeViewModel.NumberPhone,
-                Province = storeViewModel.Province,
-                District = storeViewModel.District,
-                Ward = storeViewModel.Ward,
-                SpecificAddress = storeViewModel.SpecificAddress,
-                FullAddress = fullAddress,
-                Latitude=coordinates.Latitude,
-                Longitude=coordinates.Longitude,
-                AddressType=AddressType.Default,
-                CreateDate=DateTime.Now,
-                Status=Status.Activity,
-            };
-            _dbContext.addresses.Add(address);
-            _dbContext.SaveChanges();
-            User user = new User()
+                await _storeService.CreateStoreAsync(storeViewModel);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
             {
-                UserID = new Guid(),
-                StoreID=store.StoreID,
-                FullName=storeViewModel.ManagerName,
-                Password="1",
-                Email=storeViewModel.Email,
-                CreateDate= DateTime.Now,
-                Role=Role.Manager,
-                Status=Status.Activity,
-            };
-            _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
-            return RedirectToAction("Index");
+                ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi. Vui lòng thử lại.");
+                return ViewComponent("StoreCreate", new { model = storeViewModel });
+            }
         }
-        
+
     }
 }

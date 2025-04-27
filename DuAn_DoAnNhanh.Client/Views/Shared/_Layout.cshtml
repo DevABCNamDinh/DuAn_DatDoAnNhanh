@@ -1,6 +1,8 @@
 ﻿@using DuAn_DoAnNhanh.Application.Implements.Service
 @using DuAn_DoAnNhanh.Application.Interfaces.Service
+@using DuAn_DoAnNhanh.Data.ViewModel
 @using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ICartService _cartService
 <!DOCTYPE html>
@@ -91,14 +93,21 @@
    
 
     <div class="container">
+        @{
+            var model = TempData["LoginRegisterModel"] != null
+            ? JsonConvert.DeserializeObject<LoginRegisterViewModel>(TempData["LoginRegisterModel"].ToString())
+            : new LoginRegisterViewModel();
+        }
+
         <main role="main">
             <div id="productModal" class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
 
+
                         <div class="modal-body p-2">
                             <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                            @await Component.InvokeAsync("SignUpSignIn")
+                            @await Component.InvokeAsync("SignUpSignIn", new { model = model })
                         </div>
                     </div>
                 </div>
@@ -141,6 +150,10 @@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+ 
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
@@ -165,7 +178,11 @@
             <text>
                         $("#productModal").modal('show');
             </text>
+
+
         }
+
+       
             });
     </script>
     @if (TempData["Message"] != null)

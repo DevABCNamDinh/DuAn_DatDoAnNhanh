@@ -1,4 +1,4 @@
-﻿using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
+﻿using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.EF;
 using DuAn_DoAnNhanh.Data.Entities;
@@ -11,38 +11,17 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
 
 
 namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
     public class CartService : ICartService
     {
-        private readonly IGenericRepository<Cart> _cartRepository;
-        private readonly IGenericRepository<CartItem> _cartItemRepository;
-        private readonly IGenericRepository<Product> _productRepository;
-        private readonly IGenericRepository<Bill> _billRepository;
-        private readonly IGenericRepository<BillDetails> _billDetailsRepository;
-
-
-        private readonly IGenericRepository<Combo> _comboRepository;
-        private readonly MyDBContext _context;
-
-        public CartService(IGenericRepository<Cart> cartRepository,
-            IGenericRepository<CartItem> cartItemRepository,
-            IGenericRepository<Product> productRepository,
-            IGenericRepository<Combo> comboRepository,
-            IGenericRepository<Bill> billRepository,
-            IGenericRepository<BillDetails> billDetailsRepository,
-
-            MyDBContext context)
+        private readonly IUnitOfWork _unitOfWork;
+        public CartService(IUnitOfWork unitOfWork)
         {
-            _cartItemRepository = cartItemRepository;
-            _productRepository = productRepository;
-            _cartRepository = cartRepository;
-            _comboRepository = comboRepository;
-            _billRepository = billRepository;
-            _billDetailsRepository = billDetailsRepository;
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
        
@@ -63,7 +42,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity} . co trong gio");
                 //}
                 cartItem.Quantity += quantity;
-                _cartItemRepository.update(cartItem);
+                _unitOfWork.CartItemRepo.Update(cartItem);
             }
             else
             {
@@ -73,16 +52,18 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                     CartID = cart.CartID,
                     ComboID = ComboID,
                     Quantity = quantity,
-                    Combo = _comboRepository.GetById(ComboID),
-                    Cart = _cartRepository.GetById(cart.CartID)
+
+                    Combo = _unitOfWork.ComboRepo.GetById(ComboID),
+                    Cart = _unitOfWork.CartRepo.GetById(cart.CartID)
                 };
                 //if (quantity > cartItem.Product.Quantity)
                 //{
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
                 //}
-                _cartItemRepository.insert(cartItem);
+                _unitOfWork.CartItemRepo.Add(cartItem);
+                
             }
-            _cartItemRepository.save();
+            _unitOfWork.Complete();
         }
 
         public void AddToCart(Guid userId, Guid ProductId, int quantity)
@@ -103,7 +84,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity} . co trong gio");
                 //}
                 cartItem.Quantity += quantity;
-                _cartItemRepository.update(cartItem);
+                _unitOfWork.CartItemRepo.Update(cartItem);
             }
             else
             {
@@ -113,16 +94,17 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                     CartID = cart.CartID,
                     ProductID = ProductId,
                     Quantity = quantity,
-                    Product = _productRepository.GetById(ProductId),
-                    Cart = _cartRepository.GetById(cart.CartID)
+                    Product =_unitOfWork.ProductRepo.GetById(ProductId),
+                    Cart = _unitOfWork.CartRepo.GetById(cart.CartID)
                 };
                 //if (quantity > cartItem.Product.Quantity)
                 //{
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
                 //}
-                _cartItemRepository.insert(cartItem);
+                _unitOfWork.CartItemRepo.Add(cartItem);
+               
             }
-            _cartItemRepository.save();
+            _unitOfWork.Complete();
         }
 
        
@@ -132,7 +114,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             var cartItems = GetCartItems(cartId);
             //bill
             Bill bill = new Bill();
-            bill.UserID = _cartRepository.GetById(cartId).UserID;
+            bill.UserID = _unitOfWork.CartRepo.GetById(cartId).UserID;
             bill.AddressID = addressId;
             bill.StoreID = storeId;
             bill.BillDate = DateTime.Now;   
@@ -141,8 +123,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             bill.PaymentType = PaymentType.Cash;
             bill.ReceivingType = ReceivingType.HomeDelivery;
             bill.Status = StatusOrder.Pending;
-            _billRepository.insert(bill);
-            _billRepository.save();
+            _unitOfWork.BillRepo.Add(bill);
+            _unitOfWork.Complete();
             //BillDetails
             
             foreach (var items in cartItems)
@@ -157,8 +139,9 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                     billDetails.Quantity = items.Quantity;
                     billDetails.PriceEndow = items.Product.Price;
                     billDetails.Status=StatusOrder.Activity;
-                    _billDetailsRepository.insert(billDetails);
-                    _billDetailsRepository.save();
+                    _unitOfWork.BillDetailsRepo.Add(billDetails);
+                    _unitOfWork.Complete();
+                   
                     
                 }else if(items.ProductID == null && items.ComboID != null)
                 {
@@ -176,19 +159,20 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                     billDetails.Quantity = items.Quantity;
                     billDetails.PriceEndow = items.Combo.SetupPrice.Value;
                     billDetails.Status = StatusOrder.Activity;
-                    _billDetailsRepository.insert(billDetails);
-                    _billDetailsRepository.save();
+                    _unitOfWork.BillDetailsRepo.Add(billDetails);
+                    _unitOfWork.Complete();
+                   
                 }
             }
 
-            var listBillDetails = _billDetailsRepository.GetAll().Where(x=>x.BillID==bill.BillID);
+            var listBillDetails =_unitOfWork.BillDetailsRepo.FindAll(x=>x.BillID==bill.BillID);
             decimal TotalAmount = listBillDetails.Sum(x => x.Price*x.Quantity);
             decimal TotalAmountEndow = listBillDetails.Sum(x => x.PriceEndow * x.Quantity);
-            var billUpdate = _billRepository.GetById(bill.BillID);
+            var billUpdate = _unitOfWork.BillRepo.GetById(bill.BillID);
             bill.TotalAmount= TotalAmount;
             bill.TotalAmountEndow= TotalAmountEndow;
-            _billRepository.update(bill);
-            _billRepository.save();
+            _unitOfWork.BillRepo.Update(bill);
+            _unitOfWork.Complete();
 
 
         }
@@ -197,20 +181,13 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         {
             try
             {
-                var addresses = _context.addresses.Where(x => x.UserID == userId).ToList();
-                var stores = _context.Stores.Where(x=>x.Status== Status.Activity).ToList();
-                var cartItems = _context.CartItems.Include(x => x.Cart)
-                   .Include(y => y.Combo)
-                   .ThenInclude(x => x.ProductComboes)
-                   .ThenInclude(x => x.Product)
-                   .Include(z => z.Product)
-                   .Where(ci => ci.CartID == cartId
-                   && (ci.Combo.Status ==StatusCombo.Activity
-                   || ci.Product.Status == StatusProduct.Activity)).ToList();
+                var addresses = _unitOfWork.AddressRepo.FindAll(x => x.UserID == userId);
+                var stores = _unitOfWork.StoresRepo.FindAll(x => x.Status == Status.Activity);
+                var cartItems = _unitOfWork.CartItemRepo.GetCartItemsWithDetails(cartId);
             return new CheckOutViewModel
             {
-                Address = addresses,
-                Stores = stores,
+                Address = addresses.ToList(),
+                Stores = stores.ToList(),
                 cartItemes = cartItems
             };
             }
@@ -224,32 +201,27 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void ClearCart(Guid cartId)
         {
-            var cart = _cartRepository.GetById(cartId);
+            var cart =_unitOfWork.CartRepo.GetById(cartId);
             if (cart != null)
             {
-                foreach (var cartItem in cart.CartItems)
-                {
-                    _cartItemRepository.delete(cartItem);
-                }
-                _cartItemRepository.save();
+                //foreach (var cartItem in cart.CartItems)
+                //{
+                //    _unitOfWork.CartItemRepo.Delete(cartItem);
+
+                //}
+                _unitOfWork.CartItemRepo.DeleteRange(cart.CartItems);
+                _unitOfWork.Complete();
             }
         }
 
         public Cart GetCartFromUserId(Guid userId)
         {
-            return _context.Carts.Include(x => x.CartItems).FirstOrDefault(x => x.UserID == userId);
+            return _unitOfWork.CartRepo.GetCartByUserId(userId);
         }
 
         public List<CartItem> GetCartItems(Guid cartId)
         {
-            var cartItems = _context.CartItems.Include(x=>x.Cart)
-                .Include(y=>y.Combo)               
-                .ThenInclude(x=>x.ProductComboes)
-                .ThenInclude(x => x.Product)
-                .Include(z=>z.Product) 
-                .Where(ci => ci.CartID == cartId
-                &&(ci.Combo.Status==StatusCombo.Activity
-                ||ci.Product.Status==StatusProduct.Activity)).ToList();
+            var cartItems = _unitOfWork.CartItemRepo.GetCartItemsWithDetails(cartId);
             if (cartItems != null)
             {
                 return cartItems;
@@ -262,20 +234,20 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void RemoveCartItem(Guid cartItemId)
         {
-            var cartItem = _cartItemRepository.GetById(cartItemId);
+            var cartItem =_unitOfWork.CartItemRepo.GetById(cartItemId);
             if (cartItem != null)
             {
-                _cartItemRepository.delete(cartItem);
-                _cartItemRepository.save();
+                _unitOfWork.CartItemRepo.Delete(cartItem);
+                _unitOfWork.Complete();
             }
         }
 
         public void UpdateCartItem(Guid cartItemId, int quantity)
         {
-            var cartItem = _cartItemRepository.GetById(cartItemId);         
+            var cartItem = _unitOfWork.CartItemRepo.GetById(cartItemId);         
             cartItem.Quantity = quantity;
-            _cartItemRepository.update(cartItem);
-            _cartItemRepository.save();
+            _unitOfWork.CartItemRepo.Update(cartItem);
+            _unitOfWork.Complete();
         }
 
        
