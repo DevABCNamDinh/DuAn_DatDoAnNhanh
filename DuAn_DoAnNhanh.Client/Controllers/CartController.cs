@@ -1,6 +1,7 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.Entities;
 using DuAn_DoAnNhanh.Data.Enum;
+using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DuAn_DoAnNhanh.Client.Controllers
@@ -117,20 +118,63 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         [HttpGet]
         public IActionResult CheckOut(ReceivingType receivingType)
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
-            var checkOutView= _cartService.CheckOutView(Guid.Parse(userId), cart.CartID);
-            return View(checkOutView);
-        }
-        [HttpPost]
-        public IActionResult CheckOut(Guid addressId,Guid storeId)
-        {
             try
-            {
+            {  
                 var userId = HttpContext.Session.GetString("UserId");
                 var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
-                _cartService.CheckOut(cart.CartID,addressId,storeId);
-                TempData["Message"] = "Đặt hàng thành công";
+                var checkOutView = _cartService.CheckOutView(Guid.Parse(userId), cart.CartID,receivingType);
+                if (checkOutView is not null)
+                {
+                    return View(checkOutView);
+                }
+                return NoContent();             
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return NoContent();
+            }
+
+        }
+        [HttpPost]
+        public IActionResult CheckOut(CheckOutViewModel checkOut)
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+            var checkOutView = _cartService.CheckOutView(Guid.Parse(userId), cart.CartID, checkOut.ReceivingType);
+            try
+            {
+                if (checkOut.AddressID == Guid.Empty|| checkOut.StoreID == Guid.Empty || checkOut.ReceiverName==string.Empty||checkOut.ReceiverPhone==string.Empty)
+                {
+                    if (checkOut.StoreID == Guid.Empty)
+                    {
+                        TempData["ErrorStore"] = "Cửa hàng đang bị lỗi!";
+                    }
+                    if (checkOut.ReceivingType == ReceivingType.HomeDelivery)
+                    {
+                        if (checkOut.AddressID == Guid.Empty)
+                        {
+                            TempData["ErrorAddress"] = "Địa chỉ không được để trống!";
+                            return RedirectToAction("CheckOut", new { receivingType = ReceivingType.HomeDelivery });
+                        }
+
+                    }
+                    if(checkOut.ReceivingType == ReceivingType.PickUpAtStore)
+                    {
+                        if (checkOut.ReceiverName == string.Empty || checkOut.ReceiverPhone == string.Empty)
+                        {
+                            TempData["ErrorReceiver"] = "Thông tin không được để trống!";
+                            return RedirectToAction("CheckOut", new { receivingType = ReceivingType.PickUpAtStore });
+                        }
+                    }
+
+
+                   
+                   
+                }
+                checkOut.CartID=cart.CartID;
+                _cartService.CheckOut(checkOut);
+                TempData["Message"] = "Đặt hàng thành công.";
                 if (cart != null)
                 {
                     _cartService.ClearCart(cart.CartID);
@@ -139,10 +183,10 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData["Message"] = "Đặt hàng thất bại";
-                return RedirectToAction("Index", "Home");
+                TempData["ErrorMessage"] = $"Đặt hàng thất bại! Lỗi: {ex.Message}";          
+                return View(checkOutView);
             }
         }
 

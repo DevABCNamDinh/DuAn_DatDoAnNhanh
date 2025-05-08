@@ -4,16 +4,15 @@
 @{
     decimal totalCartPrice = 0;
     decimal totalCartPriceEndow = 0;
-    var address = @Model.Address.FirstOrDefault(x => x.AddressType == AddressType.Default);
 }
 <script>
     $(document).ready(function () {
-      $("input[name='payment']").change(function () {
-        $("label").removeClass("border-danger text-danger shadow border-2");
-        $(this)
-          .closest("label")
-          .addClass("border-danger text-danger shadow border-2");
-      });
+    $("input[name='payment']").change(function () {
+    $("label").removeClass("border-danger text-danger shadow border-2");
+    $(this)
+    .closest("label")
+    .addClass("border-danger text-danger shadow border-2");
+    });
     });
 </script>
 <div class="row">
@@ -26,7 +25,8 @@
                         <span>CHI TIẾT ĐƠN HÀNG</span>
                         <span class="text-primary" style="cursor: pointer">✎</span>
                     </h4>
-                    @foreach (var item in Model.cartItemes)
+                    <hr/>
+                    @foreach (var item in Model.CartItemes)
                     {
                         @if (item.Combo == null && item.Product != null)
                         {
@@ -121,11 +121,15 @@
                         <p class="fw-bold">Áp dụng khuyến mãi</p>
                         <button class="btn btn-warning w-100 mb-2">Duyệt voucher</button>
                         <div class="input-group">
-                            <input type="text"
+                            <input type="text" 
                             class="form-control"
                             placeholder="Nhập mã phiếu quà tặng" />
                             <button class="btn btn-danger">ÁP DỤNG</button>
                         </div>
+                    </div>
+                    <div class="my-3">
+                        <label class="mb-2">Ghi chú</label>
+                        <textarea class="form-control" id="pickupNote" name="pickupNote" rows="3" placeholder="Ghi chú (nếu có)"></textarea>
                     </div>
                 </div>
             </div>
@@ -138,22 +142,51 @@
                     <div class="card-body">
                         <h4 class="card-title d-flex justify-content-between">
                             <span>Thông tin người nhận</span>
-                            <span class="text-primary" style="cursor: pointer">✎</span>
+                            <a href="@Url.Action("Address", "User")">
+                                <span class="text-primary" style="cursor: pointer">✎</span>
+                            </a>
+
                         </h4>
-                        @if (address == null)
+                        @if (Model.ReceivingType == ReceivingType.PickUpAtStore)
                         {
-                            <div class="alert alert-info">
-                                Địa chỉ của bạn trống.
-                                <a href="@Url.Action("Address", "User")">Thêm địa chỉ</a>
+                            <div  class="mt-3">
+                                <div class="mb-2">
+                                    <label class="mb-2">Tên người nhận</label>
+                                    <input type="text" class="form-control" id="pickupName" asp-for="@Model.ReceiverName" value="@Model.Address.FullName">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="mb-2" >Số điện thoại</label>
+                                    <input type="text" class="form-control" id="pickupPhone" asp-for="@Model.ReceiverPhone" value="@Model.Address.NumberPhone">
+                                </div>
+                                @if (TempData["ErrorReceiver"] != null)
+                                {
+                                    <p class="text-danger">@TempData["ErrorReceiver"]</p>
+                                }
                             </div>
+
                         }
                         else
                         {
-                            <p class="p-0">@address.FullName</p>
-                            <p>@address.NumberPhone</p>
-                            <p>@address.FullAddress</p>
-                            <input type="hidden" name="addressId" value="@address.AddressID" />
+                            @if (@Model.Address == null)
+                            {
+                                <div class="alert alert-info">
+                                    Địa chỉ của bạn trống.
+                                    <a href="@Url.Action("Address", "User")">Thêm địa chỉ</a>
+                                </div>
+                                @if (TempData["ErrorAddress"] != null)
+                                {
+                                    <p class="text-danger">@TempData["ErrorAddress"]</p>
+                                }
+                            }
+                            else
+                            {
+                                <p class="p-0">@Model.Address.FullName</p>
+                                <p>@Model.Address.NumberPhone</p>
+                                <p>@Model.Address.FullAddress</p>
+                                <input type="hidden" name="addressId" asp-for="@Model.AddressID" value="@Model.Address.AddressID" />
+                            }
                         }
+                        
 
 
                     </div>
@@ -163,16 +196,25 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h4 class="card-title d-flex justify-content-between">
-                            <span>Cửa hàng</span>
-                            <span class="text-primary" style="cursor: pointer">✎</span>
+                            <span>Thông tin cửa hàng</span>
                         </h4>
-                        <select class="form-control" name="storeId" required>
-                            <option value="">-- Chọn cửa hàng --</option>
-                            @foreach (var store in Model.Stores)
+                        @if (@Model.Store == null)
+                        {
+                            <div class="alert alert-info">
+                                Hệ thống lỗi! Đang không tồn tại cửa hàng trên hệ thống.
+                            </div>                          
+                        }
+                        else
+                        {
+                            <p class="p-0">@Model.Store.StoreName</p>
+                            <input type="hidden" asp-for ="@Model.StoreID" value="@Model.Store.StoreID" />
+
+                            @if (TempData["ErrorStore"] != null)
                             {
-                                <option value="@store.StoreID">@store.StoreName</option>
+                                <p class="text-danger mt-3">@TempData["ErrorStore"]</p>
                             }
-                        </select>
+                        }
+                       
                     </div>
                 </div>
             </div>
@@ -212,6 +254,7 @@
                 </div>
             </div>
             <div class="container  mt-2 p-0 text-end">
+                <input type="hidden" asp-for="@Model.ReceivingType" />
                 <button type="submit" class="btn btn-danger">Đặt hàng</button>
             </div>
         </form>

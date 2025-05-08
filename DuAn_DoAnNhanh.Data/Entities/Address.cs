@@ -11,7 +11,6 @@ namespace DuAn_DoAnNhanh.Data.Entities
     {
         public Guid AddressID { get; set; }
         public Guid? UserID { get; set; }
-        public Guid? StoreID { get; set; }
 
         public string FullName { get; set; }
         public string NumberPhone { get; set; }
