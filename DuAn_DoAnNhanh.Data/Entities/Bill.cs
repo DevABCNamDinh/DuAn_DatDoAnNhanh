@@ -25,12 +25,12 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public string? Description { get; set; }
 
 
-        public virtual User User { get; set; }
-        public virtual Store Store { get; set; }
-        public virtual Address Address { get; set; }
+        public virtual User User { get; set; } = new User();
+        public virtual Store Store { get; set; } = new Store();
+        public virtual Address Address { get; set; } = new Address();
 
 
-        public virtual List<BillDetails> BillDetails { get; set; }
+        public virtual List<BillDetails> BillDetails { get; set; } = new List<BillDetails>();
 
 
     }

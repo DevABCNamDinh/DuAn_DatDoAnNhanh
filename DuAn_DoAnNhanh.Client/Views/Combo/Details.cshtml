@@ -17,7 +17,7 @@
                 else
                 {
                 <h3 class="card-title style=" style="color: red;"><b><del>@Model.Combo.Price.ToString("N0")</del> đ</b></h3>
-                <h3 class="card-title style=" style="color: red;"><b>Tổng: @(Model.Combo.SetupPrice.HasValue ? Model.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                <h3 class="card-title style=" style="color: red;"><b>@(Model.Combo.SetupPrice.HasValue ? Model.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
                 }
                 <hr/>
                 <h4><b>Chi tiết Combo</b></h4>

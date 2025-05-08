@@ -10,7 +10,7 @@ namespace DuAn_DoAnNhanh.Data.Entities
     {
         public Guid CartID { get; set; }
         public Guid UserID { get; set; }
-        public virtual User User { get; set; }
-        public virtual List<CartItem> CartItems { get; set;}
+        public virtual User User { get; set; } = new User();
+        public virtual List<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
 }

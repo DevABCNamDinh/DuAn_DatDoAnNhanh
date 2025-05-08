@@ -40,7 +40,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             var user = _unitOfWork.UserRepo.GetById(userId); // Lấy thông tin người dùng
             if (user != null)
             {
-                user.Orderes = GetUserBills(userId); // Tải hóa đơn cho người dùng
+                user.Bills = GetUserBills(userId); // Tải hóa đơn cho người dùng
             }
 
             return user;
