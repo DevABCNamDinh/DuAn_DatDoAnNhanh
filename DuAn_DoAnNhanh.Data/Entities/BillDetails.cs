@@ -11,8 +11,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
     {
         public Guid BillDetailsID { get; set; }
         public Guid BillID { get; set; }
-        public string PCName { get; set; } = string.Empty;
-        public string Image { get; set; } = string.Empty;
+        public string PCName { get; set; }
+        public string Image { get; set; }
 
         public int Quantity { get; set; }
         public decimal Price { get; set; }
@@ -20,7 +20,7 @@ namespace DuAn_DoAnNhanh.Data.Entities
 
         public StatusOrder Status { get; set; }
 
-        public virtual Bill Bill { get; set; } = new Bill();
+        public virtual Bill Order { get; set; }
      
 
 

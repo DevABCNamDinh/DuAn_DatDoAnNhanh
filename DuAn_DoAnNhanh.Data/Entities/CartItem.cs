@@ -14,9 +14,9 @@ namespace DuAn_DoAnNhanh.Data.Entities
 
         public Guid CartID { get; set; }
         public int Quantity { get; set; }
-        public virtual Cart Cart { get; set; } = new Cart();
-        public virtual Combo Combo { get; set; } = new Combo();
+        public virtual Cart Cart { get; set; }
+        public virtual Combo Combo { get; set; }
 
-        public virtual Product Product { get; set; } = new Product();
+        public virtual Product Product { get; set; }
     }
 }
