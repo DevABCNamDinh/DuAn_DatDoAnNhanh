@@ -1,38 +1,38 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.Product>
 <br />
-        <div class="row">
-            @foreach (var product in Model)
-            {
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card h-100 position-relative combo-card">
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 position-relative combo-card">
 
-                        <!-- Liên kết đến chi tiết combo -->
-                        <a href="@Url.Action("Details", "Product", new { id = product.ProductID })">
-                            <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
-                        </a>
+                <!-- Liên kết đến chi tiết combo -->
+                <a href="@Url.Action("Details", "Product", new { id = product.ProductID })">
+                    <img class="card-img-top" src="@product.ImageUrl" style="height: 200px; object-fit: cover;">
+                </a>
 
-                        <div class="card-body h-100 d-flex flex-column">
-                            <h3 class="card-title">@product.ProductName</h3>
-                            <div class="mb-0 mt-auto">
-                                <h3 class="card-title style=" style="color: red;"><b>@product.Price.ToString("N0") đ</b></h3>
-                                <form method="post" action="@Url.Action("AddToCart", "Cart")" class="d-inline">
-                                    <input type="hidden" name="ProductId" value="@product.ProductID" />
-                                    <input type="hidden" name="quantity" value="1" />
-                                    <button type="submit" class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn" style="padding-right:10px;padding-left:10px" title="Thêm sản phẩm">
-                                        +
-                                    </button>
-                                </form>
-
-                            </div>
-                            
-
-                        </div>
+                <div class="card-body h-100 d-flex flex-column">
+                    <h3 class="card-title">@product.ProductName</h3>
+                    <div class="mb-0 mt-auto">
+                        <h3 class="card-title style=" style="color: red;"><b>@product.Price.ToString("N0") đ</b></h3>
+                        <form method="post" action="@Url.Action("AddToCart", "Cart")" class="d-inline">
+                            <input type="hidden" name="ProductId" value="@product.ProductID" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-danger position-absolute bottom-0 end-0 m-4 them-combo-btn" style="padding-right:10px;padding-left:10px" title="Thêm sản phẩm">
+                                +
+                            </button>
+                        </form>
 
                     </div>
+
+
                 </div>
 
-            }
+            </div>
         </div>
+
+    }
+</div>
 
 
 

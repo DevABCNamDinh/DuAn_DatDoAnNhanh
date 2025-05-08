@@ -136,6 +136,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             bill.PaymentType = PaymentType.Cash;
             bill.ReceivingType = checkOut.ReceivingType;
             bill.Status = StatusOrder.Pending;
+            bill.Description = checkOut.Description;
            
             _unitOfWork.BillRepo.Add(bill);
             _unitOfWork.Complete();
