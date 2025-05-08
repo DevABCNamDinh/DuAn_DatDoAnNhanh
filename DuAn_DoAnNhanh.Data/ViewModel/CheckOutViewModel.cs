@@ -19,6 +19,5 @@ namespace DuAn_DoAnNhanh.Data.ViewModel
         public ReceivingType ReceivingType { get; set; } //phương thức nhận hàng
         public string ReceiverName { get; set; } = string.Empty;
         public string ReceiverPhone { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
     }
 }

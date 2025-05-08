@@ -10,8 +10,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
     public class Combo
     {
         public Guid ComboID { get; set; }
-        public string ComboName { get; set; } = string.Empty;
-        public string Image { get; set; } = string.Empty;
+        public string ComboName { get; set; }
+        public string Image { get; set; }
         public decimal Price { get; set; }
         public decimal? SetupPrice { get; set; }
 
@@ -21,8 +21,8 @@ namespace DuAn_DoAnNhanh.Data.Entities
 
 
       
-        public virtual List<ProductCombo> ProductComboes { get; set; } = new List<ProductCombo>();
-        public virtual List<CartItem> CartItemes { get; set; } = new List<CartItem>();
+        public virtual List<ProductCombo> ProductComboes { get; set; }
+        public virtual List<CartItem> CartItemes { get; set; }
 
 
     }
