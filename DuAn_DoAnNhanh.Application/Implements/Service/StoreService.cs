@@ -27,16 +27,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         public async Task CreateStoreAsync(StoreViewModel storeViewModel)
         {
 
-            Store store = new Store()
-            {
-                StoreID = Guid.NewGuid(),
-                StoreName = storeViewModel.StoreName,
-                Status = Status.Activity,
-                CreateDate = DateTime.Now,
-            };
-
-            _dbContext.Stores.Add(store);
-            await _dbContext.SaveChangesAsync();
+           
 
             var fullAddress = $"{storeViewModel.SpecificAddress}, {storeViewModel.Ward}, {storeViewModel.District}, {storeViewModel.Province}";
             var coordinates = _addressService.GetCoordinates(fullAddress);
@@ -44,9 +35,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             Address address = new Address()
             {
                 AddressID = Guid.NewGuid(),
-                StoreID = store.StoreID,
                 UserID = null,
-                FullName = store.StoreName,
+                FullName = storeViewModel.StoreName,
                 NumberPhone = storeViewModel.NumberPhone,
                 Province = storeViewModel.Province,
                 District = storeViewModel.District,
@@ -61,6 +51,18 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             };
 
             _dbContext.addresses.Add(address);
+            await _dbContext.SaveChangesAsync();
+
+            Store store = new Store()
+            {
+                StoreID = Guid.NewGuid(),
+                StoreName = storeViewModel.StoreName,
+                Status = Status.Activity,
+                CreateDate = DateTime.Now,
+                AddressID = address.AddressID,
+            };
+
+            _dbContext.Stores.Add(store);
             await _dbContext.SaveChangesAsync();
 
             string randomPassword = GenerateRandomPassword();

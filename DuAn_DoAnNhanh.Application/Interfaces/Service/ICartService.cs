@@ -23,8 +23,8 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         void UpdateCartItem(Guid cartItemId, int quantity);
         void RemoveCartItem(Guid cartItemId);
         void ClearCart(Guid cartId);
-        void CheckOut(Guid cartId, Guid addressId, Guid storeId);
+        void CheckOut(CheckOutViewModel checkOut);
 
-        CheckOutViewModel CheckOutView(Guid userId, Guid cartId);
+        CheckOutViewModel CheckOutView(Guid userId, Guid cartId, ReceivingType ReceivingType);
     }
 }

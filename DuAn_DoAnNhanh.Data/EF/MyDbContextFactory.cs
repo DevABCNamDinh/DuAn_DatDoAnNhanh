@@ -16,7 +16,7 @@ namespace DuAn_DoAnNhanh.Data.EF
             var optionsBuilder = new DbContextOptionsBuilder<MyDBContext>();
 
             // Cấu hình chuỗi kết nối, thay "Your_Connection_String_Here" bằng chuỗi kết nối của bạn
-            optionsBuilder.UseSqlServer("Data Source=DESKTOP-6F71DIH\\SQLEXPRESS;Initial Catalog=Do_An_Nhanh;Integrated Security=True;TrustServerCertificate=true");
+            optionsBuilder.UseSqlServer("Data Source=VietManhABC\\SQLEXPRESS;Initial Catalog=Do_An_Nhanh;Integrated Security=True;TrustServerCertificate=true");
 
             return new MyDBContext(optionsBuilder.Options);
         }
