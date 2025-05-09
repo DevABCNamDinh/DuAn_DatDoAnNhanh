@@ -11,5 +11,8 @@ namespace DuAn_DoAnNhanh.Data.Enum
         Normal = 0,//Bình thường
         Default = 1,//Mặc định
         Store=2,//Cửa hàng
+        Active,     
+        Inactive
+
     }
 }
