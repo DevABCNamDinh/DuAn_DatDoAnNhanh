@@ -6,6 +6,7 @@ namespace DuAn_DoAnNhanh.Client.ViewComponents
 {
     public class AddAddressViewcomponent : ViewComponent
     {
+
         public IViewComponentResult Invoke()
         {
             var address = new Address();
