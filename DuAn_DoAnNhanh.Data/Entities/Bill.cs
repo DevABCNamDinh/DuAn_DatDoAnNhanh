@@ -20,12 +20,17 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public decimal TotalAmountEndow { get; set; }
         public ReceivingType ReceivingType { get; set; } //phương thức nhận hàng
         public PaymentType PaymentType { get; set; }
+        public string? ReceiverName { get; set; } 
+        public string? ReceiverPhone { get; set; }
+        public string? Description { get; set; }
+
+
         public virtual User User { get; set; }
-        public virtual Store Store { get; set; }
-        public virtual Address Address { get; set; }
+        public virtual Store Store { get; set; } = null!;
+        public virtual Address Address { get; set; } = null!;
 
 
-        public virtual List<BillDetails> BillDetails { get; set; }
+        public virtual List<BillDetails> BillDetails { get; set; } = null!;
 
 
     }

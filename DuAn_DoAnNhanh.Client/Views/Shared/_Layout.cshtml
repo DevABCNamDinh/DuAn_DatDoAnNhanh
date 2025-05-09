@@ -197,7 +197,23 @@
                 // Tự động ẩn thông báo sau 1,5 giây
                 setTimeout(function () {
                     alertBox.fadeOut();
-                }, 1500);
+                }, 2500);
+            });
+        </script>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                var message = "@TempData["ErrorMessage"]";
+                // Hiển thị thông báo thành công ở góc trên bên phải
+                var alertBox = $('<div class="alert alert-danger  position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
+                $('body').append(alertBox);
+
+                // Tự động ẩn thông báo sau 2,5 giây
+                setTimeout(function () {
+                    alertBox.fadeOut();
+                }, 2500);
             });
         </script>
     }

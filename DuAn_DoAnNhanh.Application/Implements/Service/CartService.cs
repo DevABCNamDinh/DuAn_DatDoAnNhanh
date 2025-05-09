@@ -109,20 +109,34 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
        
 
-        public void CheckOut(Guid cartId,Guid addressId, Guid storeId)
+        public void CheckOut(CheckOutViewModel checkOut)
         {
-            var cartItems = GetCartItems(cartId);
+            var cartItems = GetCartItems(checkOut.CartID);
             //bill
             Bill bill = new Bill();
-            bill.UserID = _unitOfWork.CartRepo.GetById(cartId).UserID;
-            bill.AddressID = addressId;
-            bill.StoreID = storeId;
+            bill.UserID = _unitOfWork.CartRepo.GetById(checkOut.CartID).UserID;
+            if (checkOut.AddressID==Guid.Empty)
+            {
+                bill.AddressID = null;
+                bill.ReceiverName = checkOut.ReceiverName;
+                bill.ReceiverPhone = checkOut.ReceiverPhone;
+            }
+            else
+            {
+                var address = _unitOfWork.AddressRepo.GetById(checkOut.AddressID);
+                bill.AddressID = address.AddressID;
+                bill.ReceiverName = address.FullName;
+                bill.ReceiverPhone = address.NumberPhone;
+            }
+            
+            bill.StoreID = checkOut.StoreID;
             bill.BillDate = DateTime.Now;   
             bill.TotalAmount = 0;
             bill.TotalAmountEndow = 0;
             bill.PaymentType = PaymentType.Cash;
-            bill.ReceivingType = ReceivingType.HomeDelivery;
+            bill.ReceivingType = checkOut.ReceivingType;
             bill.Status = StatusOrder.Pending;
+            bill.Description = checkOut.Description;
             _unitOfWork.BillRepo.Add(bill);
             _unitOfWork.Complete();
             //BillDetails
@@ -177,18 +191,20 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         }
 
-        public CheckOutViewModel CheckOutView(Guid userId, Guid cartId)
+        public CheckOutViewModel CheckOutView(Guid userId, Guid cartId, ReceivingType ReceivingType)
         {
             try
             {
-                var addresses = _unitOfWork.AddressRepo.FindAll(x => x.UserID == userId);
-                var stores = _unitOfWork.StoresRepo.FindAll(x => x.Status == Status.Activity);
+                var addresses = _unitOfWork.AddressRepo.Find(x => x.UserID == userId&&x.AddressType==AddressType.Default);
+                var store = _unitOfWork.StoresRepo.Find(x => x.Status == Status.Activity);
                 var cartItems = _unitOfWork.CartItemRepo.GetCartItemsWithDetails(cartId);
             return new CheckOutViewModel
             {
-                Address = addresses.ToList(),
-                Stores = stores.ToList(),
-                cartItemes = cartItems
+                Address = addresses,
+                Store = store,
+                CartItemes = cartItems,
+                ReceivingType=ReceivingType
+
             };
             }
             catch (Exception)
