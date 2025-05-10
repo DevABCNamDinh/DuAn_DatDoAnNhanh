@@ -208,6 +208,11 @@
                         else
                         {
                             <p class="p-0">@Model.Store.StoreName</p>
+                            @if (Model.Store.Address is not null)
+                            {
+                                <p>@Model.Store.Address.NumberPhone</p>
+                                <p>@Model.Store.Address.FullAddress</p>                                                   
+                            }
                             <input type="hidden" asp-for="@Model.StoreID" value="@Model.Store.StoreID" />
 
                             @if (TempData["ErrorStore"] != null)
