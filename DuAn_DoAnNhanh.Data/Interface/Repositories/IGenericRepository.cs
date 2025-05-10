@@ -8,7 +8,7 @@ namespace DuAn_DoAnNhanh.Data.Interfaces.Repositories
         Task<IEnumerable<T>> GetAllAsync();
 
         T GetById(Guid id);
-        Task<T> GetByIdAsync(int id);
+        Task<T> GetByIdAsync(Guid id);
        
         void Add(T entity);
         Task<T> AddAsync(T entity);

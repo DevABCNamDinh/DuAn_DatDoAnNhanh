@@ -14,5 +14,7 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         void AddCombo(Combo combo);
         void DeleteCombo(Guid id);
         void UpdateCombo(Combo combo);
+        Task<Guid> CreateComboAsync(Combo combo, List<ProductCombo> productCombos);
+        public List<Combo> GetDeactivatedCombos();
     }
 }
