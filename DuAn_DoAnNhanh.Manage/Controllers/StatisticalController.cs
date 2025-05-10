@@ -1,9 +1,6 @@
 ﻿using DuAn_DoAnNhanh.Data.EF;
-using DuAn_DoAnNhanh.Data.Entities;
-using DuAn_DoAnNhanh.Data.Migrations;
 using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {

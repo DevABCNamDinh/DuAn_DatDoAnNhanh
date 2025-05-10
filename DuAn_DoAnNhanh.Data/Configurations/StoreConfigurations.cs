@@ -16,7 +16,6 @@ namespace DuAn_DoAnNhanh.Data.Configurations
             builder.ToTable("Store");
             builder.HasKey(x => x.StoreID);
             builder.Property(x => x.StoreID).ValueGeneratedOnAdd();
-            builder.HasOne(x => x.Address).WithOne(x => x.Store);
             builder.HasMany(x => x.Users).WithOne(x => x.Store);
 
             builder.HasMany(x => x.Bills).WithOne(x => x.Store).HasForeignKey(x=>x.StoreID);

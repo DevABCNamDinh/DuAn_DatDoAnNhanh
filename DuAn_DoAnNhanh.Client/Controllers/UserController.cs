@@ -178,15 +178,15 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
         [HttpPost]
         public IActionResult SaveAddress(
-    Guid? AddressID,
-    string province,
-    string district,
-    string ward,
-    string specificAddress,
-    string fullName,
-    string numberPhone,
-    string? Description,
-    bool SetAsDefault)
+            Guid? AddressID,
+            string province,
+            string district,
+            string ward,
+            string specificAddress,
+            string fullName,
+            string numberPhone,
+            string? Description,
+            bool SetAsDefault)
         {
             var userIdString = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
@@ -258,7 +258,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
                     CreateDate = DateTime.Now,
                     Description = Description ?? "",
                     AddressType = AddressType.Normal, // tạm set là Normal
-                    Status = Status.Active
+                    Status = Status.Activity
                 };
 
                 _dbContext.addresses.Add(newAddress);

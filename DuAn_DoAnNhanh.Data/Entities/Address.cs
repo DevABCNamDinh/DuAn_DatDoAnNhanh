@@ -13,7 +13,6 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public Guid AddressID { get; set; }
         public Guid? UserID { get; set; }
 
-        public Guid? StoreID { get; set; }
         [Required(ErrorMessage = "Vui lòng nhập họ tên.")]
         [StringLength(100, ErrorMessage = "Họ tên không được vượt quá 100 ký tự.")]
         public string FullName { get; set; } = string.Empty;

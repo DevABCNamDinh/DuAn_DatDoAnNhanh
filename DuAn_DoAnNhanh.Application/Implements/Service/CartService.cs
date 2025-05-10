@@ -197,13 +197,15 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             {
                 var addresses = _unitOfWork.AddressRepo.Find(x => x.UserID == userId&&x.AddressType==AddressType.Default);
                 var store = _unitOfWork.StoresRepo.Find(x => x.Status == Status.Activity);
+                store.Address = _unitOfWork.AddressRepo.GetById(store.AddressID);
                 var cartItems = _unitOfWork.CartItemRepo.GetCartItemsWithDetails(cartId);
             return new CheckOutViewModel
             {
                 Address = addresses,
                 Store = store,
                 CartItemes = cartItems,
-                ReceivingType=ReceivingType
+                ReceivingType=ReceivingType,
+               
 
             };
             }
