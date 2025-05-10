@@ -65,8 +65,8 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public List<Product> listProductInCombo(Guid id)
         {
-            var listProductInCombo = _unitOfWork.ProductComboRepo.FindAll(x => x.ComboID == id && x.Status == StatusCombo.Activity);
-
+            // Loại bỏ điều kiện lọc trạng thái để lấy tất cả ProductCombo
+            var listProductInCombo = _unitOfWork.ProductComboRepo.FindAll(x => x.ComboID == id);
 
             var products = new List<Product>();
             foreach (var product in listProductInCombo)

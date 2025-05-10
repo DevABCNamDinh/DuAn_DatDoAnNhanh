@@ -1,7 +1,16 @@
 ﻿@model IEnumerable<DuAn_DoAnNhanh.Data.ViewModel.ComboWithProductsViewModel>
 
 <div class="search-container mb-4">
-    <input type="text" id="searchInput" placeholder="Tìm kiếm combo..." class="form-control" />
+    <form id="searchForm" method="get" action="@Url.Action("GetAll")">
+        <input type="text" name="searchTerm" id="searchInput" placeholder="Tìm kiếm combo..." class="form-control" value="@ViewBag.SearchTerm" />
+        <button type="submit" class="btn btn-primary mt-2">Tìm kiếm</button>
+        <label for="statusFilter" class="form-label mt-2">Lọc theo trạng thái:</label>
+        <select name="status" id="statusFilter" class="form-select" onchange="window.location.href='@Url.Action("GetAll")?status=' + this.value;">
+            <option value="">Tất cả</option>
+            <option value="Activity" selected="@(ViewBag.Status == "Activity" ? "selected" : null)">Đang hoạt động</option>
+            <option value="InActivity" selected="@(ViewBag.Status == "InActivity" ? "selected" : null)">Ngừng hoạt động</option>
+        </select>
+    </form>
 </div>
 
 <p>
@@ -11,11 +20,13 @@
 </p>
 
 <!-- Modal cho việc tạo sản phẩm mới -->
-<div id="comboModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div id="comboModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
+            <div class="modal-header">
+                <h5>Tạo Combo Mới</h5>
+            </div>
             <div class="modal-body">
-                <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
                 @await Component.InvokeAsync("ComboCreate")
             </div>
         </div>
@@ -33,14 +44,26 @@ else
     <div class="row" id="comboList">
         @foreach (var combo in Model)
         {
-            <div class="col-md-4 col-sm-6 mb-4 combo-item">
+            <div class="col-md-4 col-sm-6 mb-4 combo-item" data-status="@combo.Combo.Status">
                 <div class="card h-100 position-relative combo-card">
-                    <!-- Nút "X" hiển thị khi hover -->
-                    <a href="@Url.Action("Delete", "Combo", new { id = combo.Combo.ComboID })"
-                       class="btn btn-danger position-absolute top-0 end-0 m-2 delete-combo-btn"
-                       title="Xóa combo">
-                        X
-                    </a>
+                    @if (combo.Combo.Status == DuAn_DoAnNhanh.Data.Enum.StatusCombo.Activity)
+                    {
+                        <span class="status-label actived position-absolute top-0 start-0 m-2">Đang hoạt động</span>
+                        <a href="@Url.Action("Deactivate", "Combo", new { id = combo.Combo.ComboID, searchTerm = ViewBag.SearchTerm, status = ViewBag.Status, page = ViewBag.CurrentPage })"
+                           class="btn btn-danger position-absolute top-0 end-0 m-2"
+                           onclick="return confirm('Bạn có chắc muốn vô hiệu hóa combo này?')">
+                            X
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="status-label inactive position-absolute top-0 start-0 m-2">Ngừng hoạt động</span>
+                        <a href="@Url.Action("Activate", "Combo", new { id = combo.Combo.ComboID, searchTerm = ViewBag.SearchTerm, status = ViewBag.Status, page = ViewBag.CurrentPage })"
+                           class="btn btn-success position-absolute top-0 end-0 m-2"
+                           onclick="return confirm('Bạn có chắc muốn kích hoạt combo này?')">
+                            ✔
+                        </a>
+                    }
 
                     <img class="card-img-top" src="@combo.Combo.Image" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
@@ -52,88 +75,66 @@ else
 
                         @if (combo.Combo.SetupPrice == null)
                         {
-                            <h3 class="card-title style=" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
-                        }else{
-                            <p class="card-title style=" style="color: red;"><b><del>@combo.Combo.Price.ToString("N0")</del> đ</b></p>
-                            <h3 class="card-title style=" style="color: red;"><b>@(combo.Combo.SetupPrice.HasValue ? combo.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                            <h3 class="card-title" style="color: red;"><b>@combo.Combo.Price.ToString("N0") đ</b></h3>
                         }
-             
+                        else
+                        {
+                            <p class="card-title" style="color: red;"><b><del>@combo.Combo.Price.ToString("N0")</del> đ</b></p>
+                            <h3 class="card-title" style="color: red;"><b>@(combo.Combo.SetupPrice.HasValue ? combo.Combo.SetupPrice.Value.ToString("N0") : "0") đ</b></h3>
+                        }
+
                         @Html.ActionLink("Xem chi tiết", "Details", new { id = combo.Combo.ComboID }, new { @class = "btn btn-primary" })
                     </div>
                 </div>
             </div>
         }
     </div>
-}
-<!-- Nút điều hướng phân trang -->
-<div class="pagination text-center mt-4">
-    <span id="pageNumbers"></span>
-</div>
 
-<!-- Thêm script cho jQuery và Bootstrap -->
+    <!-- Phân trang -->
+    <div class="pagination text-center mt-4">
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a href="@Url.Action("GetAll", new { searchTerm = ViewBag.SearchTerm, status = ViewBag.Status, page = ViewBag.CurrentPage - 1 })" class="btn btn-secondary">Trang trước</a>
+        }
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="@Url.Action("GetAll", new { searchTerm = ViewBag.SearchTerm, status = ViewBag.Status, page = i })" class="btn @(i == ViewBag.CurrentPage ? "btn-primary" : "btn-secondary")">@i</a>
+        }
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a href="@Url.Action("GetAll", new { searchTerm = ViewBag.SearchTerm, status = ViewBag.Status, page = ViewBag.CurrentPage + 1 })" class="btn btn-secondary">Trang sau</a>
+        }
+    </div>
+}
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- Script mở và đóng modal -->
-<script>
-    $(document).ready(function () {
-        // Khi nhấn nút mở modal
-        $("#openModal").click(function () {
-            $("#comboModal").modal('show');
-        });
+@section Scripts {
+    <script>
+        $('#openModal').click(() => $('#comboModal').modal('show'));
+    </script>
+}
 
-        // Khi nhấn nút đóng modal
-        $(".close").click(function () {
-            $("#comboModal").modal('hide');
-        });
-    });
-    // Tìm kiếm combo
-    $("#searchInput").on("keyup", function () {
-        var value = $(this).val().toLowerCase();
-        $(".combo-item").filter(function () {
-            $(this).toggle($(this).find(".card-title b").text().toLowerCase().indexOf(value) > -1);
-        });
-    });
-    $(document).ready(function () {
-        const itemsPerPage = 6; // Số combo trên mỗi trang
-        let currentPage = 1; // Trang hiện tại
-        const $comboItems = $(".combo-item"); // Lấy tất cả các combo
-        const totalItems = $comboItems.length; // Tổng số combo
-        const totalPages = Math.ceil(totalItems / itemsPerPage); // Tổng số trang
+<style>
+    .status-label {
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        pointer-events: none;
+    }
 
-        // Hiển thị combo cho trang hiện tại
-        function showPage(page) {
-            if (page < 1) page = 1;
-            if (page > totalPages) page = totalPages;
+    .actived {
+        background-color: green;
+    }
 
-            // Ẩn tất cả các combo
-            $comboItems.hide();
+    .inactive {
+        background-color: yellow;
+        color: black;
+    }
 
-            // Tính chỉ số bắt đầu và kết thúc của các combo cần hiển thị
-            const startIndex = (page - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-
-            // Hiển thị combo từ startIndex đến endIndex
-            $comboItems.slice(startIndex, endIndex).fadeIn();
-
-            // Cập nhật thông tin trang
-            $("#pageNumbers").html('');
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = $(`<button class="btn ${i === page ? 'btn-primary' : 'btn-secondary'} page-btn" data-page="${i}">${i}</button>`);
-                $("#pageNumbers").append(pageButton);
-            }
-        }
-
-        // Xử lý khi nhấn nút trang số
-        $(document).on('click', '.page-btn', function () {
-            const selectedPage = parseInt($(this).data('page'));
-            if (selectedPage) {
-                currentPage = selectedPage;
-                showPage(currentPage);
-            }
-        });
-
-        // Hiển thị trang đầu tiên khi tải trang
-        showPage(currentPage);
-    });
-</script>
+    .combo-card:hover .btn {
+        display: inline-block;
+    }
+</style>
