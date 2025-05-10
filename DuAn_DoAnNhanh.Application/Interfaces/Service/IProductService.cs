@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DuAn_DoAnNhanh.Application.Interfaces.Service
@@ -15,5 +13,9 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         void AddProduct(Product product, IFormFile ImageFile);
         void DeleteProduct(Guid id);
         void UpdateProduct(Product product, IFormFile ImageFile);
+        bool ChangeStatus(Guid id);
+
+        // Thêm phương thức mới để lấy tất cả sản phẩm không phân biệt trạng thái
+        List<Product> GetAllProductIncludeInactive();
     }
 }
