@@ -1,0 +1,177 @@
+﻿@model IEnumerable<DuAn_DoAnNhanh.Data.Entities.User>
+
+
+<h2>@ViewData["Title"]</h2>
+<div class="search-container mb-4">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm nhân viên..." class="form-control" />
+</div>
+
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createStaffModal">Thêm nhân viên</button>
+    </div>
+    <div>
+        <select id="statusFilter" class="form-select">
+            <option value="">Tất cả trạng thái</option>
+            <option value="Hoạt động">Hoạt động</option>
+            <option value="Không hoạt động">Không hoạt động</option>
+        </select>
+    </div>
+</div>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var staff in Model)
+        {
+            <tr class="staff-item">
+                <td>@staff.FullName</td>
+                <td>@staff.Email</td>
+                <td>@staff.Role</td>
+                <td>
+                    @if (staff.Status == DuAn_DoAnNhanh.Data.Enum.Status.Activity)
+                    {
+                        <span>Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span>Không hoạt động</span>
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#updateStaffModal" data-id="@staff.UserID">Sửa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal tạo nhân viên -->
+<div class="modal fade" id="createStaffModal" tabindex="-1" aria-labelledby="createStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createStaffModalLabel">Thêm nhân viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body" id="createStaffModalBody">
+                @await Component.InvokeAsync("StaffCreate", new { model = new DuAn_DoAnNhanh.Data.ViewModel.StaffViewModel() })
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sửa nhân viên -->
+<div class="modal fade" id="updateStaffModal" tabindex="-1" aria-labelledby="updateStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStaffModalLabel">Sửa thông tin nhân viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body" id="updateStaffModalBody">
+                @* StaffUpdate component sẽ được load vào đây *@
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(document).on("submit", "#createStaffForm", function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            $.ajax({
+                type: form.attr("method"),
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        $("#createStaffModalBody").html(response);
+                    }
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi, vui lòng thử lại.");
+                }
+            });
+        });
+        $(document).on("click", "[data-bs-target='#updateStaffModal']", function () {
+            var userId = $(this).data("id");
+            $.ajax({
+                url: '/Staff/Update/' + userId,
+                type: 'GET',
+                success: function (response) {
+                    $("#updateStaffModalBody").html(response);
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi khi tải dữ liệu sửa.");
+                }
+            });
+        });
+
+        $(document).on("submit", "#updateStaffForm", function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            $.ajax({
+                type: form.attr("method"),
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        $("#updateStaffModalBody").html(response);
+                    }
+                },
+                error: function () {
+                    alert("Đã xảy ra lỗi, vui lòng thử lại.");
+                }
+            });
+        });
+
+        function filterStaff() {
+            const keyword = $("#searchInput").val().toLowerCase();
+            const status = $("#statusFilter").val();
+
+            $(".staff-item").each(function () {
+                const staffName = $(this).find("td:eq(0)").text().toLowerCase();
+                const staffStatus = $(this).find("td:eq(3)").text().trim();
+
+                const matchesName = staffName.indexOf(keyword) !== -1;
+                const matchesStatus = !status || staffStatus === status;
+
+                if (matchesName && matchesStatus) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        $("#searchInput").on("keyup", filterStaff);
+        $("#statusFilter").on("change", filterStaff);
+
+    </script>
+    <style>
+        /* CSS cho tiêu đề bảng */
+        .table thead {
+            background-color: black; /* Màu nền đen */
+            color: white; /* Chữ trắng */
+        }
+    </style>
+}

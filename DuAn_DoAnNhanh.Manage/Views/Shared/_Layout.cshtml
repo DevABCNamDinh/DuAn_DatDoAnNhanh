@@ -52,6 +52,10 @@
                 <i class='bx bx-store  p-2' title="Cửa hàng"></i>
                 <span class="p-2">Cửa hàng</span>
             </a>
+        <a asp-action="Index" asp-controller="Staff" class="nav_link @(currentAction == "Index" && currentController == "Staff" ? "active" : "")">
+            <i class='bx bx-store  p-2' title="Nhân viên"></i>
+            <span class="p-2">Nhân viên</span>
+        </a>
             @if (authToken != null && userName != null)
             {
             <a asp-action="Logout" asp-controller="Account" class="nav_link mt-auto">

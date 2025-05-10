@@ -19,12 +19,13 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
         {
             _productService = productService;
         }
-        
+
         public IActionResult GetAll()
         {
-            var product = _productService.GetAllProduct().OrderByDescending(p => p.CreteDate).ToList();
+            var product = _productService.GetAllProductIncludeInactive()
+                .OrderByDescending(p => p.CreteDate)
+                .ToList();
             return View(product);
-
         }
 
         [HttpGet]
@@ -60,7 +61,38 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             return View(book);
         }
 
-        
+        [HttpPost]
+        //public IActionResult ChangeStatus(Guid id)
+        //{
+        //    if (_productService.ChangeStatus(id))
+        //    {
+        //        return Ok();
+        //    }
+
+        //    return NotFound();
+        //}
+
+        [HttpPost]
+        public IActionResult ChangeStatus(Guid id)
+        {
+            try
+            {
+                if (_productService.ChangeStatus(id))
+                {
+                    return Ok(new { success = true });
+                }
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
 
 
         public IActionResult Edit(Product product, IFormFile ImageFile)
@@ -91,8 +123,5 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
                 throw;
             }
         }
-
-       
-
     }
 }

@@ -44,6 +44,7 @@ builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IStoreService, StoreService>();
+builder.Services.AddScoped<IStaffService, StaffService>(); 
 builder.Services.AddScoped<BillViewModel>();
 builder.Services.AddHttpClient(); 
 builder.Services.AddSingleton<IJwtService, JwtService>();
