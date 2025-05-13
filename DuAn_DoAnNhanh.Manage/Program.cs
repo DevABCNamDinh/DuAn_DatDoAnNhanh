@@ -22,6 +22,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSession(options =>
 {
+    options.Cookie.Name = ".Manager.Session";
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian tồn tại của session
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true; // Bắt buộc cookie session hoạt động
