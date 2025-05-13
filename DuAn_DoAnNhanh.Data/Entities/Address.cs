@@ -42,7 +42,6 @@ namespace DuAn_DoAnNhanh.Data.Entities
 
         public virtual User User { get; set; } = null!;
         public virtual Store Store { get; set; } = null!;
-        public virtual List<Bill> Bills { get; set; } =null!;
 
     }
 }

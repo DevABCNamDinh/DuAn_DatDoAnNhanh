@@ -153,11 +153,11 @@
                             <div class="mt-3">
                                 <div class="mb-2">
                                     <label class="mb-2">Tên người nhận</label>
-                                    <input type="text" class="form-control" id="pickupName" asp-for="@Model.ReceiverName" value="@Model.Address.FullName">
+                                    <input type="text" class="form-control" id="pickupName" asp-for="@Model.ReceiverName" value="@(Model.Address != null ? Model.Address.FullName : "")">
                                 </div>
                                 <div class="mb-2">
                                     <label class="mb-2">Số điện thoại</label>
-                                    <input type="text" class="form-control" id="pickupPhone" asp-for="@Model.ReceiverPhone" value="@Model.Address.NumberPhone">
+                                    <input type="text" class="form-control" id="pickupPhone" asp-for="@Model.ReceiverPhone" value="@(Model.Address != null ? Model.Address.NumberPhone : "")">
                                 </div>
                                 @if (TempData["ErrorReceiver"] != null)
                                 {

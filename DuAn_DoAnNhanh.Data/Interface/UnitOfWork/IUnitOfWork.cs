@@ -19,7 +19,16 @@ namespace DuAn_DoAnNhanh.Data.Interface.UnitOfWork
         IProductComboRepository ProductComboRepo { get; }
         IAddressRepository AddressRepo { get; }
         IStoresRepository StoresRepo { get; }
+        IComboItemsArchiveRepository ComboItemsArchiveRepo { get; }
+        IBillPaymentRepository BillPaymentRepo { get; }
+        IBillNotesRepository BillNotesRepo { get; }
+        IBillDeliveryRepository BillDeliveryRepo { get; }
         Task<int> CompleteAsync();
         int Complete();
+        void BeginTransaction();
+        void Commit();
+        Task CommitAsync();
+        void Rollback();
+        Task RollbackAsync();
     }
 }

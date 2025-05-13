@@ -29,7 +29,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         public IActionResult GetAll()
         {
             // Lấy danh sách combo
-            var comboList = _comboService.GetAllCombo();
+            var comboList = _comboService.GetAllCombo().Where(x=>x.Status==StatusCombo.Activity);
 
             // Tạo danh sách ViewModel để chứa combo và sản phẩm của mỗi combo
             var comboWithProductsList = comboList.Select(combo => new ComboWithProductsViewModel

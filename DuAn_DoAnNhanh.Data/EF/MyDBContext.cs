@@ -29,6 +29,11 @@ namespace DuAn_DoAnNhanh.Data.EF
             modelBuilder.ApplyConfiguration(new ProductConfigurations());
             modelBuilder.ApplyConfiguration(new AddressConfigurations());
             modelBuilder.ApplyConfiguration(new UserConfigurations());
+            modelBuilder.ApplyConfiguration(new BillDeliveryConfigurations());
+            modelBuilder.ApplyConfiguration(new BillNotesConfigurations());
+            modelBuilder.ApplyConfiguration(new BillPaymentConfigurations());
+            modelBuilder.ApplyConfiguration(new ComboItemsArchiveConfigurations());
+
 
             modelBuilder.Entity<Product>().HasData(
                 new Product
@@ -328,6 +333,11 @@ namespace DuAn_DoAnNhanh.Data.EF
         public DbSet<Address> addresses { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Store> Stores { get; set; }
+
+        public DbSet<BillDelivery> BillDeliveries { get; set; }
+        public DbSet<BillNotes> BillNotes { get; set; }
+        public DbSet<BillPayment> BillPayments { get; set; }
+        public DbSet<ComboItemsArchive> ComboItemsArchives { get; set; }
 
 
 
