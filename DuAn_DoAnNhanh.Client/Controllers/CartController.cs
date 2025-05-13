@@ -122,17 +122,24 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             {  
                 var userId = HttpContext.Session.GetString("UserId");
                 var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
-                var checkOutView = _cartService.CheckOutView(Guid.Parse(userId), cart.CartID,receivingType);
-                if (checkOutView is not null)
-                {
-                    return View(checkOutView);
+                if (cart.CartItems.Count > 0) {
+                    var checkOutView = _cartService.CheckOutView(Guid.Parse(userId), cart.CartID, receivingType);
+                    if (checkOutView is not null)
+                    {
+                        return View(checkOutView);
+                    }
+                    return NoContent();
                 }
-                return NoContent();             
+                else
+                {
+                    throw new Exception("Giỏ hàng trống, không thể tiến hành thanh toán!");
+                }
+                   
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
-                return NoContent();
+                return RedirectToAction("Index", "Home");
             }
 
         }
@@ -186,7 +193,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Đặt hàng thất bại! Lỗi: {ex.Message}";          
-                return View(checkOutView);
+                return RedirectToAction("CheckOut", new { checkOut = checkOutView });
             }
         }
 

@@ -51,21 +51,13 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
                 || user.Role == Role.Manager
                 || user.Role == Role.Employee)
                 {
-                    var token = _jwtService.GenerateToken(login.Email,user.Role.ToString());
+                    var token = _jwtService.GenerateToken(login.Email, user.Role.ToString());
                     // Lưu Token vào Session
                     HttpContext.Session.SetString("AuthToken", token);
                     HttpContext.Session.SetString("UserName", user.FullName);
-
-                    if (user.Role == Role.Admin)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else if (user.Role == Role.Manager || user.Role == Role.Employee)
-                    {
-                        return RedirectToAction("Index", "Home", new { Areas = "ManageStore" });
-                    }
+                    return RedirectToAction("Index", "Home");
                 }
-              
+
             }
             ViewBag.Error = "Email hoặc mật khẩu không đúng, hoặc bạn không có quyền truy cập.";
             return View(login);
