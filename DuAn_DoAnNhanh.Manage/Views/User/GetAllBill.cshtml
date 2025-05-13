@@ -16,8 +16,8 @@
         @foreach (var item in Model.BillDetails)
         {
             <tr>
-                <td><img @* class="card-img-top" *@ src="@item.Image" style="height: 100px;width:100px; object-fit: cover;"></td>
-                <td>@item.PCName</td>
+                <td><img  src="@item.Image" style="height: 100px;width:100px; object-fit: cover;"></td>
+                <td>@item.ItemsName</td>
                 <td>
                     @item.Price.ToString("N0") đ
                 </td>

@@ -12,25 +12,23 @@ namespace DuAn_DoAnNhanh.Data.Entities
     {
         public Guid BillID { get; set; }
         public Guid UserID { get; set; }
-        public Guid? AddressID { get; set; }
         public Guid? StoreID { get; set; }
         public DateTime BillDate { get; set; }
         public StatusOrder Status { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal TotalAmountEndow { get; set; }
-        public ReceivingType ReceivingType { get; set; } //phương thức nhận hàng
-        public PaymentType PaymentType { get; set; }
-        public string? ReceiverName { get; set; } 
-        public string? ReceiverPhone { get; set; }
-        public string? Description { get; set; }
+      
 
 
-        public virtual User User { get; set; }
+        public virtual User User { get; set; } = null!;
         public virtual Store Store { get; set; } = null!;
-        public virtual Address Address { get; set; } = null!;
+        public virtual BillDelivery BillDelivery { get; set; } = null!;
 
 
         public virtual List<BillDetails> BillDetails { get; set; } = null!;
+        public virtual List<BillPayment> BillPayments { get; set; } = null!;
+        public virtual List<BillNotes> BillNotes { get; set; } = null!;
+
 
 
     }

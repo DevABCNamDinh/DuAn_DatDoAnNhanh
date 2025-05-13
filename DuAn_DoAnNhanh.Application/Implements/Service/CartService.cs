@@ -24,7 +24,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
             _unitOfWork = unitOfWork;
         }
 
-       
+
         public void AddComboToCart(Guid userId, Guid ComboID, int quantity)
         {
             var cart = GetCartFromUserId(userId);
@@ -61,13 +61,14 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
                 //}
                 _unitOfWork.CartItemRepo.Add(cartItem);
-                
+
             }
             _unitOfWork.Complete();
         }
 
         public void AddToCart(Guid userId, Guid ProductId, int quantity)
         {
+            _unitOfWork.BeginTransaction();
 
             var cart = GetCartFromUserId(userId);
             if (cart.CartItems == null)
@@ -75,7 +76,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 cart.CartItems = new List<CartItem>();
             }
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductID == ProductId);
-            
+
 
             if (cartItem != null)
             {
@@ -94,7 +95,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                     CartID = cart.CartID,
                     ProductID = ProductId,
                     Quantity = quantity,
-                    Product =_unitOfWork.ProductRepo.GetById(ProductId),
+                    Product = _unitOfWork.ProductRepo.GetById(ProductId),
                     Cart = _unitOfWork.CartRepo.GetById(cart.CartID)
                 };
                 //if (quantity > cartItem.Product.Quantity)
@@ -102,92 +103,124 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
                 //    throw new Exception($"Cannot add more than {cartItem.Product.Quantity}.");
                 //}
                 _unitOfWork.CartItemRepo.Add(cartItem);
-               
+
             }
             _unitOfWork.Complete();
         }
 
-       
+
 
         public void CheckOut(CheckOutViewModel checkOut)
         {
-            var cartItems = GetCartItems(checkOut.CartID);
-            //bill
-            Bill bill = new Bill();
-            bill.UserID = _unitOfWork.CartRepo.GetById(checkOut.CartID).UserID;
-            if (checkOut.AddressID==Guid.Empty)
+            _unitOfWork.BeginTransaction();
+
+            try
             {
-                bill.AddressID = null;
-                bill.ReceiverName = checkOut.ReceiverName;
-                bill.ReceiverPhone = checkOut.ReceiverPhone;
-            }
-            else
-            {
-                var address = _unitOfWork.AddressRepo.GetById(checkOut.AddressID);
-                bill.AddressID = address.AddressID;
-                bill.ReceiverName = address.FullName;
-                bill.ReceiverPhone = address.NumberPhone;
-            }
-            
-            bill.StoreID = checkOut.StoreID;
-            bill.BillDate = DateTime.Now;   
-            bill.TotalAmount = 0;
-            bill.TotalAmountEndow = 0;
-            bill.PaymentType = PaymentType.Cash;
-            bill.ReceivingType = checkOut.ReceivingType;
-            bill.Status = StatusOrder.Pending;
-            bill.Description = checkOut.Description;
-            _unitOfWork.BillRepo.Add(bill);
-            _unitOfWork.Complete();
-            //BillDetails
-            
-            foreach (var items in cartItems)
-            {
-                if(items.ProductID != null&&items.ComboID==null) {
-                    
-                    BillDetails billDetails = new BillDetails();
-                    billDetails.BillID=bill.BillID;
-                    billDetails.PCName = items.Product.ProductName;
-                    billDetails.Image = items.Product.ImageUrl;
-                    billDetails.Price = items.Product.Price;
-                    billDetails.Quantity = items.Quantity;
-                    billDetails.PriceEndow = items.Product.Price;
-                    billDetails.Status=StatusOrder.Activity;
-                    _unitOfWork.BillDetailsRepo.Add(billDetails);
-                    _unitOfWork.Complete();
-                   
-                    
-                }else if(items.ProductID == null && items.ComboID != null)
-                {
-                  
-                    BillDetails billDetails = new BillDetails();
-                    billDetails.BillID = bill.BillID;
-                    string comboName=" ";
-                    foreach (var item in items.Combo.ProductComboes.ToList())
-                    {
-                        comboName = comboName +" "+item.Quantity+" "+ item.Product.ProductName;
-                    }
-                    billDetails.PCName = items.Combo.ComboName +"("+ comboName+")";
-                    billDetails.Image = items.Combo.Image;
-                    billDetails.Price = items.Combo.Price;
-                    billDetails.Quantity = items.Quantity;
-                    billDetails.PriceEndow = items.Combo.SetupPrice.Value;
-                    billDetails.Status = StatusOrder.Activity;
-                    _unitOfWork.BillDetailsRepo.Add(billDetails);
-                    _unitOfWork.Complete();
-                   
+                var userId  = _unitOfWork.CartRepo.GetById(checkOut.CartID).UserID;
+
+                var cartItems = GetCartItems(checkOut.CartID);
+                //bill
+                Bill bill = new Bill();
+                bill.UserID = userId;
+                bill.StoreID = checkOut.StoreID;
+                bill.BillDate = DateTime.Now;
+                bill.TotalAmount = 0;
+                bill.TotalAmountEndow = 0;             
+                bill.Status = StatusOrder.Pending;
+                _unitOfWork.BillRepo.Add(bill);
+                _unitOfWork.Complete();
+                //BillDelivery
+                var billDelivery = new BillDelivery();
+                billDelivery.BillID = bill.BillID;
+                if (checkOut.ReceivingType == ReceivingType.PickUpAtStore)
+                {                
+                    billDelivery.ReceivingType= ReceivingType.PickUpAtStore;
+                    billDelivery.ReceiverName=checkOut.ReceiverName;
+                    billDelivery.ReceiverPhone=checkOut.ReceiverPhone;
+                    billDelivery.ReceiverAddress = "";
                 }
+                else
+                {
+                    var address = _unitOfWork.AddressRepo.GetById(checkOut.AddressID);
+                    billDelivery.ReceivingType = ReceivingType.HomeDelivery;
+                    billDelivery.ReceiverName = address.FullName;
+                    billDelivery.ReceiverPhone = address.NumberPhone;
+                    billDelivery.ReceiverAddress=address.FullAddress;                  
+                }
+                _unitOfWork.BillDeliveryRepo.Add(billDelivery);
+                if (!string.IsNullOrEmpty(checkOut.Description))
+                {
+                    var billNotes = new BillNotes();
+                    billNotes.BillID = bill.BillID;
+                    billNotes.NoteType = NoteType.CustomerOrder;
+                    billNotes.NoteContent = checkOut.Description??"";
+                    billNotes.CreatedDate= DateTime.Now;
+                    var user = _unitOfWork.UserRepo.GetById(userId);
+                    billNotes.CreatedBy = $"Người dùng: {user.FullName}, Email: {user.Email}, Id: {user.UserID}";
+                     _unitOfWork.BillNotesRepo.Add(billNotes);
+                }
+
+                foreach (var items in cartItems)
+                {
+                    if (items.ProductID != null && items.ComboID == null)
+                    {
+
+                        BillDetails billDetails = new BillDetails();
+                        billDetails.BillID = bill.BillID;
+                        billDetails.ItemType= ItemType.Product;
+                        billDetails.ItemsName = items.Product.ProductName;
+                        billDetails.Image = items.Product.ImageUrl??"";
+                        billDetails.Price = items.Product.Price;
+                        billDetails.Quantity = items.Quantity;
+                        billDetails.PriceEndow = items.Product.Price;
+                        billDetails.Status = StatusOrder.Activity;
+                        _unitOfWork.BillDetailsRepo.Add(billDetails);
+
+
+                    }
+                    else if (items.ProductID == null && items.ComboID != null)
+                    {
+
+                        BillDetails billDetails = new BillDetails();
+                        billDetails.BillID = bill.BillID;
+                        var comboItems = items.Combo.ProductComboes.ToList();
+                        billDetails.ItemType = ItemType.Combo;
+                        billDetails.ItemsName = items.Combo.ComboName ;
+                        billDetails.Image = items.Combo.Image;
+                        billDetails.Price = items.Combo.Price;
+                        billDetails.Quantity = items.Quantity;
+                        billDetails.PriceEndow = items.Combo.SetupPrice??items.Combo.Price;
+                        billDetails.Status = StatusOrder.Activity;
+                        _unitOfWork.BillDetailsRepo.Add(billDetails);
+                        var comboItemsArchive = new ComboItemsArchive();
+                        foreach (var item in comboItems)
+                        {
+                            comboItemsArchive.BillDetailsID = billDetails.BillDetailsID;
+                            comboItemsArchive.ProductName=item.Product.ProductName;
+                            comboItemsArchive.Quantity= item.Product.Quantity;
+                            comboItemsArchive.Image = item.Product.ImageUrl ?? "";
+                            comboItemsArchive.Price = item.Product.Price;
+                        }
+
+                    }
+                }
+                // Tính toán tổng tiền
+                var listBillDetails = _unitOfWork.BillDetailsRepo.FindAll(x => x.BillID == bill.BillID);
+                decimal TotalAmount = listBillDetails.Sum(x => x.Price * x.Quantity);
+                decimal TotalAmountEndow = listBillDetails.Sum(x => x.PriceEndow * x.Quantity);
+
+                // Cập nhật tổng tiền cho hóa đơn
+                bill.TotalAmount = TotalAmount;
+                bill.TotalAmountEndow = TotalAmountEndow;
+                _unitOfWork.BillRepo.Update(bill);
+                _unitOfWork.Complete();
+
             }
-
-            var listBillDetails =_unitOfWork.BillDetailsRepo.FindAll(x=>x.BillID==bill.BillID);
-            decimal TotalAmount = listBillDetails.Sum(x => x.Price*x.Quantity);
-            decimal TotalAmountEndow = listBillDetails.Sum(x => x.PriceEndow * x.Quantity);
-            var billUpdate = _unitOfWork.BillRepo.GetById(bill.BillID);
-            bill.TotalAmount= TotalAmount;
-            bill.TotalAmountEndow= TotalAmountEndow;
-            _unitOfWork.BillRepo.Update(bill);
-            _unitOfWork.Complete();
-
+            catch (Exception)
+            {
+                _unitOfWork.Rollback();
+                throw;
+            }
 
         }
 
@@ -195,31 +228,31 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
         {
             try
             {
-                var addresses = _unitOfWork.AddressRepo.Find(x => x.UserID == userId&&x.AddressType==AddressType.Default);
+                var addresses = _unitOfWork.AddressRepo.Find(x => x.UserID == userId && x.AddressType == AddressType.Default);
                 var store = _unitOfWork.StoresRepo.Find(x => x.Status == Status.Activity);
                 store.Address = _unitOfWork.AddressRepo.GetById(store.AddressID);
                 var cartItems = _unitOfWork.CartItemRepo.GetCartItemsWithDetails(cartId);
-            return new CheckOutViewModel
-            {
-                Address = addresses,
-                Store = store,
-                CartItemes = cartItems,
-                ReceivingType=ReceivingType,
-               
+                return new CheckOutViewModel
+                {
+                    Address = addresses,
+                    Store = store,
+                    CartItemes = cartItems,
+                    ReceivingType = ReceivingType,
 
-            };
+
+                };
             }
             catch (Exception)
             {
 
                 throw;
             }
-          
+
         }
 
         public void ClearCart(Guid cartId)
         {
-            var cart =_unitOfWork.CartRepo.GetById(cartId);
+            var cart = _unitOfWork.CartRepo.GetById(cartId);
             if (cart != null)
             {
                 //foreach (var cartItem in cart.CartItems)
@@ -252,7 +285,7 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void RemoveCartItem(Guid cartItemId)
         {
-            var cartItem =_unitOfWork.CartItemRepo.GetById(cartItemId);
+            var cartItem = _unitOfWork.CartItemRepo.GetById(cartItemId);
             if (cartItem != null)
             {
                 _unitOfWork.CartItemRepo.Delete(cartItem);
@@ -262,12 +295,12 @@ namespace DuAn_DoAnNhanh.Application.Implements.Service
 
         public void UpdateCartItem(Guid cartItemId, int quantity)
         {
-            var cartItem = _unitOfWork.CartItemRepo.GetById(cartItemId);         
+            var cartItem = _unitOfWork.CartItemRepo.GetById(cartItemId);
             cartItem.Quantity = quantity;
             _unitOfWork.CartItemRepo.Update(cartItem);
             _unitOfWork.Complete();
         }
 
-       
+
     }
 }

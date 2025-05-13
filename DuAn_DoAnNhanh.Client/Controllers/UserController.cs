@@ -395,7 +395,7 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
 
         [HttpPost]
-        //[ActionName("ConfirmDelete")]  // Xác nhận rằng đây là POST cho action ConfirmDelete
+        //[ActionName("ConfirmDelete")]  // Xác nhận rằng đây là POST cho action ji
         public IActionResult MarkAddressAsInActive(Guid id)
         {
             var address = _dbContext.addresses.FirstOrDefault(a => a.AddressID == id); // Lấy địa chỉ theo Guid
