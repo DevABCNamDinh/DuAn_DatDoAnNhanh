@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using DuAn_DoAnNhanh.Manage.Models.ViewModel;
+
 
 namespace DuAn_DoAnNhanh.Manage.Controllers
 {
@@ -54,6 +56,36 @@ namespace DuAn_DoAnNhanh.Manage.Controllers
             billViewModel.BillDetails = listBillDetails;
             return View(billViewModel);
         }
+
+
+        //Dang nhap, 
+        public IActionResult Login()
+        {
+            return View();
+        }
+      
+        [HttpPost]
+        public IActionResult Login(string email, string password)
+        {
+            var user = _dbContext.Users
+                .FirstOrDefault(u => u.Email == email && u.Password == password && u.Role != Role.Customer);
+
+            if (user != null)
+            {
+                // Lưu thông tin người dùng vào session
+                HttpContext.Session.SetString("UserEmail", user.Email);
+                HttpContext.Session.SetString("UserRole", user.Role.ToString());
+
+                // Chuyển hướng đến trang thống kê
+                return RedirectToAction("Index", "Statistical");
+            }
+
+            ViewBag.Error = "Email hoặc mật khẩu không đúng, hoặc bạn không có quyền truy cập.";
+            return View();
+        }
+
+
     }
+
 }
 
