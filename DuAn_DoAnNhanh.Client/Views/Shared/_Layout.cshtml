@@ -1,6 +1,8 @@
 ﻿@using DuAn_DoAnNhanh.Application.Implements.Service
 @using DuAn_DoAnNhanh.Application.Interfaces.Service
+@using DuAn_DoAnNhanh.Data.ViewModel
 @using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ICartService _cartService
 <!DOCTYPE html>
@@ -9,9 +11,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DuAn_DoAnNhanh.Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DuAn_DoAnNhanh.Client.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
 </head>
 <body>
     <header>
@@ -88,14 +93,21 @@
    
 
     <div class="container">
-        <main role="main" class="pb-3">
+        @{
+            var model = TempData["LoginRegisterModel"] != null
+            ? JsonConvert.DeserializeObject<LoginRegisterViewModel>(TempData["LoginRegisterModel"].ToString())
+            : new LoginRegisterViewModel();
+        }
+
+        <main role="main">
             <div id="productModal" class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
+                <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
+
 
                         <div class="modal-body p-2">
                             <!-- Gọi ViewComponent và truyền model đúng kiểu nếu cần -->
-                            @await Component.InvokeAsync("SignUpSignIn")
+                            @await Component.InvokeAsync("SignUpSignIn", new { model = model })
                         </div>
                     </div>
                 </div>
@@ -104,23 +116,29 @@
                 Kính chào quý khách! Chúc quý khách ngày mới tốt lành.
             </marquee>
             <div class="container-fluid mt-3">
-                <div class="row">
+                <div class="row" >
                     @if (ViewBag.ShowSidebar == true)
-                    {
-                        <div class="col-md-3 sidebar bg-light">
-                            <!-- Thanh menu dọc -->
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a href="@Url.Action("Information", "User")">Thông tin tài khoản</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="@Url.Action("Address", "User")">Địa chỉ</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="@Url.Action("History", "User")">Đơn mua</a>
-                                </li>
-                            </ul>
+                    {                    
+                        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                        <div class="col-md-3 sidebar">
+                            <div class="account-menu bg-warning p-3 rounded-3 fw-bold">
+                                <h4 class="text-uppercase">TÀI KHOẢN CỦA TÔI</h4>
+                                <nav class="nav flex-column " >
+                                    <a class="nav-link @(currentAction == "Information" ? "active text-danger position-relative" : "")" href="@Url.Action("Information", "User")" style="color: inherit">
+                                        Quản lý tài khoản
+                                    </a>
+                                    <a class="nav-link @(currentAction == "History" ? "active text-danger position-relative" : "")" href="@Url.Action("History", "User")" style="color: inherit">
+                                        Đơn hàng của tôi
+                                    </a>
+                                    <a class="nav-link @(currentAction == "Address" ? "active text-danger position-relative" : "")" href="@Url.Action("Address", "User")" style="color: inherit">
+                                        Địa chỉ giao hàng
+                                    </a>
+                                    <a class="nav-link " href="#" style="color: inherit">THÔNG TIN TÀI KHOẢN</a>
+                                    <a class="nav-link " href="#" style="color: inherit">DANH SÁCH ƯU ĐÃI</a>
+                                </nav>
+                            </div>
                         </div>
+
                     }
                     <div class="col @((ViewBag.ShowSidebar == true) ? "col-md-9" : "col-12") main-content">
                         @RenderBody()
@@ -132,51 +150,84 @@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+ 
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
-<script>
-    $(document).ready(function () {
-        // Khi nhấn nút mở modal
-        $("#openModal").click(function () {
-            $("#productModal").modal('show');
-        });
-
-        // Khi nhấn nút đóng modal
-        $(".close").click(function () {
-            $("#productModal").modal('hide');
-        });
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        // Kiểm tra nếu TempData yêu cầu mở modal
-    @if (TempData["OpenSignInModal"] != null && (bool)TempData["OpenSignInModal"] == true)
-    {
-        <text>
-                $("#productModal").modal('show');
-        </text>
-    }
-        });
-</script>
-@if (TempData["Message"] != null)
-{
     <script>
         $(document).ready(function () {
-            var message = "@TempData["Message"]";
-            // Hiển thị thông báo thành công ở góc trên bên phải
-            var alertBox = $('<div class="alert alert-success position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
-            $('body').append(alertBox);
+            // Khi nhấn nút mở modal
+            $("#openModal").click(function () {
+                $("#productModal").modal('show');
+            });
 
-            // Tự động ẩn thông báo sau 1,5 giây
-            setTimeout(function () {
-                alertBox.fadeOut();
-            }, 1500);
+            // Khi nhấn nút đóng modal
+            $(".close").click(function () {
+                $("#productModal").modal('hide');
+            });
         });
     </script>
-}
+    <script>
+        $(document).ready(function () {
+            // Kiểm tra nếu TempData yêu cầu mở modal
+        @if (TempData["OpenSignInModal"] != null && (bool)TempData["OpenSignInModal"] == true)
+        {
+            <text>
+                        $("#productModal").modal('show');
+            </text>
+
+
+        }
+
+       
+            });
+    </script>
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                var message = "@TempData["Message"]";
+                // Hiển thị thông báo thành công ở góc trên bên phải
+                var alertBox = $('<div class="alert alert-success position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
+                $('body').append(alertBox);
+
+                // Tự động ẩn thông báo sau 1,5 giây
+                setTimeout(function () {
+                    alertBox.fadeOut();
+                }, 2500);
+            });
+        </script>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                var message = "@TempData["ErrorMessage"]";
+                // Hiển thị thông báo thành công ở góc trên bên phải
+                var alertBox = $('<div class="alert alert-danger  position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
+                $('body').append(alertBox);
+
+                // Tự động ẩn thông báo sau 2,5 giây
+                setTimeout(function () {
+                    alertBox.fadeOut();
+                }, 2500);
+            });
+        </script>
+    }
+    <script>
+        $(document).ready(function () {
+          $(".nav-link").click(function () {
+            $(".nav-link").removeClass("active"); // Xóa class active khỏi tất cả mục
+            $(this).addClass("active"); // Thêm class active vào mục được nhấn
+          });
+        });
+    </script>
+</body>
+</html>
+
 <style>
     .alert {
         opacity: 1;

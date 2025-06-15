@@ -1,35 +1,43 @@
-﻿@using DuAn_DoAnNhanh.Client.Models.ViewModel
-@model RegisterViewModel
+﻿@using DuAn_DoAnNhanh.Data.ViewModel
+@model LoginRegisterViewModel
 <body>
     <div class="login-wrap">
         <div class="login-html">
-            <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
-            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
+            <input id="tab-1" type="radio" name="tab" class="sign-in" @(TempData["ActiveTab"]?.ToString() != "register" ? "checked" : "")><label for="tab-1" class="tab">Đăng Nhập</label>
+
+            <input id="tab-2" type="radio" name="tab" class="sign-up" @(TempData["ActiveTab"]?.ToString() == "register" ? "checked" : "")><label for="tab-2" class="tab">Đăng Ký</label>
             <div class="login-form">
                 <div class="sign-in-htm">
+                
+                  
+
 
                     <form asp-controller="User" asp-action="Login" method="post">
 
                         <div class="group">
-                            <label asp-for="@Model.Email" class="form-label"></label>
-                            <input asp-for="@Model.Email" class="form-control">
-                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                            <label asp-for="@Model.Login.Email" class="form-label"></label>
+                            <input asp-for="@Model.Login.Email" class="form-control">
+
+                            <span asp-validation-for="@Model.Login.Email" class="text-danger"></span>
                         </div>
                         <div class="group">
-                            <label asp-for="@Model.Password" class="form-label">Mật khẩu</label>
-                            <input asp-for="@Model.Password" class="form-control" data-type="password">
-                            <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                            <label asp-for="@Model.Login.Password" class="form-label">Mật khẩu</label>
+                            <input asp-for="@Model.Login.Password" class="form-control" data-type="password">
+                            <span asp-validation-for="@Model.Login.Password" class="text-danger"></span>
                         </div>
                    
                         <div class="group">
                             <button type="submit" class="btn btn-primary">Đăng nhập</button>
-                        </div>
-                        @if (TempData["ErrorPassword"] != null)
+                        </div>                    
+                        @if (TempData["LoginError"] != null)
                         {
-                            <div class="alert alert-danger">
-                                @TempData["ErrorPassword"]
-                            </div>
+                            <span class="text-danger">@TempData["LoginError"]</span>
                         }
+
+                       
+
+
+                      
                     </form>
 
                     
@@ -37,28 +45,37 @@
                 </div>
                 <div class="sign-up-htm">
 
+
+                   
+
                     <form asp-controller="User" asp-action="Register" method="post">
                         <div class="group">
-                            <label asp-for="@Model.FullName" class="form-label">Họ và tên</label>
-                            <input asp-for="@Model.FullName" class="form-control">
-                            <span asp-validation-for="@Model.FullName" class="text-danger"></span>
+                            <label asp-for="@Model.Register.FullName" class="form-label">Họ và tên</label>
+                            <input asp-for="@Model.Register.FullName" class="form-control">
+                            <span asp-validation-for="@Model.Register.FullName" class="text-danger"></span>
                         </div>
                         <div class="group">
-                            <label asp-for="@Model.Email" class="form-label">Email</label>
-                            <input asp-for="@Model.Email" class="form-control">
-                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                            <label asp-for="@Model.Register.Email" class="form-label">Email</label>
+                            <input asp-for="@Model.Register.Email" class="form-control">
+                            <span asp-validation-for="@Model.Register.Email" class="text-danger"></span>
                         </div>
                         <div class="group">
-                            <label asp-for="@Model.Password" class="form-label">Mật khẩu</label>
-                            <input asp-for="@Model.Password" class="form-control" data-type="password">
-                            <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                            <label asp-for="@Model.Register.Password" class="form-label">Mật khẩu</label>
+                            <input asp-for="@Model.Register.Password" class="form-control" data-type="password">
+                            <span asp-validation-for="@Model.Register.Password" class="text-danger"></span>
                         </div>
                         <div class="group">
-                            <label asp-for="@Model.ConfirmPassword" class="form-label">Nhập lại mật khẩu</label>
-                            <input asp-for="@Model.ConfirmPassword" class="form-control" data-type="password">
-                            <span asp-validation-for="@Model.ConfirmPassword" class="text-danger"></span>
+                            <label asp-for="@Model.Register.ConfirmPassword" class="form-label">Nhập lại mật khẩu</label>
+                            <input asp-for="@Model.Register.ConfirmPassword" class="form-control" data-type="password">
+                            <span asp-validation-for="@Model.Register.ConfirmPassword" class="text-danger"></span>
                         </div>
+                        <div class="group">
                         <button type="submit" class="btn btn-primary">Đăng ký</button>
+                        </div>
+                        @if (TempData["RegisterError"] != null)
+                        {
+                            <span class="text-danger">@TempData["RegisterError"]</span>
+                        }
                     </form>
                  
                    
@@ -66,6 +83,10 @@
             </div>
         </div>
     </div>
+
+
+
+
 </body>
 
 </html>
@@ -273,3 +294,5 @@
         text-align: center;
     }
 </style>
+
+

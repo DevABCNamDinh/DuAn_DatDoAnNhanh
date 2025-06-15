@@ -13,17 +13,17 @@ namespace DuAn_DoAnNhanh.Data.Entities
         public Guid? StoreID { get; set; }
 
 
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
         public DateTime CreateDate { get; set; }
         public Status Status { get; set; }
         public Role Role { get; set; }
-        public virtual Cart Cart { get; set; }
+        public virtual Cart Cart { get; set; } = null!;
         public virtual Store? Store { get; set; }
 
-        public virtual List<Bill> Orderes { get; set; }
-        public virtual List<Address> Addresses { get; set; }
+        public virtual List<Bill> Orderes { get; set; } = null!;
+        public virtual List<Address> Addresses { get; set; } = null!;
 
     }
 }

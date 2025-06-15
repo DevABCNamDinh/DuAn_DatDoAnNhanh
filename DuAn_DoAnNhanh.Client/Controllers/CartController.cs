@@ -1,5 +1,7 @@
 ﻿using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
+using DuAn_DoAnNhanh.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DuAn_DoAnNhanh.Client.Controllers
@@ -13,14 +15,6 @@ namespace DuAn_DoAnNhanh.Client.Controllers
         }
         public IActionResult Cart ()
         {
-        //var cart = _cartService.GetCartFromUserId(userId); 
-        //if (cart == null)
-        //{
-        //    return View("EmptyCart"); 
-        //}
-
-        //var cartItems = _cartService.GetCartItems(cart.CartID); 
-        //return View(cartItems);
         try
         {
             var UserId = HttpContext.Session.GetString("UserId");
@@ -121,15 +115,73 @@ namespace DuAn_DoAnNhanh.Client.Controllers
             }
             return RedirectToAction("Cart");
         }
-        [HttpPost]
-        public IActionResult CheckOut()
+        [HttpGet]
+        public IActionResult CheckOut(ReceivingType receivingType)
         {
             try
+            {  
+                var userId = HttpContext.Session.GetString("UserId");
+                var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+                if (cart.CartItems.Count > 0) {
+                    var checkOutView = _cartService.CheckOutView(Guid.Parse(userId), cart.CartID, receivingType);
+                    if (checkOutView is not null)
+                    {
+                        return View(checkOutView);
+                    }
+                    return NoContent();
+                }
+                else
+                {
+                    throw new Exception("Giỏ hàng trống, không thể tiến hành thanh toán!");
+                }
+                   
+            }
+            catch (Exception ex)
             {
-                var UserId = HttpContext.Session.GetString("UserId");
-                var cart = _cartService.GetCartFromUserId(Guid.Parse(UserId));
-                _cartService.CheckOut(cart.CartID);
-                TempData["Message"] = "Đặt hàng thành công";
+                TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index", "Home");
+            }
+
+        }
+        [HttpPost]
+        public IActionResult CheckOut(CheckOutViewModel checkOut)
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+            var checkOutView = _cartService.CheckOutView(Guid.Parse(userId), cart.CartID, checkOut.ReceivingType);
+            try
+            {
+                if (checkOut.AddressID == Guid.Empty|| checkOut.StoreID == Guid.Empty || checkOut.ReceiverName==string.Empty||checkOut.ReceiverPhone==string.Empty)
+                {
+                    if (checkOut.StoreID == Guid.Empty)
+                    {
+                        TempData["ErrorStore"] = "Cửa hàng đang bị lỗi!";
+                    }
+                    if (checkOut.ReceivingType == ReceivingType.HomeDelivery)
+                    {
+                        if (checkOut.AddressID == Guid.Empty)
+                        {
+                            TempData["ErrorAddress"] = "Địa chỉ không được để trống!";
+                            return RedirectToAction("CheckOut", new { receivingType = ReceivingType.HomeDelivery });
+                        }
+
+                    }
+                    if(checkOut.ReceivingType == ReceivingType.PickUpAtStore)
+                    {
+                        if (checkOut.ReceiverName == string.Empty || checkOut.ReceiverPhone == string.Empty)
+                        {
+                            TempData["ErrorReceiver"] = "Thông tin không được để trống!";
+                            return RedirectToAction("CheckOut", new { receivingType = ReceivingType.PickUpAtStore });
+                        }
+                    }
+
+
+                   
+                   
+                }
+                checkOut.CartID=cart.CartID;
+                _cartService.CheckOut(checkOut);
+                TempData["Message"] = "Đặt hàng thành công.";
                 if (cart != null)
                 {
                     _cartService.ClearCart(cart.CartID);
@@ -138,12 +190,12 @@ namespace DuAn_DoAnNhanh.Client.Controllers
 
 
             }
-            catch (Exception)
-                {
-                    TempData["OpenSignInModal"] = true;
-                    return RedirectToAction("Index", "Home");
-                }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Đặt hàng thất bại! Lỗi: {ex.Message}";          
+                return RedirectToAction("CheckOut", new { checkOut = checkOutView });
             }
+        }
 
     }
 }

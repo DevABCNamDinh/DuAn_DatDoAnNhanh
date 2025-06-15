@@ -1,4 +1,4 @@
-﻿using DuAn_DoAnNhanh.Application.Interfaces.Repositories;
+﻿using DuAn_DoAnNhanh.Data.Interfaces.Repositories;
 using DuAn_DoAnNhanh.Application.Interfaces.Service;
 using DuAn_DoAnNhanh.Data.Entities;
 using System;
@@ -6,37 +6,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DuAn_DoAnNhanh.Data.Implements.UnitOfWork;
+using DuAn_DoAnNhanh.Data.Interface.UnitOfWork;
 
 namespace DuAn_DoAnNhanh.Application.Implements.Service
 {
     public class BillService : IBillService
     {
-        private readonly IGenericRepository<Bill> _genericRepository;
-        public BillService(IGenericRepository<Bill> genericRepository)
+
+        private readonly IUnitOfWork _unitOfWork;
+        public BillService(IUnitOfWork unitOfWork)
         {
-            _genericRepository = genericRepository;
+            _unitOfWork = unitOfWork;
         }
     
         public void AddBill(Bill bill)
         {
-            _genericRepository.insert(bill);
-            _genericRepository.save();
+           _unitOfWork.BillRepo.Add(bill);
+            _unitOfWork.Complete();
         }
 
-        public List<Bill> GetAllBill()
+        public IEnumerable<Bill> GetAllBill(Guid? userId)
         {
-            return _genericRepository.GetAll();
+            var bills= _unitOfWork.BillRepo.GetAllBillIncludeUser();
+            if (userId != null && userId != Guid.Empty)
+            {
+                bills = bills.Where(x => x.UserID == userId);
+
+            }
+            return bills;
         }
 
         public Bill GetBillById(Guid id)
         {
-            return _genericRepository.GetById(id);
+            return _unitOfWork.BillRepo.GetById(id);
         }
 
         public void UpdateBill(Bill bill)
         {
-           _genericRepository.update(bill);
-            _genericRepository.save();
+           _unitOfWork.BillRepo.Update(bill);
+            _unitOfWork.Complete();
         }
     }
 }

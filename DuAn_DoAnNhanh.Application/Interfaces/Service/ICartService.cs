@@ -1,6 +1,7 @@
 ﻿
 using DuAn_DoAnNhanh.Application.Implements.Service;
 using DuAn_DoAnNhanh.Data.Entities;
+using DuAn_DoAnNhanh.Data.Enum;
 using DuAn_DoAnNhanh.Data.ViewModel;
 
 using System;
@@ -22,8 +23,8 @@ namespace DuAn_DoAnNhanh.Application.Interfaces.Service
         void UpdateCartItem(Guid cartItemId, int quantity);
         void RemoveCartItem(Guid cartItemId);
         void ClearCart(Guid cartId);
-        void CheckOut(Guid cartId);
-       //List<Data.ViewModel.CartItemViewModel> GetCartItemsWithDetails(Guid cartId);
-       // IEnumerable<Implements.Service.CartItemViewModel> GetCartItemsWithDetails(Guid cartId);
+        void CheckOut(CheckOutViewModel checkOut);
+
+        CheckOutViewModel CheckOutView(Guid userId, Guid cartId, ReceivingType ReceivingType);
     }
 }

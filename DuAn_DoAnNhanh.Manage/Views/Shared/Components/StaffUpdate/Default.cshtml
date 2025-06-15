@@ -1,0 +1,54 @@
+﻿@model DuAn_DoAnNhanh.Data.ViewModel.StaffViewModel
+
+<form asp-controller="Staff" asp-action="UpdateStaff" method="post" id="updateStaffForm">
+    <input type="hidden" asp-for="UserID" />
+
+    <div class="form-group">
+        <label>Họ tên</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Chức vụ</label>
+        @* <select asp-for="Role" asp-items="Html.GetEnumSelectList<DuAn_DoAnNhanh.Data.Enum.Role>()" class="form-control">
+        </select> *@
+        <select asp-for="Role" class="form-control">
+            <option value="">-- Chọn vai trò --</option>
+            @foreach (var role in Enum.GetValues(typeof(DuAn_DoAnNhanh.Data.Enum.Role)).Cast<DuAn_DoAnNhanh.Data.Enum.Role>())
+            {
+                // Lọc bỏ vai trò Admin
+                if (role != DuAn_DoAnNhanh.Data.Enum.Role.Admin && role != DuAn_DoAnNhanh.Data.Enum.Role.Customer)
+                {
+                    <option value="@role">@role</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Trạng thái</label>
+        <div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" asp-for="Status" value="Activity" />
+                <label class="form-check-label">Hoạt động</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" asp-for="Status" value="InActivity" />
+                <label class="form-check-label">Không hoạt động</label>
+            </div>
+        </div>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3 text-end">
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </div>
+</form>

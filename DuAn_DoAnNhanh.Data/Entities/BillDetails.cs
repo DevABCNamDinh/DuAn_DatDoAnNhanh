@@ -11,8 +11,9 @@ namespace DuAn_DoAnNhanh.Data.Entities
     {
         public Guid BillDetailsID { get; set; }
         public Guid BillID { get; set; }
-        public string PCName { get; set; }
-        public string Image { get; set; }
+        public ItemType ItemType { get; set; }
+        public string ItemsName { get; set; } = string.Empty;
+        public string Image { get; set; } = string.Empty;
 
         public int Quantity { get; set; }
         public decimal Price { get; set; }
@@ -20,8 +21,9 @@ namespace DuAn_DoAnNhanh.Data.Entities
 
         public StatusOrder Status { get; set; }
 
-        public virtual Bill Order { get; set; }
-     
+        public virtual Bill Order { get; set; } = null!;
+        public virtual List<ComboItemsArchive> ComboItemsArchives { get; set; } = null!;
+
 
 
 

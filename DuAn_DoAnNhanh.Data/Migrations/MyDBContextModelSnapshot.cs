@@ -34,6 +34,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("District")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -44,7 +47,8 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
@@ -54,7 +58,8 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.Property<string>("NumberPhone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Province")
                         .IsRequired()
@@ -62,10 +67,11 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.Property<string>("SpecificAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid?>("StoreID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("UserID")
                         .HasColumnType("uniqueidentifier");
@@ -74,18 +80,29 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("status")
-                        .HasColumnType("int");
-
                     b.HasKey("AddressID");
-
-                    b.HasIndex("StoreID")
-                        .IsUnique()
-                        .HasFilter("[StoreID] IS NOT NULL");
 
                     b.HasIndex("UserID");
 
                     b.ToTable("Address", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            AddressID = new Guid("931f07e5-46d8-4449-b77e-533bf4f33aa3"),
+                            AddressType = 2,
+                            CreateDate = new DateTime(2025, 5, 10, 8, 46, 48, 869, DateTimeKind.Local).AddTicks(1868),
+                            District = "Quận Nam Từ Liêm",
+                            FullAddress = "Số 36 Hàm Nghi, Phường Cầu Diễn, Quận Nam Từ Liêm, Thành phố Hà Nội",
+                            FullName = "BB Chicken-Hàm Nghi",
+                            Latitude = 21.02983,
+                            Longitude = 105.76913,
+                            NumberPhone = "055931234",
+                            Province = "Thành phố Hà Nội",
+                            SpecificAddress = "Số 36 Hàm Nghi",
+                            Status = 0,
+                            Ward = "Phường Cầu Diễn"
+                        });
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Bill", b =>
@@ -100,7 +117,19 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<DateTime>("BillDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PaymentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceiverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceivingType")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -119,6 +148,8 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BillID");
+
+                    b.HasIndex("AddressID");
 
                     b.HasIndex("StoreID");
 
@@ -241,6 +272,40 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.HasKey("ComboID");
 
                     b.ToTable("Combos", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ComboID = new Guid("a1b2c3d4-e5f6-4789-abcd-1234567890ab"),
+                            ComboName = "Combo Burger Siêu Cay",
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1656),
+                            Description = "Burger Siêu Cay kèm Khoai Tây Chiên (M) và Pepsi Zero (M)",
+                            Image = "https://www.lotteria.vn/media/catalog/product/cache/400x400/m/e/menu_burger_2.jpg.webp",
+                            Price = 65000m,
+                            SetupPrice = 60000m,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ComboID = new Guid("b2c3d4e5-f6a7-4890-abcd-2345678901bc"),
+                            ComboName = "Combo Gà Rán",
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1661),
+                            Description = "Gà Rán (1 miếng) kèm Khoai Tây Chiên (M) và Pepsi Zero (M)",
+                            Image = "https://www.lotteria.vn/media/catalog/product/cache/400x400/2/2/222281_4.png.webp",
+                            Price = 85000m,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ComboID = new Guid("c3d4e5f6-a7b8-4901-bcde-3456789012cd"),
+                            ComboName = "Combo Gà Nướng",
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1664),
+                            Description = "Gà Nướng (1 miếng) kèm Khoai Tây Chiên (M) và Pepsi Zero (M)",
+                            Image = "https://www.lotteria.vn/media/catalog/product/cache/400x400/2/2/228380.png.webp",
+                            Price = 87000m,
+                            SetupPrice = 80000m,
+                            Status = 0
+                        });
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Product", b =>
@@ -274,6 +339,118 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.HasKey("ProductID");
 
                     b.ToTable("Products", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ProductID = new Guid("f4a7b7e8-63b6-4c90-a38a-74c5c8d9d7b1"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1403),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/m/e/menu_burger_2.jpg.webp",
+                            Price = 35000m,
+                            ProductName = "Burger Siêu Cay",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("9e41d162-3f6a-42a1-b9a6-28f6efbc7f5c"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1409),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/b/u/burger_bulgogi_4.png.webp",
+                            Price = 35000m,
+                            ProductName = "Burger Bulgogi",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("2d8f7e1a-5cbb-4ff1-bcbc-f82b07dcb4ad"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1413),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/b/u/burger_shrimp_1_.png.webp",
+                            Price = 35000m,
+                            ProductName = "Burger Tôm",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("85c5e5a3-9a3d-4d9a-a09c-74647eb07bfc"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1416),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/d/r/drink_pepsi_zero_m_l__2.png.webp",
+                            Price = 15000m,
+                            ProductName = "Pepsi Zero (M)",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("e1bb1ea5-94b2-45c7-98a2-b1fa0f4e3e6d"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1419),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/d/e/dessert_french_fries_m_i.png.webp",
+                            Price = 25000m,
+                            ProductName = "Khoai Tây Chiên (M)",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("b487da52-d738-4376-a1e3-c4a4d2fc7ef1"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1424),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/d/e/dessert_shake_potato_tuy_t_xanh_.png.webp",
+                            Price = 25000m,
+                            ProductName = "Khoai lắc tuyết xanh",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("f6a71ac8-78f3-4194-88c9-c2aa9467f93e"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1426),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/l/c/lc0003_1.png.webp",
+                            Price = 41000m,
+                            ProductName = "Gà Sốt HS (1 miếng)",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("dbc17836-d6f4-46cb-bb9a-77b9c54e7b13"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1428),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/2/2/227436_2.png.webp",
+                            Price = 40000m,
+                            ProductName = "Gà Nướng (1 miếng)",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("7b17b539-8168-42c5-8b9f-1c1c783bd423"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1433),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/l/c/lc0001_4.png.webp",
+                            Price = 40000m,
+                            ProductName = "Gà Rán (1 miếng)",
+                            Quantity = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductID = new Guid("c1a8f0ee-73c9-4c2f-b10f-fc3d6561d275"),
+                            CreteDate = new DateTime(2025, 5, 10, 1, 46, 48, 869, DateTimeKind.Utc).AddTicks(1435),
+                            Description = "Mô tả",
+                            ImageUrl = "https://www.lotteria.vn/media/catalog/product/cache/400x400/m/e/menu_menu_5_.jpg.webp",
+                            Price = 41000m,
+                            ProductName = "Gà Sốt Bơ Tỏi (1 miếng)",
+                            Quantity = 0,
+                            Status = 0
+                        });
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.ProductCombo", b =>
@@ -301,6 +478,80 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.HasIndex("ProductID");
 
                     b.ToTable("ProductCombos", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ProductComboID = new Guid("fa570ecb-33f1-48ba-a2b3-9fc884e8ed55"),
+                            ComboID = new Guid("a1b2c3d4-e5f6-4789-abcd-1234567890ab"),
+                            ProductID = new Guid("f4a7b7e8-63b6-4c90-a38a-74c5c8d9d7b1"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("af881b82-147b-4ad9-89df-7d4e12b83bbc"),
+                            ComboID = new Guid("a1b2c3d4-e5f6-4789-abcd-1234567890ab"),
+                            ProductID = new Guid("e1bb1ea5-94b2-45c7-98a2-b1fa0f4e3e6d"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("f078478c-82ad-4f58-ab7f-036b27f9c092"),
+                            ComboID = new Guid("a1b2c3d4-e5f6-4789-abcd-1234567890ab"),
+                            ProductID = new Guid("85c5e5a3-9a3d-4d9a-a09c-74647eb07bfc"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("f621562d-7e1b-499a-a53b-18d3fb7baf76"),
+                            ComboID = new Guid("b2c3d4e5-f6a7-4890-abcd-2345678901bc"),
+                            ProductID = new Guid("7b17b539-8168-42c5-8b9f-1c1c783bd423"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("aa0427c1-c631-48a2-bf62-4a2a127ba2da"),
+                            ComboID = new Guid("b2c3d4e5-f6a7-4890-abcd-2345678901bc"),
+                            ProductID = new Guid("e1bb1ea5-94b2-45c7-98a2-b1fa0f4e3e6d"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("bed1a4e1-9ee8-4423-81d6-6bc953432bb3"),
+                            ComboID = new Guid("b2c3d4e5-f6a7-4890-abcd-2345678901bc"),
+                            ProductID = new Guid("85c5e5a3-9a3d-4d9a-a09c-74647eb07bfc"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("96fc0609-2f1f-4dd5-8d7c-19767c57faac"),
+                            ComboID = new Guid("c3d4e5f6-a7b8-4901-bcde-3456789012cd"),
+                            ProductID = new Guid("dbc17836-d6f4-46cb-bb9a-77b9c54e7b13"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("54005e70-3cf6-487b-b771-dde970397f3f"),
+                            ComboID = new Guid("c3d4e5f6-a7b8-4901-bcde-3456789012cd"),
+                            ProductID = new Guid("e1bb1ea5-94b2-45c7-98a2-b1fa0f4e3e6d"),
+                            Quantity = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            ProductComboID = new Guid("c47f2417-7edf-4342-847e-f1c3b4fa9792"),
+                            ComboID = new Guid("c3d4e5f6-a7b8-4901-bcde-3456789012cd"),
+                            ProductID = new Guid("85c5e5a3-9a3d-4d9a-a09c-74647eb07bfc"),
+                            Quantity = 1,
+                            Status = 0
+                        });
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Store", b =>
@@ -308,6 +559,12 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Property<Guid>("StoreID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AddressID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -318,7 +575,20 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.HasKey("StoreID");
 
+                    b.HasIndex("AddressID")
+                        .IsUnique();
+
                     b.ToTable("Stores");
+
+                    b.HasData(
+                        new
+                        {
+                            StoreID = new Guid("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e"),
+                            AddressID = new Guid("931f07e5-46d8-4449-b77e-533bf4f33aa3"),
+                            CreateDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = 0,
+                            StoreName = "BB Chicken-Hàm Nghi"
+                        });
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
@@ -353,39 +623,52 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
                     b.HasKey("UserID");
 
-                    b.HasIndex("StoreID")
-                        .IsUnique()
-                        .HasFilter("[StoreID] IS NOT NULL");
+                    b.HasIndex("StoreID");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserID = new Guid("a7a7f4ec-4600-4eda-bd80-3abcb375302d"),
+                            CreateDate = new DateTime(2025, 5, 10, 8, 46, 49, 38, DateTimeKind.Local).AddTicks(5983),
+                            Email = "admin@gmail.com",
+                            FullName = "Admin",
+                            Password = "$2a$11$rNMWwHnuYbqCboRhwDQsIeH2nAZfqYnH9quSoA5MCXk5InrfSmWBW",
+                            Role = 0,
+                            Status = 0
+                        },
+                        new
+                        {
+                            UserID = new Guid("8ddadcd2-68bf-4099-af30-e70d1ac6c8c3"),
+                            CreateDate = new DateTime(2025, 5, 10, 8, 46, 49, 220, DateTimeKind.Local).AddTicks(4414),
+                            Email = "manhdb123@gmail.com",
+                            FullName = "Phạm Viết Mạnh",
+                            Password = "$2a$11$uqhwOfqIYrfPctRDpDtclOKDu2eZzZlU87DNnPrQZUztdyCUJUot.",
+                            Role = 1,
+                            Status = 0,
+                            StoreID = new Guid("8a2e5d21-5f6b-4a7c-9d5e-3f6c8b2a1d0e")
+                        });
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Address", b =>
                 {
-                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
-                        .WithOne("Address")
-                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.Address", "StoreID");
-
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.User", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserID");
-
-                    b.Navigation("Store");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Bill", b =>
                 {
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Address", "Address")
+                        .WithMany("Bills")
+                        .HasForeignKey("AddressID");
+
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
                         .WithMany("Bills")
                         .HasForeignKey("StoreID");
-
-                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Address", "Address")
-                        .WithMany("Bills")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.User", "User")
                         .WithMany("Orderes")
@@ -464,11 +747,22 @@ namespace DuAn_DoAnNhanh.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Store", b =>
+                {
+                    b.HasOne("DuAn_DoAnNhanh.Data.Entities.Address", "Address")
+                        .WithOne("Store")
+                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.Store", "AddressID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+                });
+
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>
                 {
                     b.HasOne("DuAn_DoAnNhanh.Data.Entities.Store", "Store")
-                        .WithOne("User")
-                        .HasForeignKey("DuAn_DoAnNhanh.Data.Entities.User", "StoreID");
+                        .WithMany("Users")
+                        .HasForeignKey("StoreID");
 
                     b.Navigation("Store");
                 });
@@ -476,6 +770,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Address", b =>
                 {
                     b.Navigation("Bills");
+
+                    b.Navigation("Store")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Bill", b =>
@@ -504,13 +801,9 @@ namespace DuAn_DoAnNhanh.Data.Migrations
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.Store", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
-
                     b.Navigation("Bills");
 
-                    b.Navigation("User")
-                        .IsRequired();
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("DuAn_DoAnNhanh.Data.Entities.User", b =>

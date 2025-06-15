@@ -1,102 +1,105 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DuAn_DoAnNhanh.Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DuAn_DoAnNhanh.Client.styles.css" asp-append-version="true" />
-    <style>
-        body {
-            margin: 0;
-            color: #6a6f8c;
-            /* background: #c8c8c8; */
-            font: 600 16px/18px "Open Sans", sans-serif;
-        }
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet">
 
-        .sidebar {
-            width: 200px;
-            background-color: #2c3e50; /* Màu nền của menu */
-            color: white;
-            padding: 20px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
 
-            .sidebar a {
-                color: white;
-                text-decoration: none;
-                display: block;
-                padding: 10px 0;
-            }
-
-                .sidebar a:hover {
-                    background-color: #34495e;
-                }
-
-        .main-content {
-            margin-left: 200px;
-            padding-top: 80px; /* Khoảng trống để tránh bị chồng lên header */
-            width: calc(100% - 200px);
-        }
-
-        header {
-            background-color: #2c3e50; /* Màu nền của header giống màu menu */
-            color: white;
-            padding: 15px;
-            position: fixed;
-            top: 0;
-            left: 200px;
-            width: calc(100% - 200px);
-            z-index: 1000; /* Đảm bảo header luôn nằm trên các thành phần khác */
-            text-align: center;
-        }
-
-        .navbar .nav-link {
-            color: white !important; /* Màu chữ của các liên kết trong header */
-        }
-    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Menu</h2>
-        <a asp-action="Index" asp-controller="Statistical">Thống kê</a>
-
-        <a asp-action="GetAll" asp-controller="Bill">Đơn hàng</a>
-        <a asp-action="GetAll" asp-controller="Product">Sản phẩm</a>
-        <a asp-action="GetAll" asp-controller="Combo">Combo</a>
-        <a asp-action="Index" asp-controller="User">Khách hàng</a>
-        <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action text-white" data-bs-toggle="collapse" data-bs-target="#menuCuaHang" style="background-color: #2c3e50; border: none;">
-                Hệ thống ▼
+    <div class="sidebar d-flex flex-column" style="height: 100vh;">
+            <h2>Menu</h2>
+            @{
+                var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                var authToken = HttpContextAccessor.HttpContext.Session.GetString("AuthToken");
+                var userName = HttpContextAccessor.HttpContext.Session.GetString("UserName");
+            }
+            <a asp-action="Index" asp-controller="Statistical" class="nav_link @(currentAction == "Index" && currentController == "Statistical" ? "active" : "")">
+                <i class='bx bx-grid-alt  p-2' title="Thống kê"></i>
+                <span class="p-2">Thống kê</span>
             </a>
-            <div class="collapse" id="menuCuaHang">
-                <a asp-action="Index" asp-controller="Store" class="list-group-item list-group-item-action text-white ps-4" style="background-color: #34495e; border: none;">Cửa hàng</a>
-                <a asp-action="Index" asp-controller="Account" class="list-group-item list-group-item-action text-white ps-4" style="background-color: #34495e; border: none;">Tài khoản</a>
-            </div>
+
+            <a asp-action="GetAll" asp-controller="Bill" class="nav_link @(currentAction == "GetAll" && currentController == "Bill" ? "active" : "")">
+                <i class='bx bx-cart  p-2' title="Đơn hàng"></i>
+                <span class="p-2">Đơn hàng</span>
+            </a>
+
+            <a asp-action="GetAll" asp-controller="Product" class="nav_link @(currentAction == "GetAll" && currentController == "Product" ? "active" : "")">
+                <i class='bx bx-package  p-2' title="Sản phẩm"></i>
+                <span class="p-2">Sản phẩm</span>
+            </a>
+
+            <a asp-action="GetAll" asp-controller="Combo" class="nav_link @(currentAction == "GetAll" && currentController == "Combo" ? "active" : "")">
+                <i class='bx bx-purchase-tag  p-2' title="Combo"></i>
+                <span class="p-2">Combo</span>
+            </a>
+
+            <a asp-action="Index" asp-controller="User" class="nav_link @(currentAction == "Index" && currentController == "User" ? "active" : "")">
+                <i class='bx bx-user  p-2' title="Khách hàng"></i>
+                <span class="p-2">Khách hàng</span>
+            </a>
+
+            <a asp-action="Index" asp-controller="Store" class="nav_link @(currentAction == "Index" && currentController == "Store" ? "active" : "")">
+                <i class='bx bx-store  p-2' title="Cửa hàng"></i>
+                <span class="p-2">Cửa hàng</span>
+            </a>
+        <a asp-action="Index" asp-controller="Staff" class="nav_link @(currentAction == "Index" && currentController == "Staff" ? "active" : "")">
+            <i class='bx bx-store  p-2' title="Nhân viên"></i>
+            <span class="p-2">Nhân viên</span>
+        </a>
+            @if (authToken != null && userName != null)
+            {
+            <a asp-action="Logout" asp-controller="Account" class="nav_link mt-auto">
+                    <i class='bx bx-log-out  p-2' title="Đăng xuất"></i>
+                    <span class="p-2">Đăng xuất</span>
+                </a>
+            }
         </div>
-    </div>
 
     <div class="main-content">
         <header>
-            <h3>Quản lý</h3>
+            <h3>Quản trị hệ thống</h3>
         </header>
 
-        <div class="container">
+        <div class="container-fluid">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
 
-      
+
     </div>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                var message = "@TempData["Message"]";
+                // Hiển thị thông báo thành công ở góc trên bên phải
+                var alertBox = $('<div class="alert alert-success position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
+                $('body').append(alertBox);
+
+                // Tự động ẩn thông báo sau 1,5 giây
+                setTimeout(function () {
+                    alertBox.fadeOut();
+                }, 1500);
+            });
+        </script>
+    }
 </body>
 </html>
+

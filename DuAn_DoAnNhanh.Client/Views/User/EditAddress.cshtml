@@ -1,0 +1,178 @@
+﻿
+  @model DuAn_DoAnNhanh.Data.Entities.Address
+  @using DuAn_DoAnNhanh.Data.Enum
+
+<div class="container">
+    <h2>Chỉnh sửa địa chỉ</h2>
+    <form asp-controller="User" asp-action="SaveAddress" method="post" enctype="multipart/form-data" class="form-container">
+        <input type="hidden" name="AddressID" value="@Model.AddressID" />
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <input asp-for="FullName" type="text" class="form-control" placeholder="Họ và tên" />
+            </div>
+            <div class="mb-3 col-md-6">
+                <input asp-for="NumberPhone" type="text" class="form-control" placeholder="Số điện thoại" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <select asp-for="Province" id="province" class="form-control">
+                    <option value="">Tỉnh/Thành phố</option>
+            
+                </select>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <select asp-for="District" id="district" class="form-control">
+                    <option value="">Quận/Huyện</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <select asp-for="Ward" id="ward" class="form-control">
+                <option value="">Xã/Phường</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <input asp-for="SpecificAddress" type="text" class="form-control" placeholder="Nhập địa chỉ cụ thể" />
+        </div>
+
+        <div class="mb-3">
+            <label for="description">Ghi chú về địa chỉ (nếu có)</label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Ghi chú về địa chỉ (nếu có)"></textarea>
+        </div>
+
+        <div class="form-check">
+            @Html.CheckBox("SetAsDefault", Model.AddressType == AddressType.Default, new { @class = "form-check-input", id = "SetAsDefault" })
+            <label class="form-check-label" for="SetAsDefault">Đặt làm địa chỉ mặc định</label>
+        </div>
+
+
+
+
+        <button type="submit" class="btn btn-primary">Lưu Địa Chỉ</button>
+    </form>
+
+  
+ 
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var selectedProvince = "@Html.Raw(Model.Province)";
+        var selectedDistrict = "@Html.Raw(Model.District)";
+        var selectedWard = "@Html.Raw(Model.Ward)";
+
+        function loadDistricts(provinceCode, callback) {
+            $("#district").html('<option value="">Quận/Huyện</option>');
+            $("#ward").html('<option value="">Xã/Phường</option>');
+
+            if (provinceCode) {
+                $.getJSON(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`, function (data) {
+                    data.districts.forEach(function (district) {
+                        $("#district").append(
+                            `<option value="${district.name}" data-code="${district.code}">${district.name}</option>`
+                        );
+                    });
+
+                    if (selectedDistrict) {
+                        $('#district option').each(function () {
+                            if ($(this).text() == selectedDistrict) {
+                                $(this).prop('selected', true);
+                                var districtCode = $(this).data('code');
+                                loadWards(districtCode);
+                                if (callback) callback();
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        function loadWards(districtCode) {
+            $("#ward").html('<option value="">Xã/Phường</option>');
+
+            if (districtCode) {
+                $.getJSON(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`, function (data) {
+                    data.wards.forEach(function (ward) {
+                        $("#ward").append(
+                            `<option value="${ward.name}">${ward.name}</option>`
+                        );
+                    });
+
+                    if (selectedWard) {
+                        $('#ward option').each(function () {
+                            if ($(this).text() == selectedWard) {
+                                $(this).prop('selected', true);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        function loadProvinces() {
+            $.getJSON("https://provinces.open-api.vn/api/?depth=2", function (data) {
+                data.forEach(function (province) {
+                    $("#province").append(
+                        `<option value="${province.name}" data-code="${province.code}">${province.name}</option>`
+                    );
+                });
+
+                if (selectedProvince) {
+                    $('#province option').each(function () {
+                        if ($(this).text() == selectedProvince) {
+                            $(this).prop('selected', true);
+                            var provinceCode = $(this).data('code');
+
+                            loadDistricts(provinceCode, function () {
+                                var districtCode = $("#district option:selected").data('code');
+                                loadWards(districtCode);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        loadProvinces();
+
+        $("#province").change(function () {
+            var provinceCode = $("#province option:selected").data('code');
+            loadDistricts(provinceCode);
+        });
+
+        $("#district").change(function () {
+            var districtCode = $("#district option:selected").data('code');
+            loadWards(districtCode);
+        });
+    });
+   
+        $(document).ready(function () {
+            // Khi nhấn nút mở modal
+            $("#openModal1").click(function () {
+                $("#addressModal").modal('show');
+            });
+            // Khi nhấn nút "Chỉnh sửa" địa chỉ
+            $(document).on("click", ".editAddressBtn", function () {
+                var addressId = $(this).data("id"); // lấy id địa chỉ
+                $.get("/User/LoadAddressForm?id=" + addressId, function (data) {
+                    $("#addressModalContent").html(data);
+                    $("#addressModal").modal('show');
+                });
+            });
+            // Khi nhấn nút đóng modal
+            $(".close").click(function () {
+                $("#addressModal").modal('hide');
+            });
+        });
+
+
+</script>
+

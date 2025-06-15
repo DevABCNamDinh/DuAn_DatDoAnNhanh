@@ -1,4 +1,5 @@
-﻿ @model IEnumerable<DuAn_DoAnNhanh.Data.Entities.CartItem> 
+﻿@using DuAn_DoAnNhanh.Data.Enum
+ @model IEnumerable<DuAn_DoAnNhanh.Data.Entities.CartItem> 
 @{
     decimal totalCartPrice = 0;
     decimal totalCartPriceEndow = 0;
@@ -31,8 +32,8 @@
 
         <div class="row">
             <div class="col-lg-8">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
+                <div class="table-responsive card shadow">
+                    <table class="table table-striped " style="color: inherit">
                         <thead>
                             <tr>
                                 <th></th>
@@ -40,6 +41,7 @@
                                 <th>Giá</th>
                                 <th>Số lượng</th>
                                 <th>Tổng</th>
+                                <th></th>
                              
                             </tr>
                         </thead>
@@ -74,7 +76,7 @@
                                         </td>
                                         <td style="vertical-align: middle;">
                                             <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -150,7 +152,7 @@
                                         </td>
                                         <td style="vertical-align: middle;">
                                             <form method="post" action="@Url.Action("RemoveCartItem", "Cart", new { cartItemId = item.CartItemID })" class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
                                             </form>
                                         </td>
                                     </tr>
@@ -161,7 +163,7 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-body">
                         <h4 class="card-title">Tóm tắt đơn hàng</h4>
                         <p class="card-text">Mặt hàng: @Model.Sum(item => item.Quantity)</p>
@@ -173,13 +175,22 @@
                             <p class="card-title style=">Tổng: @totalCartPriceEndow.ToString("N0") đ</p>
 
                         }
-                      
-                        <!-- Nút mở modal -->
-                        @* <a id="openModalX" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#checkOutModal">Tiến hành thanh toán</a> *@
-                        @* <a method="post" action="@Url.Action("CheckOut", "Cart")" class="btn btn-primary btn-lg btn-block">Tiến hành thanh toán</a> *@
-                        <form method="post" action="@Url.Action("CheckOut", "Cart")" class="mt-3">
-                            <button type="submit" class="btn btn-primary btn-block">Tiến hành thanh toán</button>
+                        <form method="get" action="@Url.Action("CheckOut", "Cart")" class="mt-3">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input me-2" type="radio" name="receivingType" id="delivery" value="@ReceivingType.HomeDelivery" checked>
+                                <label class="form-check-label" for="delivery">
+                                    Giao tận nơi
+                                </label>
+                            </div>
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input me-2" type="radio" name="receivingType" id="pickup" value="@ReceivingType.PickUpAtStore">
+                                <label class="form-check-label" for="pickup">
+                                    Hẹn lấy tại cửa hàng
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mt-3">Tiến hành thanh toán</button>
                         </form>
+
 
                         <form method="post" action="@Url.Action("ClearCart", "Cart")" class="mt-3">
                             <button type="submit" class="btn btn-warning btn-block">Xóa tất cả giỏ hàng</button>

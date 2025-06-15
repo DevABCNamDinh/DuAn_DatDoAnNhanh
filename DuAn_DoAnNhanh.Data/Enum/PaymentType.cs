@@ -8,7 +8,7 @@ namespace DuAn_DoAnNhanh.Data.Enum
 {
     public enum PaymentType
     {
-        Transfer = 0,
-        Cash=1,
+        Transfer = 0,//chuyển khoản
+        Cash=1,//tiền mặt
     }
 }
